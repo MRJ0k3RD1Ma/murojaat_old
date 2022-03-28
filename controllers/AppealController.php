@@ -10,15 +10,16 @@ use app\models\Company;
 use app\models\search\AppealBajaruvchiComSearch;
 use app\models\search\AppealBajaruvchiSearch;
 use app\models\search\AppealRegisterClosedSearch;
-use app\models\search\AppealRegisterComSearch;
 use app\models\search\AppealRegisterDeadSearch;
 use app\models\search\AppealRegisterHasSearch;
 use app\models\search\AppealRegisterRunningSearch;
 use app\models\search\AppealRegisterSearch;
+use app\models\search\CompanyRegisterSearch;
 use app\models\User;
 use app\models\Village;
 use PhpOffice\PhpSpreadsheet\Reader\Xls;
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use Yii;
 use yii\base\BaseObject;
 use yii\db\Exception;
@@ -89,6 +90,50 @@ class AppealController extends Controller
         if($com = Company::findOne($id)){
             $searchModel = new AppealBajaruvchiComSearch();
             $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+            if(Yii::$app->request->isPost){
+
+                header('Content-Type: application/vnd.ms-excel');
+                header('Content-Disposition: attachment;filename="hisbot.xlsx"');
+                $spreadsheet = new Spreadsheet();
+                $sheet = $spreadsheet->getActiveSheet();
+                $n = 0;
+                $sheet->setCellValue('A1', '№');
+                $sheet->setCellValue('B1', 'Ҳолати');
+                $sheet->setCellValue('C1', 'Мурожаатчи');
+                $sheet->setCellValue('D1', 'Савол');
+                $sheet->setCellValue('E1', 'Муддат');
+                $sheet->setCellValue('F1', 'Юборилган вақти');
+                foreach ($dataProvider->query->all() as $item){
+                    $n++;
+                    $m = $n+1;
+                    $d = $item;
+                    if($q = $d->appeal->question){
+                        $res = $q->group->code.'-'.$q->code.'.'.$q->name;
+                    }else{
+                        $res = "Савол белгиланмаган";
+                    }
+
+                    if($d->status == 0){
+                        $status =  "Рўйхатга олинмаган";
+                    }elseif($d->status == 1){
+                        $status =  "Жараёнда";
+                    }else{
+                        $status =  "Бажарилган";
+                    }
+
+                    $sheet->setCellValue('A'.$m, $n);
+                    $sheet->setCellValue('B'.$m, $status);
+                    $sheet->setCellValue('C'.$m, $d->appeal->person_name);
+                    $sheet->setCellValue('D'.$m, $res);
+                    $sheet->setCellValue('E'.$m, $item->deadtime);
+                    $sheet->setCellValue('F'.$m, $item->created);
+                }
+
+                $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+                $writer->save("php://output");
+
+            }
 
             return $this->render('combaj', [
                 'searchModel' => $searchModel,
@@ -430,5 +475,50 @@ class AppealController extends Controller
         }else{
             Yii::$app->session->setFlash('error','Маълумотлар етарли эмас');
         }
+    }
+
+
+
+    public function actionCompanies(){
+        $searchModel = new CompanyRegisterSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+        if(Yii::$app->request->isPost){
+
+            header('Content-Type: application/vnd.ms-excel');
+            header('Content-Disposition: attachment;filename="hisobot.xlsx"');
+            $spreadsheet = new Spreadsheet();
+            $sheet = $spreadsheet->getActiveSheet();
+            $n = 0;
+            $sheet->setCellValue('A1', '№');
+            $sheet->setCellValue('B1', 'Ташкилот номи');
+            $sheet->setCellValue('C1', 'Юборилган мурожаатлар');
+            $sheet->setCellValue('D1', 'Қабул қилинмаган');
+            $sheet->setCellValue('E1', 'Жараёнда');
+            $sheet->setCellValue('F1', 'Бажарилган');
+            $sheet->setCellValue('F1', 'Муддати бузилган');
+            foreach ($dataProvider->query->all() as $item){
+                $n++;
+                $m = $n+1;
+                $sheet->setCellValue('A'.$m, $n);
+                $sheet->setCellValue('B'.$m, $item->name);
+                $sheet->setCellValue('C'.$m, $item->cntall);
+                $sheet->setCellValue('D'.$m, $item->cntzero);
+                $sheet->setCellValue('E'.$m, $item->cntone);
+                $sheet->setCellValue('F'.$m, $item->cnttwo);
+                $sheet->setCellValue('F'.$m, $item->cntdead);
+            }
+
+            $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+            $writer->save("php://output");
+
+        }
+        return $this->render('companies', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
+
+
+
     }
 }

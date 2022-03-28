@@ -30,6 +30,7 @@ use Yii;
  */
 class Company extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
 {
+    public $cntall,$cntzero,$cntone,$cnttwo,$cntdead;
     /**
      * {@inheritdoc}
      */
@@ -78,6 +79,11 @@ class Company extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
             'district_id' => 'Туман',
             'village_id' => 'Маҳалла',
             'address' => 'Манзил',
+            'cntall' => 'Юборилган мурожаатлар',
+            'cntzero' => 'Қабул қилинмаган',
+            'cntone' => 'Жараёнда',
+            'cnttwo' => 'Бажарилган',
+            'cntdead' => 'Муддати бузилган',
         ];
     }
 

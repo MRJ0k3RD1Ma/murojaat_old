@@ -16,7 +16,9 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-
+                    <div class="card-tools">
+                        <a href="" class="btn btn-danger" data-method="post"><span class="fa fa-file-excel"></span> Эхпорт</a>
+                    </div>
                 </div>
                 <div class="card-body">
 
@@ -42,19 +44,21 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'format'=>'raw'
                             ],
                             [
-                                'label'=>'Мурожаатчи',
+                                'attribute'=>'appeal_id',
                                 'value'=>function($d){
-                                    if($s = $d->appeal){
-                                        $res = $s->person_name;
-                                        if($s->question){
-                                            $res .= '<br>'.$s->question->name;
-                                        }
-                                        return $res;
+
+                                    if($q = $d->appeal->question){
+                                        $res = $q->group->code.'-'.$q->code.'.'.$q->name;
                                     }else{
-                                        return null;
+                                        $res = "Савол белгиланмаган";
                                     }
+
+                                    $url = Yii::$app->urlManager->createUrl(['/appeal/view','id'=>$d->id]);
+
+                                    $res = $d->appeal->person_name.'<br>'.$res;
+                                    return "<a href='{$url}'>{$res}</a>";
                                 },
-                                'format'=>'raw'
+                                'format'=>'raw',
                             ],
                             [
                                 'attribute'=>'deadtime',
