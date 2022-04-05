@@ -9,7 +9,7 @@ use yii\widgets\ActiveForm;
 ?>
 
 <div class="appeal-answer-form">
-
+    <?php if(false){?>
     <?php $form = ActiveForm::begin(['action'=>Yii::$app->urlManager->createUrl(['/site/answer','id'=>$model->register_id])]); ?>
 
     <?= $form->field($model, 'detail')->textarea(['rows' => 6]) ?>
@@ -22,5 +22,7 @@ use yii\widgets\ActiveForm;
     </div>
 
     <?php ActiveForm::end(); ?>
-
+    <?php }else{?>
+    Жавоб юбориш техник сабабларга кўра тўхтатилган.
+    <?php }?>
 </div>

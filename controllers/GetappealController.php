@@ -10,6 +10,7 @@ use app\models\Company;
 use app\models\CompanyType;
 use app\models\District;
 use app\models\Village;
+use yii\base\BaseObject;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\web\Controller;
@@ -52,7 +53,12 @@ class GetappealController extends Controller
     public function actionMyfiles($id,$reg = 0){
         $model = AppealAnswer::findOne($id);
 		if($model->status != 2){
-			$comment = AppealComment::findOne(['answer_id'=>$id]);
+			if($comment = AppealComment::findOne(['answer_id'=>$id])){
+
+            }else{
+                $comment = new AppealComment();
+                $comment->answer_id = $id;
+            }
 		}else{
 			$comment = new AppealComment();
 			$comment->answer_id = $id;

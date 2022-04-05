@@ -2,6 +2,7 @@
 
 namespace app\models\search;
 
+use app\models\AppealAnswer;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\AppealRegister;
@@ -48,6 +49,12 @@ class AppealRegisterHasSearch extends AppealRegister
             ->innerJoin('appeal_answer','appeal_answer.appeal_id=appeal.id')
             ->andWhere(['<>','appeal_answer.status_boshqa',0])
             ->orderBy(['appeal_answer.created'=>SORT_DESC,'appeal_register.status'=>SORT_ASC,'appeal_register.deadtime'=>SORT_ASC]);
+
+        $q = AppealAnswer::find()->select(['appeal_answer.*','cnt'])
+            ->innerJoin('appeal_')
+
+            ;
+
 
         // add conditions that should always apply here
 

@@ -6,7 +6,6 @@ namespace app\controllers;
 use app\models\Company;
 use app\models\CompanyType;
 use app\models\District;
-use app\models\KasanachiTutzorSxema;
 use app\models\Village;
 use yii\web\Controller;
 

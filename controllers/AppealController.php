@@ -7,6 +7,7 @@ use app\models\AppealAnswer;
 use app\models\AppealBajaruvchi;
 use app\models\AppealRegister;
 use app\models\Company;
+use app\models\search\AppealAnswerSearch;
 use app\models\search\AppealBajaruvchiComSearch;
 use app\models\search\AppealBajaruvchiSearch;
 use app\models\search\AppealRegisterClosedSearch;
@@ -145,6 +146,16 @@ class AppealController extends Controller
         }
     }
 
+    public function actionAnswered($status = 0){
+        $searchModel = new AppealAnswerSearch();
+        $searchModel->status_boshqa = $status;
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+        return $this->render('answered', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
+    }
 
     public function actionAnswerlist(){
 
