@@ -30,7 +30,7 @@ foreach ($ans as $a):
             <button class="btn btn-primary myfiles" value="<?= Yii::$app->urlManager->createUrl(['/getappeal/myfiles','id'=>$a->id,'reg'=>$register->id])?>">
                 <span class="fa fa-eye"></span>
             </button>
-            <?php if($a->status == 2){?>
+            <?php if($a->status == 2 and false){?>
                 <a class="btn btn-success" href="<?= Yii::$app->urlManager->createUrl(['/appeal/view','id'=>$register->id,'ans'=>$a->id])?>"><span class="fa fa-reply"></span> </a>
             <?php }?>
         </td>
@@ -45,7 +45,7 @@ foreach ($ans as $a):
                 <button class="btn btn-primary myfiles" value="<?= Yii::$app->urlManager->createUrl(['/getappeal/myfiles','id'=>$a->id,'reg'=>$register->id])?>">
                     <span class="fa fa-eye"></span>
                 </button>
-                <?php if($a->status == 2){?>
+                <?php if($a->status == 2 and false){?>
                     <a class="btn btn-success" href="<?= Yii::$app->urlManager->createUrl(['/appeal/view','id'=>$register->id,'ans'=>$a->id])?>"><span class="fa fa-reply"></span> </a>
                 <?php } ?>
             </td>

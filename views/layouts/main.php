@@ -90,6 +90,29 @@ AppAsset::register($this);
 
                 </div>
             </li>
+
+            <li class="nav-item dropdown">
+                <a class="nav-link" data-toggle="dropdown" href="#">
+                    <i class="far fa-envelope"></i>
+                    <span class="badge badge-warning navbar-badge">
+
+
+                        <?php $cnt_ans = \app\models\AppealAnswer::find()->select(['appeal_answer.*'])
+                            ->innerJoin('appeal_register','appeal_register.id = appeal_answer.register_id')
+                            ->where('appeal_register.parent_bajaruvchi_id IN (SELECT ar.id FROM appeal_register ar WHERE ar.company_id='.Yii::$app->user->identity->company_id.')')
+                            ->andWhere(['appeal_answer.status_boshqa'=>0])
+                            ->orderBy(['created'=>SORT_DESC])->count('appeal_answer.id'); echo $cnt_ans?>
+                    </span>
+                </a>
+                <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+                    <span class="dropdown-item dropdown-header">Жавоби келган</span>
+                    <div class="dropdown-divider"></div>
+                    <a href="<?= Yii::$app->urlManager->createUrl(['/appeal/answered'])?>" class="dropdown-item">
+                        <i class="fas fa-envelope mr-2"></i> <?= $cnt_ans ?> та жавоб келган
+                    </a>
+
+                </div>
+            </li>
             <li class="nav-item dropdown">
                 <a class="nav-link" data-toggle="dropdown" href="#">
                     <i class="far fa-bell"></i>

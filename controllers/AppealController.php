@@ -7,6 +7,7 @@ use app\models\AppealAnswer;
 use app\models\AppealBajaruvchi;
 use app\models\AppealRegister;
 use app\models\Company;
+use app\models\DeadlineChanges;
 use app\models\search\AppealAnswerSearch;
 use app\models\search\AppealBajaruvchiComSearch;
 use app\models\search\AppealBajaruvchiSearch;
@@ -16,6 +17,7 @@ use app\models\search\AppealRegisterHasSearch;
 use app\models\search\AppealRegisterRunningSearch;
 use app\models\search\AppealRegisterSearch;
 use app\models\search\CompanyRegisterSearch;
+use app\models\search\DeadlineChangesSearch;
 use app\models\User;
 use app\models\Village;
 use PhpOffice\PhpSpreadsheet\Reader\Xls;
@@ -530,6 +532,53 @@ class AppealController extends Controller
         ]);
 
 
+
+    }
+
+    public function actionDeadline($id){
+        $model = AppealRegister::findOne($id);
+        $dead = new DeadlineChanges();
+        $dead->appeal_id = $model->appeal_id;
+        $dead->register_id = $model->id;
+        if($dead->load(Yii::$app->request->post())){
+
+            if($dead->file = UploadedFile::getInstance($dead,'file')){
+                $name = microtime(true).'.'.$dead->file->extension;
+                $dead->file->saveAs(Yii::$app->basePath.'/web/upload/deadline/'.$name);
+                $dead->file = $name;
+            }
+
+            if($dead->save()){
+                return $this->redirect(['view','id'=>$id]);
+            }
+        }
+
+        return $this->render('deadline',[
+            'model'=>$dead
+        ]);
+    }
+
+
+    public function actionRequest(){
+
+        $searchModel = new DeadlineChangesSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+        return $this->render('request', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+
+
+    public function actionClose($id,$regid){
+        $model = Appeal::findOne($id);
+        $register = $regid;
+        if($model->load(Yii::$app->request->post())){
+            echo "<pre>";
+            var_dump($model);
+            exit;
+        }
 
     }
 }

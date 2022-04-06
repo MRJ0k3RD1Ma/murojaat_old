@@ -241,6 +241,7 @@ $user = Yii::$app->user->identity;
                                             [
                                                 'label'=>'Рақаси ва санаси',
                                                 'value'=>function($d){
+                                                    $d->date = date('d-m-Y',strtotime($d->date));
                                                     return "<b>№ {$d->number}</b> <br> {$d->date}";
                                                 },
                                                 'format'=>'raw'
@@ -291,10 +292,10 @@ $user = Yii::$app->user->identity;
                                                     }
                                                     $datetime2 = date_create($d->deadtime);
                                                     $datetime1 = date_create(date('Y-m-d'));
-
                                                     $interval = date_diff($datetime1, $datetime2);
                                                     $days = $interval->format('%a ');
                                                     $ds = $interval->format('%R%a ');
+                                                    $d->deadtime = date('d-m-Y',strtotime($d->deadtime));
                                                     $class = "";
                                                     if($ds <= 5){
                                                         $class = "bg-warning";
@@ -302,7 +303,7 @@ $user = Yii::$app->user->identity;
                                                     if($ds < 0){
                                                         $class = "bg-danger";
                                                     }
-                                                    $res = "<span class='{$class}' style='width: 100%; height: 100%; display: block;text-align: center'>".$d->deadtime.' <br>'.$days.' кун қолди'."</span> ";
+                                                    $res = "<span class='{$class}' style='width: 100%; height: 100%; display: block;text-align: center'>".$days.' кун<br>'.$d->deadtime."</span> ";
 
                                                     
 													if($ds < 0){
@@ -310,12 +311,9 @@ $user = Yii::$app->user->identity;
 														$res = "<span class='{$class}' style='width: 100%; height: 100%; display: block;'>Муддати ўтган</span>";
 													}elseif($ds <= 5){
 														$class = "bg-warning";
-														$res = "<span class='{$class}' style='width: 100%; height: 100%; display: block;'>".$days.' кун қолди'."</span>";
-													}else{$res = "<span class='{$class}' style='width: 100%; height: 100%; display: block;'>".$days.' кун қолди'."</span>";}
-													if(\app\models\AppealAnswer::find()->where(['appeal_id'=>$d->appeal_id])->andWhere(['status'=>0])->count('id') > 0){
-                                                        $info = "<span class='fa fa-info-circle bg-warning' style='width: 100%; display: block; text-align: center; padding:3px; font-size: 12px;'> Янги жавоб</span>";
-                                                        $res = $info . $res;
-                                                    }
+														$res = "<span class='{$class}' style='width: 100%; height: 100%; display: block;'>".$days.' кун'."</span><br>{$d->deadtime}";
+													}else{$res = "<span class='{$class}' style='width: 100%; height: 100%; display: block;'>".$days.' кун'."</span><br>{$d->deadtime}";}
+
                                                     return $res;
                                                 },
                                                 'format'=>'raw'
@@ -378,3 +376,9 @@ $user = Yii::$app->user->identity;
         </div>
     </div>
 </div>
+
+<style>
+    table th,table td{
+        min-width: 100px;
+    }
+</style>

@@ -27,10 +27,22 @@ use yii\helpers\Url; ?>
         </li>
         <?php if(Yii::$app->user->identity->is_registration == 1){?>
             <li class="nav-item">
-                <a href="<?= Yii::$app->urlManager->createUrl(['/appeal/index'])?>" class="nav-link <?=(Yii::$app->controller->id=='appeal' and Yii::$app->controller->action->id != 'companies')?'active':''?>">
+                <a href="<?= Yii::$app->urlManager->createUrl(['/appeal/index'])?>" class="nav-link
+                <?=(Yii::$app->controller->id=='appeal'
+                    and Yii::$app->controller->action->id != 'companies'
+                    and Yii::$app->controller->action->id != 'куйгуқе'
+                )?'active':''?>">
                     <i class="nav-icon fas fa-list"></i>
                     <p>
                         Мурожаатлар
+                    </p>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="<?= Yii::$app->urlManager->createUrl(['/appeal/request'])?>" class="nav-link <?=(Yii::$app->controller->id=='appeal' and Yii::$app->controller->action->id == 'request')?'active':''?>">
+                    <i class="nav-icon fas fa-list"></i>
+                    <p>
+                        Муддат узайтиришга сўров
                     </p>
                 </a>
             </li>

@@ -40,7 +40,7 @@ class AppealAnswer extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['appeal_id', 'register_id', 'detail',  'bajaruvchi_id',], 'required'],
+            [['appeal_id','preview', 'register_id', 'detail',  'bajaruvchi_id','reaply_send','status','status_boshqa','n_olish','date', 'name', 'number',], 'required'],
             [['appeal_id', 'register_id', 'bajaruvchi_id', 'reaply_send','status','status_boshqa','n_olish'], 'integer'],
             [['detail'], 'string'],
             [['date', 'tarqatma_date', 'created', 'updated'], 'safe'],
