@@ -34,10 +34,11 @@ class AppealBajaruvchi extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['company_id', 'appeal_id',  'deadtime'], 'required'],
+            [['appeal_id', 'deadtime','task'], 'required'],
             [['company_id', 'appeal_id', 'register_id', 'deadline','status'], 'integer'],
             [['deadtime','created'], 'safe'],
             ['letter','string'],
+            ['task','string','max'=>255],
             ['letter','required','on'=>'send'],
         ];
     }
@@ -55,8 +56,9 @@ class AppealBajaruvchi extends \yii\db\ActiveRecord
             'deadline' => 'Муддат(кун)',
             'deadtime' => 'Муддат(Сана)',
             'status' => 'Ҳолат',
-            'letter' => 'Кузатувчи хат',
+            'letter' => 'Кузатув хати (виза)',
             'created' => 'Юборилган вақти',
+            'task' => 'Топшириқ матни',
         ];
     }
 
@@ -75,5 +77,9 @@ class AppealBajaruvchi extends \yii\db\ActiveRecord
             $this->letter->saveAs(Yii::$app->basePath.'/web/upload/'.$name);
             $this->letter = $name;
         }
+    }
+
+    public function getStatus0(){
+        return $this->hasOne(Status::className(),['id'=>'status']);
     }
 }

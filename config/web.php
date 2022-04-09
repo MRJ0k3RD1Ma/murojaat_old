@@ -32,6 +32,12 @@ $config = [
                 'application/json' => \yii\web\JsonParser::class,
             ]
         ],
+        'formatter' => [
+            'dateFormat' => 'dd.MM.yyyy',
+            'decimalSeparator' => ',',
+            'thousandSeparator' => ' ',
+            'currencyCode' => 'EUR',
+        ],
         'cache' => [
             'class' => 'yii\caching\FileCache',
         ],

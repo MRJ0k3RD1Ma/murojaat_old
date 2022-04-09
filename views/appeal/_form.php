@@ -63,8 +63,6 @@ use yii\widgets\ActiveForm;
                     <?= $form->field($model, 'date_of_birth')->textInput(['type'=>'date']) ?>
                     <?= $form->field($model, 'gender')->dropDownList([0=>'Аёл',1=>'Эркак'],['prompt'=>'Жинсини танланг']) ?>
                     <?= $form->field($model, 'person_phone')->textInput(['maxlength' => true]) ?>
-                    <?= $form->field($model, 'email')->textInput(['type' => 'email']) ?>
-                    <?= $form->field($model, 'nation_id')->dropDownList(\yii\helpers\ArrayHelper::map(\app\models\Nation::find()->all(),'id','name')) ?>
 
                 </div>
             </div>
@@ -171,24 +169,10 @@ use yii\widgets\ActiveForm;
                         <div class="card-body">
 
                             <div class="row">
-                                <div class="col-md-2">
-                                    <?= $form->field($register, 'nazorat')->checkbox(['value' => 1,'checked'=>true,'style'=>'margin-top:35px;']) ?>
+                                <div class="col-md-12">
+                                    <?= $form->field($register, 'nazorat')->checkbox(['value' => 1,'checked'=>true]) ?>
                                 </div>
-                                <div class="col-md-2">
-                                    <?= $form->field($register, 'takroriy')->checkbox(['value' => 1,'style'=>'margin-top:35px;']) ?>
 
-                                </div>
-                                <div class="col-md-2">
-                                    <button class="btn btn-primary" type="button" id="appealregister-takroriy_id" name="AppealRegister[takroriy_id]" disabled style="margin-top:32px;">Базадан</button>
-                                </div>
-                                <div class="col-md-3">
-
-                                    <?= $form->field($register, 'takroriy_number')->textInput(['maxlength' => true,'disabled'=>true]) ?>
-                                </div>
-                                <div class="col-md-3">
-                                    <?= $form->field($register, 'takroriy_date')->textInput(['maxlength' => true,'disabled'=>true]) ?>
-
-                                </div>
                             </div>
 
                             <?= $form->field($register,'rahbar_id')->dropDownList(\yii\helpers\ArrayHelper::map(\app\models\User::find()->where(['company_id'=>Yii::$app->user->identity->company_id])->andWhere(['is_rahbar'=>1])->all(),'id','name'),['prompt'=>'Раҳбарни танланг'])?>
@@ -203,6 +187,9 @@ use yii\widgets\ActiveForm;
                                     <?= $form->field($register,'deadtime')->textInput(['type'=>'date'])?>
                                 </div>
                             </div>
+
+                            <?= $form->field($register,'ijrochi_id')->dropDownList(\yii\helpers\ArrayHelper::map(\app\models\User::find()->where(['company_id'=>Yii::$app->user->identity->company_id])->all(),'id','name'),['prompt'=>'Ижрочини танланг'])?>
+
                         </div>
                     </div>
                 </div>
@@ -212,72 +199,23 @@ use yii\widgets\ActiveForm;
                 <div class="col-md-12">
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title">Бажарувчилар</h3>
+                            <h3 class="card-title">
+                                Такрорий мурожаат маълумотлари
+                            </h3>
                         </div>
                         <div class="card-body">
                             <div class="row">
-                                <div class="col-md-12">
-                                    <?= $form->field($model,'letter')->fileInput()?>
-                                </div>
-                            </div>
-                            <div class="row">
                                 <div class="col-md-2">
-                                    <button class="btn btn-primary" type="button" id="buttonhodim" style="margin-top:32px;"><span class="fa fa-plus"></span> Ҳодим</button>
+                                    <?= $form->field($register, 'takroriy')->checkbox(['value' => 1,'style'=>'margin-top:35px;']) ?>
+
                                 </div>
-                                <div class="col-md-3">
-                                    <button class="btn btn-primary" type="button" id="buttontashkilot" style="margin-top:32px;"><span class="fa fa-plus"></span> Ташкилот</button>
+                                <div class="col-md-5">
+
+                                    <?= $form->field($register, 'takroriy_number')->textInput(['maxlength' => true,'disabled'=>true]) ?>
                                 </div>
-                                <div class="col-md-7">
-                                    <?php
-                                        $data = [];
-                                    if($register->users != null and isset($us['user'])) {
-                                        $us = json_decode($register->users, true);
-                                        foreach ($us['user'] as $i):
-                                            $data[$i] = \app\models\User::findOne($i)->name;
-                                        endforeach;
-                                    }
-                                        ?>
+                                <div class="col-md-5">
+                                    <?= $form->field($register, 'takroriy_date')->textInput(['maxlength' => true,'disabled'=>true]) ?>
 
-                                    <?= $form->field($register,'ijrochi_id')->dropDownList($data,['prompt'=>'Масъул ҳодимни танланг'])?>
-                                </div>
-
-                                <div class="col-md-12">
-                                    <table class="table table-bordered table-hover">
-                                        <thead>
-                                        <tr>
-                                            <th style="width: 65px;"></th>
-                                            <th>ФИО/Ташкилот</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody id="tablehomditashkilot">
-                                        <?php
-                                        if($register->users != null and isset($us['user'])) {
-                                            $us = json_decode($register->users, true);
-                                            foreach ($us['user'] as $i):?>
-                                              <tr id="u<?= $i?>">
-                                                  <td><button value="<?= $i?>" type="button" class="btn btn-danger" onclick="deleteitem(<?= $i?>)"><span class="fa fa-trash"></span></button></td>
-                                                  <td><?= $data[$i]?></td>
-                                                  <input type="text" id="userid-<?= $i?>" name="AppealRegister[users][user][]" value="<?= $i?>" hidden class="hidden">
-                                              </tr>
-
-                                            <?php endforeach;
-                                        }
-                                        ?>
-                                        <?php
-                                        if($register->users != null and isset($us['tashkilot'])) {
-                                            $us = json_decode($register->users, true);
-                                            foreach ($us['tashkilot'] as $i):?>
-                                                <tr id="i<?= $i?>">
-                                                    <td><button value="<?= $i?>" type="button" class="btn btn-danger" onclick="deletetashkilotitem(<?= $i?>)"><span class="fa fa-trash"></span></button></td>
-                                                    <td><?= \app\models\Company::findOne($i)->name?></td>
-                                                    <input type="text" id="tashkilotid-<?= $i?>" name="AppealRegister[users][tashkilot][]" value="<?= $i?>" hidden class="hidden">
-                                                </tr>
-
-                                            <?php endforeach;
-                                        }
-                                        ?>
-                                        </tbody>
-                                    </table>
                                 </div>
                             </div>
                         </div>

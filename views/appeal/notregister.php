@@ -33,10 +33,10 @@ $this->params['breadcrumbs'][] = $this->title;
 //                            'appeal_id',
 //                            'register_id',
                             [
-                                 'label'=>'',
+                                'label'=>'',
                                 'value'=>function($d){
                                     $url = Yii::$app->urlManager->createUrl(['/appeal/regform','id'=>$d->id]);
-                                    return "<button class='btn btn-link btnregister' type='button' value='{$url}'>Рўйхатга олиш</button>";
+                                    return "<a href='{$url}'>Рўйхатга олиш</a>";
                                 },
                                 'format'=>'raw'
                             ],

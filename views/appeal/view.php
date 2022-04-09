@@ -14,6 +14,9 @@ $this->title = $model->person_name;
 $this->params['breadcrumbs'][] = ['label' => 'Мурожаатлар', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
+    <script>
+        var tashkilotadd = function(){}
+    </script>
 <div class="row">
     <div class="col-md-6">
         <div class="card">
@@ -161,40 +164,157 @@ $this->params['breadcrumbs'][] = $this->title;
                     'attributes' => [
                         'number',
                         'date',
-                        'deadtime',
+//                        'deadtime',
+                        [
+                            'attribute'=>'deadtime',
+                            'value'=>function($d){
+                                return $d->deadline.' кун '.$d->deadtime;
+                            }
+                        ],
                         'donetime',
-                        'control_id',
-                        'status',
+//                        'control_id',
+                        [
+                            'attribute'=>'control_id',
+                            'value'=>function($d){
+                                return $d->control->name;
+                            }
+                        ],
+//                        'status',
                         'preview',
-                        'detail',
-                        'file',
-                        'nazorat',
-                        'takroriy',
-
+//                        'detail',
+//                        'file',
+//                        'nazorat',
+                        [
+                            'attribute'=>'nazorat',
+                            'value'=>function($d){
+                                return Yii::$app->params['nazorat'][$d->nazorat];
+                            }
+                        ],
+//                        'takroriy',
+//                        'rahbar_id',
+//                        'ijrochi_id',
+                        [
+                            'attribute'=>'rahbar_id',
+                            'value'=>function($d){
+                                return @$d->rahbar->name;
+                            }
+                        ],
+                        [
+                            'attribute'=>'ijrochi_id',
+                            'value'=>function($d){
+                                return @$d->ijrochi->name;
+                            }
+                        ],
                     ],
                 ]) ?>
 
                     </div>
                 </div>
-                <hr>
-                <ul class="nav">
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#">Active</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Link</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Link</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
-                    </li>
-                </ul>
 
+                <hr>
+                <div id="accordion">
+
+                    <a href="<?= Yii::$app->urlManager->createUrl(['/appeal/getappeal','id'=>$register->id])?>" class="btn btn-default" id="downappeal"><span class="fa fa-download"></span> Мурожаат масаласини юклаб олиш</a>
+
+                    <a href="#success" class="btn btn-success" data-toggle="collapse">Ташкилотларга топшириқ бериш</a>
+
+                    <div class="dropdown" style="float: right">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Маълумотларни янгилаш
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <a class="dropdown-item" href="#">Мурожаат маълумотлари</a>
+                            <a class="dropdown-item" href="#">Мурожаатчи маълумотлари</a>
+                        </div>
+                    </div>
+
+
+
+                    <div id="success" class="collapse" style="margin-top: 20px; padding: 20px;border: 1px solid #28a745;" data-parent="#accordion">
+
+                        <table class="table table-hover table-bordered datatable_tashkilot">
+                            <thead>
+                            <tr>
+                                <th></th>
+                                <th>Ташкилот номи</th>
+                                <th>Директор</th>
+                                <th>СТИР(ИНН)</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+
+
+
+                            </tbody>
+                        </table>
+
+                    </div>
+
+
+
+
+                </div>
 
             </div>
 
 
 </div>
 
+
+    <!-- Modal -->
+    <div id="modaltashkilot" class="modal fade" role="dialog">
+        <div class="modal-dialog modal-lg">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Топшириқ бериш</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Ёпиш</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+
+<style>
+    .table.table-hover.table-bordered.datatable_tashkilot.dataTable.no-footer{
+        width: 100% !important;
+    }
+</style>
+
+
+<?php
+$url = Yii::$app->urlManager->createUrl(['/appeal/task','regid'=>$register->id]);
+    $this->registerJs("
+        $(document).ready(function(){
+              $('.datatable_tashkilot').DataTable({
+                \"processing\": true,
+                \"serverSide\": true,
+
+                \"ajax\": {
+                    \"url\":\"/get/gettashkilot\",
+                    \"type\":\"post\"
+                },
+                \"columns\": [
+                    { \"data\": \"id\" },
+                    { \"data\": \"name\" },
+                    { \"data\": \"director\" },
+                    { \"data\": \"inn\" }
+                ],
+            });
+        })
+        
+        tashkilotadd = function(id){
+            $('#modaltashkilot').modal('show').find('.modal-body').load('{$url}&id='+id);
+        }      
+        
+    ")
+?>

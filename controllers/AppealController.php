@@ -23,6 +23,9 @@ use app\models\Village;
 use PhpOffice\PhpSpreadsheet\Reader\Xls;
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpWord\PhpWord;
+use PhpOffice\PhpWord\Template;
+use PhpOffice\PhpWord\TemplateProcessor;
 use Yii;
 use yii\base\BaseObject;
 use yii\db\Exception;
@@ -272,6 +275,8 @@ class AppealController extends Controller
         $model->count_applicant = 1;
         $model->count_list = 1;
 		$model->appeal_control_id = 1;
+		$model->nation_id = 1;
+		$model->email = '';
         //appeal_file file upload
         //users array to json
         $model->district_id = Yii::$app->user->identity->company->district_id;
@@ -341,15 +346,21 @@ class AppealController extends Controller
     public function actionRegform($id){
         $model = new AppealRegister();
         $baj = AppealBajaruvchi::findOne($id);
+        if($baj->status == 0){
+            $baj->status = 1;
+            $baj->save();
+        }
         $model->appeal_id = $baj->appeal_id;
         $model->parent_bajaruvchi_id = $baj->id;
         $model->company_id = $baj->company_id;
         $model->deadline = $baj->deadline;
         $model->deadtime = $baj->deadtime;
+        $model->preview = $baj->register->preview;
+        $model->scenario = 'reg';
         if($model->load(Yii::$app->request->post())){
 
             if($model->save()){
-                $baj->status = 1;
+                $baj->status = 2;
                 $baj->save();
                 $app = $model->appeal;
                 $app->appeal_control_id = 1;
@@ -361,8 +372,11 @@ class AppealController extends Controller
                 exit;
             }
         }
-        return $this->renderAjax('_register',[
-            'model'=>$model
+        return $this->render('_register',[
+            'reg'=>$model,
+            'model'=>Appeal::findOne($baj->appeal_id),
+            'register'=>AppealRegister::findOne($baj->register_id),
+            'baj'=>$baj
         ]);
     }
 
@@ -570,6 +584,67 @@ class AppealController extends Controller
         ]);
     }
 
+    public function actionGetappeal($id){
+        $register = AppealRegister::findOne($id);
+        $model = Appeal::findOne($register->appeal_id);
+        $address = $model->region->name.' '.$model->district->name.' '.@$model->village->name.' '.$model->address;
+        $word = new TemplateProcessor(Yii::$app->basePath.'/web/template/getappeal.docx');
+        $word->setValue('companyup',mb_strtoupper($model->company->name));
+        $word->setValue('number',$register->number);
+        $word->setValue('questiongroup',$model->question->group->name);
+
+        $word->setValue('question',$model->question->name);
+
+        $word->setValue('company',$model->company->name);
+        $word->setValue('date',$register->date);
+        $word->setValue('person_name',$model->person_phone);
+        $word->setValue('address',$address);
+//        $word->setValue('sector',$register->number);
+        $word->setValue('gender',Yii::$app->params['gender'][$model->gender]);
+        $word->setValue('birthday',@$model->date_of_birth);
+        $word->setValue('isbusiness',Yii::$app->params['yur'][$model->isbusinessman]);
+        $word->setValue('businesname',@$model->businessman);
+        $word->setValue('phone',$model->person_phone);
+        $word->setValue('deadline',$register->deadline.' кун '.$register->deadtime.' гача');
+        $word->setValue('detail',$model->appeal_detail);
+        $word->setValue('tocompany',Yii::$app->user->identity->company->name.'га');
+
+
+
+
+        $fileName = 'e-murojaat.uz_'.$register->number.'.docx';
+        $fullname = Yii::$app->basePath.'/web/template/temp/e-murojaat.uz_'.$register->number.'.docx';
+        $word->saveAs($fullname);
+        header('Content-Disposition: attachment; name=' . $fullname);
+        $file = fopen($fullname, 'r+');
+        Yii::$app->response->sendFile($fullname, $fileName, ['inline' => false, 'mimeType' => 'application/word'])->send();
+        if(file_exists($fullname)){
+            unlink($fullname);
+        }
+    }
+
+    public function actionTask($id,$regid){
+        $register = AppealRegister::findOne($regid);
+        $model = new AppealBajaruvchi();
+        $model->register_id = $register;
+        $model->appeal_id = $register->appeal_id;
+        $model->company_id = $id;
+        if(AppealBajaruvchi::find()->where(['company_id'=>$id])->andWhere(['appeal_id'=>$model->appeal_id])->andWhere(['register_id'=>$register->id])->one()){
+            return "Ушбу ташкилотга аввал мурожаат юборилган";
+        }
+        if($model->load(Yii::$app->request->post())){
+            $model->upload();
+            if($model->save()){
+                Yii::$app->session->setFlash('success','Топшириқ юборилди');
+            }else{
+                Yii::$app->session->setFlash('error','Маълумотлар тўлиқ тўлдирилмаган');
+            }
+            return $this->redirect(['view','id'=>$regid]);
+        }
+        return $this->renderAjax('_task',[
+            'model'=>$model
+        ]);
+    }
 
     public function actionClose($id,$regid){
         $model = Appeal::findOne($id);
@@ -581,4 +656,9 @@ class AppealController extends Controller
         }
 
     }
+
+
+
+
+
 }
