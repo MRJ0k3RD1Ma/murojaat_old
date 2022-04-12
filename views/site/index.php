@@ -335,16 +335,11 @@ $user = Yii::$app->user->identity;
                                             'value'=>function($d){
                                                 $res = \app\models\AppealBajaruvchi::find()->where(['appeal_id'=>$d->appeal_id])
                                                     ->andWhere(['register_id'=>$d->id])->all();
-                                                $s = [
-                                                    0=>'text text-danger fa fa-times',
-                                                    1=>'text text-warning fa fa-running',
-                                                    2=>'text text-success fa fa-check'
-                                                ];
                                                 $ret = "";
                                                 foreach ($res as $item){
 
                                                     if($item->company_id and $item->company){
-                                                        $ret .= '<span class="'.$s[$item->status].'"></span>'.$item->company->name.'<br>';
+                                                        $ret .= '<span class="'.$d->status0->icon.'"></span>'.$item->company->name.'<br>';
                                                     }
                                                 }
 
@@ -356,15 +351,15 @@ $user = Yii::$app->user->identity;
                                         [
                                             'label'=>'Жавоб берилган',
                                             'value'=>function($d){
-                                                $res = \app\models\AppealAnswer::find()->where(['appeal_id'=>$d->appeal_id])
-                                                    ->andWhere(['<>','status_boshqa',0])->all();
+                                                $res = \app\models\AppealBajaruvchi::find()->where(['appeal_id'=>$d->appeal_id])
+                                                    ->andWhere('status=3 and status=4')->all();
                                                 $ret = "";
                                                 $com = [];
                                                 foreach ($res as $item){
-                                                    if($item->register->company){
-                                                        if(!in_array($item->register->company_id,$com)){
-                                                            $com[] = $item->register->company_id;
-                                                            $ret .= $item->register->company->name.'<br>';
+                                                    if($item->company){
+                                                        if(!in_array($item->company_id,$com)){
+                                                            $com[] = $item->company_id;
+                                                            $ret .= $item->company->name.'<br>';
                                                         }
                                                     }
                                                 }

@@ -34,7 +34,7 @@ class AppealBajaruvchi extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['appeal_id', 'deadtime','task'], 'required'],
+            [['appeal_id', 'deadtime','task',], 'required'],
             [['company_id', 'appeal_id', 'register_id', 'deadline','status'], 'integer'],
             [['deadtime','created'], 'safe'],
             ['letter','string'],

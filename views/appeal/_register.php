@@ -281,15 +281,18 @@ $this->params['breadcrumbs'][] = $this->title;
                                 <?= $form->field($reg,'date')->textInput(['type'=>'date'])?>
                             </div>
                         </div>
-
-                        <?= $form->field($reg,'rahbar_id')->dropDownList(\yii\helpers\ArrayHelper::map(\app\models\User::find()->where(['company_id'=>Yii::$app->user->identity->company_id])->andWhere(['is_rahbar'=>1])->all(),'id','name'))?>
-                    </div>
-                    <div class="col-md-6">
-
                         <?= $form->field($reg,'preview')->textarea(['style'=>'min-height:68px'])?>
 
-                        <button class="btn btn-success">Қабул қилиш</button>
+                        </div>
+                    <div class="col-md-6">
+                        <?= $form->field($reg,'rahbar_id')->dropDownList(\yii\helpers\ArrayHelper::map(\app\models\User::find()->where(['company_id'=>Yii::$app->user->identity->company_id])->andWhere(['is_rahbar'=>1])->all(),'id','name'))?>
+
+                        <?= $form->field($reg,'ijrochi_id')->dropDownList(\yii\helpers\ArrayHelper::map(\app\models\User::find()->where(['company_id'=>Yii::$app->user->identity->company_id])->andWhere(['is_rahbar'=>1])->all(),'id','name'),['prompt'=>'Масъул ижрочини танланг'])?>
+
+
                     </div>
+
+                    <button class="btn btn-success">Қабул қилиш</button>
                 </div>
 
                 <?php ActiveForm::end() ?>

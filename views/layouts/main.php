@@ -77,7 +77,7 @@ AppAsset::register($this);
                         <?php $cnt_ans = \app\models\AppealAnswer::find()->select(['appeal_answer.*'])
                             ->innerJoin('appeal_register','appeal_register.id = appeal_answer.register_id')
                             ->where('appeal_register.parent_bajaruvchi_id IN (SELECT ar.id FROM appeal_register ar WHERE ar.company_id='.Yii::$app->user->identity->company_id.')')
-                            ->andWhere(['appeal_answer.status_boshqa'=>0])
+                            ->andWhere(['appeal_answer.status'=>0])
                             ->orderBy(['created'=>SORT_DESC])->count('appeal_answer.id'); echo $cnt_ans?>
                     </span>
                 </a>
@@ -100,7 +100,7 @@ AppAsset::register($this);
                         <?php $cnt_ans = \app\models\AppealAnswer::find()->select(['appeal_answer.*'])
                             ->innerJoin('appeal_register','appeal_register.id = appeal_answer.register_id')
                             ->where('appeal_register.parent_bajaruvchi_id IN (SELECT ar.id FROM appeal_register ar WHERE ar.company_id='.Yii::$app->user->identity->company_id.')')
-                            ->andWhere(['appeal_answer.status_boshqa'=>0])
+                            ->andWhere(['appeal_answer.status'=>0])
                             ->orderBy(['created'=>SORT_DESC])->count('appeal_answer.id'); echo $cnt_ans?>
                     </span>
                 </a>

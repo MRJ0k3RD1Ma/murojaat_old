@@ -19,7 +19,6 @@ use Yii;
  * @property int $bajaruvchi_id
  * @property int $reaply_send
  * @property int $status
- * @property int $status_boshqa
  * @property string $name
  * @property string $created
  * @property string $updated
@@ -40,7 +39,7 @@ class AppealAnswer extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['appeal_id','preview', 'register_id', 'detail',  'bajaruvchi_id','reaply_send','status','status_boshqa','n_olish','date', 'name', 'number',], 'required'],
+            [['appeal_id','preview', 'register_id', 'detail',  'bajaruvchi_id','reaply_send','status','n_olish','date', 'name', 'number',], 'required'],
             [['appeal_id', 'register_id', 'bajaruvchi_id', 'reaply_send','status','status_boshqa','n_olish'], 'integer'],
             [['detail'], 'string'],
             [['date', 'tarqatma_date', 'created', 'updated'], 'safe'],
@@ -71,7 +70,6 @@ class AppealAnswer extends \yii\db\ActiveRecord
             'file' => 'Файл',
             'created' => 'Юборилди',
             'updated' => 'Тасдиқланди',
-            'status_boshqa' => 'Ҳолат',
         ];
     }
     public function getAppeal(){

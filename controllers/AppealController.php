@@ -18,23 +18,12 @@ use app\models\search\AppealRegisterRunningSearch;
 use app\models\search\AppealRegisterSearch;
 use app\models\search\CompanyRegisterSearch;
 use app\models\search\DeadlineChangesSearch;
-use app\models\User;
-use app\models\Village;
-use PhpOffice\PhpSpreadsheet\Reader\Xls;
-use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpWord\PhpWord;
-use PhpOffice\PhpWord\Template;
 use PhpOffice\PhpWord\TemplateProcessor;
 use Yii;
-use yii\base\BaseObject;
-use yii\db\Exception;
 use yii\filters\AccessControl;
 use yii\web\Controller;
-use yii\web\Response;
 use yii\filters\VerbFilter;
-use app\models\LoginForm;
-use app\models\ContactForm;
 use yii\web\UploadedFile;
 
 class AppealController extends Controller
@@ -60,6 +49,7 @@ class AppealController extends Controller
                 'class' => VerbFilter::className(),
                 'actions' => [
                     'delete' => ['post'],
+                    'deletetask' => ['post'],
                 ],
             ],
         ];
@@ -177,35 +167,25 @@ class AppealController extends Controller
         $register = AppealRegister::findOne($id);
         $model = Appeal::findOne($register->appeal_id);
         $answer = null;
-        if($ans == 0){
-            $answer = new AppealAnswer();
-            $answer->appeal_id = $model->id;
-            $answer->register_id = $register->id;
-        }else{
-            $answer = AppealAnswer::findOne($ans);
-            $answer->name = $answer->bajaruvchi->name;
-        }
+        $answer = new AppealAnswer();
+        $answer->appeal_id = $model->id;
+        $answer->register_id = $register->id;
         return $this->render('view',[
             'model'=>$model,
             'register'=>$register,
             'answer'=>$answer,
         ]);
     }
-    public function actionAnswer($id,$ans = 0){
+    public function actionAnswer($id){
         $register = AppealRegister::findOne($id);
         $model = null;
         $file = null;
-        if($ans == 0){
-            $model = new AppealAnswer();
-            $model->appeal_id = $register->appeal_id;
-            $model->register_id = $register->id;
-            $model->date = date('Y-m-d');
-            $model->bajaruvchi_id = Yii::$app->user->id;
-            $model->tarqatma_date = date('Y-m-d');
-        }else{
-            $model = AppealAnswer::findOne($ans);
-            $file = $model->file;
-        }
+        $model = new AppealAnswer();
+        $model->appeal_id = $register->appeal_id;
+        $model->register_id = $register->id;
+        $model->date = date('Y-m-d');
+        $model->bajaruvchi_id = Yii::$app->user->id;
+        $model->tarqatma_date = date('Y-m-d');
 
         if($model->load(Yii::$app->request->post())){
             if($model->file = UploadedFile::getInstance($model,'file')){
@@ -215,9 +195,6 @@ class AppealController extends Controller
             }else{
                 $model->file = $file;
             }
-
-            $model->status_boshqa = 1;
-            $model->status = 2;
 
             if($model->save()){
                 $register->status = 2;
@@ -348,7 +325,7 @@ class AppealController extends Controller
         $baj = AppealBajaruvchi::findOne($id);
         if($baj->status == 0){
             $baj->status = 1;
-            $baj->save();
+            $baj->save(false);
         }
         $model->appeal_id = $baj->appeal_id;
         $model->parent_bajaruvchi_id = $baj->id;
@@ -646,6 +623,9 @@ class AppealController extends Controller
         ]);
     }
 
+
+
+
     public function actionClose($id,$regid){
         $model = Appeal::findOne($id);
         $register = $regid;
@@ -657,7 +637,19 @@ class AppealController extends Controller
 
     }
 
+    public function actionDeletetask($id){
 
+        $baj = AppealBajaruvchi::findOne($id);
+        $redid = $baj->register_id;
+
+        $reg = AppealRegister::find()->where(['parent_bajaruvchi_id'=>$baj->id])->all();
+        foreach ($reg as $item){
+            $item->delete();
+        }
+        $baj->delete();
+        Yii::$app->session->setFlash('success','Топшириқ мувоффақиятли ўчирилди');
+        return $this->redirect(['view','id'=>$redid]);
+    }
 
 
 

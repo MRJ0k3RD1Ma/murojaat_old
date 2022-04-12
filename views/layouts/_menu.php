@@ -56,6 +56,7 @@ use yii\helpers\Url; ?>
                 <?=(Yii::$app->controller->id=='appeal'
                             and Yii::$app->controller->action->id != 'companies'
                             and Yii::$app->controller->action->id != 'request'
+                            and Yii::$app->controller->action->id != 'notregister'
                         )?'active':''?>">
                             <i class="nav-icon fas fa-list"></i>
                             <p>
@@ -179,3 +180,4 @@ use yii\helpers\Url; ?>
         background: rgb(45, 82, 163) !important;
     }
 </style>
+

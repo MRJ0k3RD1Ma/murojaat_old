@@ -49,7 +49,7 @@ class AppealRegister extends \yii\db\ActiveRecord
     {
         return [
 //            [['number', 'date', 'appeal_id',], 'required'],
-            [['number','date','rahbar_id','preview'],'required','on'=>'reg'],
+            [['number','date','rahbar_id','preview','ijrochi_id'],'required','on'=>'reg'],
             [['date', 'deadtime', 'donetime', 'created', 'updated','takroriy_date'], 'safe'],
             [['appeal_id', 'ijrochi_id','rahbar_id', 'parent_bajaruvchi_id','nazorat', 'takroriy','takroriy_id','deadline', 'control_id', 'status', 'company_id', 'answer_send'], 'integer'],
             [['users', 'detail','user_answer','user_answer','tashkilot','tashkilot_answer'], 'string'],
@@ -117,5 +117,9 @@ class AppealRegister extends \yii\db\ActiveRecord
 
     public function getParent(){
         return $this->hasOne(AppealBajaruvchi::className(),['id'=>'parent_bajaruvchi_id']);
+    }
+
+    public function getChild(){
+        return $this->hasMany(AppealBajaruvchi::className(),['register_id'=>'id']);
     }
 }

@@ -10,20 +10,29 @@ use yii\widgets\ActiveForm;
 
 <div class="appeal-answer-form">
 
-    <?php $form = ActiveForm::begin(['action'=>Yii::$app->urlManager->createUrl(['/appeal/answer','id'=>$model->register_id, 'ans'=>$model->id])]); ?>
-
-    <?= $form->field($model, 'n_olish')->dropDownList(\yii\helpers\ArrayHelper::map(\app\models\AppealControl::find()->where(['>','id',1])->all(),'id','name'),['prompt'=>'Назоратдан олиш']) ?>
-
-    <?= $form->field($model, 'preview')->textInput(['maxlength' => true]) ?>
+    <?php $form = ActiveForm::begin(['action'=>Yii::$app->urlManager->createUrl(['/appeal/answer','id'=>$model->register_id])]); ?>
 
     <div class="row">
-        <div class="col-md-6">
-            <?= $form->field($model, 'number')->textInput(['maxlength' => true]) ?>
+        <div class="col-md-4">
+            <div class="row">
+                <div class="col-md-6">
+                    <?= $form->field($model, 'number')->textInput(['maxlength' => true]) ?>
+
+                </div>
+                <div class="col-md-6">
+                    <?= $form->field($model, 'date')->textInput(['type'=>'date']) ?>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <?= $form->field($model, 'n_olish')->dropDownList(\yii\helpers\ArrayHelper::map(\app\models\AppealControl::find()->where(['>','id',1])->all(),'id','name'),['prompt'=>'Назоратдан олиш']) ?>
 
         </div>
-        <div class="col-md-6">
-            <?= $form->field($model, 'date')->textInput(['type'=>'date']) ?>
+        <div class="col-md-4">
+            <?= $form->field($model, 'preview')->textInput(['maxlength' => true]) ?>
+
         </div>
+
     </div>
 
 

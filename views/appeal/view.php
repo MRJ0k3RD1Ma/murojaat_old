@@ -216,21 +216,31 @@ $this->params['breadcrumbs'][] = $this->title;
 
                     <a href="<?= Yii::$app->urlManager->createUrl(['/appeal/getappeal','id'=>$register->id])?>" class="btn btn-default" id="downappeal"><span class="fa fa-download"></span> Мурожаат масаласини юклаб олиш</a>
 
-                    <a href="#success" class="btn btn-success" data-toggle="collapse">Ташкилотларга топшириқ бериш</a>
+                    <a href="#success" class="btn btn-primary" data-toggle="collapse">Ташкилотларга топшириқ бериш</a>
+                    <a href="#answer" class="btn btn-success" data-toggle="collapse">Жавоб юбориш</a>
 
-                    <div class="dropdown" style="float: right">
+                    <div class="dropdown" style="float: right; margin-left:5px;">
                         <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             Маълумотларни янгилаш
                         </button>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <a class="dropdown-item" href="<?= Yii::$app->urlManager->createUrl(['/appeal/update','id'=>$register->id])?>">Резолюция</a>
                             <a class="dropdown-item" href="#">Мурожаат маълумотлари</a>
                             <a class="dropdown-item" href="#">Мурожаатчи маълумотлари</a>
                         </div>
                     </div>
 
+                    <div class="dropdown" style="float: right">
+                        <button class="btn btn-info dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Сўров юбориш
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <a class="dropdown-item" href="#">Муддатни узайтириш</a>
+                            <a class="dropdown-item" href="#">Бошқа давлат органига юбориш</a>
+                        </div>
+                    </div>
 
-
-                    <div id="success" class="collapse" style="margin-top: 20px; padding: 20px;border: 1px solid #28a745;" data-parent="#accordion">
+                    <div id="success" class="collapse" style="margin-top: 20px; padding: 20px;border: 1px solid #007bff;" data-parent="#accordion">
 
                         <table class="table table-hover table-bordered datatable_tashkilot">
                             <thead>
@@ -250,6 +260,11 @@ $this->params['breadcrumbs'][] = $this->title;
 
                     </div>
 
+                    <div id="answer" class="collapse" style="margin-top: 20px; padding: 20px;border: 1px solid #28a745;" data-parent="#accordion">
+
+                        <?php if($register->parent_bajaruvchi_id){echo $this->render('_answerform',['model'=>$answer]);} ?>
+
+                    </div>
 
 
 
@@ -260,6 +275,47 @@ $this->params['breadcrumbs'][] = $this->title;
 
 </div>
 
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">
+                Топшириқ юборилган ташкилотлар рўйхати
+            </h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-12 table-responsive">
+                    <table class="table table-hover table-bordered">
+                        <thead>
+                            <tr>
+                                <th>№</th>
+                                <th>Ташкилот номи</th>
+                                <th>Топшириқ матни</th>
+                                <th>Илова</th>
+                                <th>Юборилган сана</th>
+                                <th>Ҳолат</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php $n=0; foreach ($register->child as $item): $n++?>
+                                <tr>
+                                    <td><?= $n?></td>
+                                    <td><?= $item->company->name?></td>
+                                    <td><?= $item->task?></td>
+                                    <td><?= $item->letter? "<a href='/upload/{$item->letter}' download>Иловани юклаб олинг</a>" : 'Илова мавжуд эмас'?></td>
+                                    <td><?= $item->created ?></td>
+                                    <td><?= $item->status0->name ?></td>
+                                    <td>
+                                        <a data-method="post" data-confirm="Siz rostdan ham ushbu topshiriqni o`chirmoqchimisiz?" href="<?= Yii::$app->urlManager->createUrl(['/appeal/deletetask','id'=>$item->id])?>"><span class="fa fa-trash"></span></a>
+                                    </td>
+                                </tr>
+                            <?php endforeach;?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Modal -->
     <div id="modaltashkilot" class="modal fade" role="dialog">
