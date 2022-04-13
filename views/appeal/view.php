@@ -151,15 +151,14 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
         <div class="card">
-            <div class="card-header">
-                <h3 class="card-title">
-                    Ариза маълумотлари
-                </h3>
-            </div>
+
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-<?php if($register->status == 0 or $register->status == 1 or $register->status == 2) echo 12; else echo 6?>">
-                <?= DetailView::widget([
+                        <h3 class="card-title">
+                            Ариза маълумотлари
+                        </h3>
+                        <?= DetailView::widget([
                     'model' => $register,
                     'attributes' => [
                         'number',
@@ -209,6 +208,54 @@ $this->params['breadcrumbs'][] = $this->title;
                 ]) ?>
 
                     </div>
+                    <?php if($register->status > 2 and $register->parent_bajaruvchi_id){?>
+                    <div class="col-md-6">
+                        <h3 class="card-title">
+                            Мурожаатнинг жавоби
+                        </h3>
+                        <?= DetailView::widget([
+                            'model' => \app\models\AppealAnswer::find()->where(['parent_id'=>$register->parent_bajaruvchi_id])->orderBy(['created'=>SORT_DESC])->one(),
+                            'attributes' => [
+                                'number',
+                                'date',
+                                'preview',
+                                'detail',
+                                'name',
+//                                'file',
+                                [
+                                    'attribute'=>'file',
+                                    'value'=>function($d){
+                                        if($d->file){
+                                            return "<a href='/upload/{$d->file}'>Жавоб хатини юклаб олиш</a>";
+                                        }else{
+                                            return null;
+                                        }
+                                    },
+                                    'format'=>'raw'
+                                ],
+//                                'reaply_send',
+                                [
+                                    'attribute'=>'reaply_send',
+                                    'value'=>function($d){
+                                        if($d->reaply_send == 0){
+                                            return "Мурожаатчига жавоб хати юборилган";
+                                        }else{
+                                            return "Мурожаатчига жавоб хати юборилмаган";
+                                        }
+                                    }
+                                ],
+//                                'status'
+                                [
+                                    'attribute'=>'status',
+                                    'value'=>function($d){
+                                        return $d->status0->name;
+                                    }
+                                ],
+                            ],
+                        ]) ?>
+
+                    </div>
+                    <?php }?>
                 </div>
 
                 <hr>
@@ -261,9 +308,9 @@ $this->params['breadcrumbs'][] = $this->title;
                     </div>
 
                     <div id="answer" class="collapse" style="margin-top: 20px; padding: 20px;border: 1px solid #28a745;" data-parent="#accordion">
-
-                        <?php if($register->parent_bajaruvchi_id){echo $this->render('_answerform',['model'=>$answer]);} ?>
-
+                        <?php if($register->status != 3 and $register->status != 4){?>
+                            <?php if($register->parent_bajaruvchi_id){ echo $this->render('_answerform',['model'=>$answer]);} ?>
+                        <?php }else{echo "Мурожаатга жавоб юборилган";}?>
                     </div>
 
 
@@ -288,6 +335,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         <thead>
                             <tr>
                                 <th>№</th>
+                                <th></th>
                                 <th>Ташкилот номи</th>
                                 <th>Топшириқ матни</th>
                                 <th>Илова</th>
@@ -300,6 +348,13 @@ $this->params['breadcrumbs'][] = $this->title;
                             <?php $n=0; foreach ($register->child as $item): $n++?>
                                 <tr>
                                     <td><?= $n?></td>
+                                    <td><?php if($item->status>2){?>
+                                            <a class="btn btn-default" href="<?= Yii::$app->urlManager->createUrl(['/appeal/showresult','id'=>$item->id])?>"><span class="<?= $item->status0->icon?>"></span></a>
+                                        <?php }else{?>
+                                            <span class="<?= $item->status0->icon?>"></span>
+                                        <?php }?>
+                                    </td>
+
                                     <td><?= $item->company->name?></td>
                                     <td><?= $item->task?></td>
                                     <td><?= $item->letter? "<a href='/upload/{$item->letter}' download>Иловани юклаб олинг</a>" : 'Илова мавжуд эмас'?></td>

@@ -19,6 +19,7 @@ use Yii;
  * @property int $bajaruvchi_id
  * @property int $reaply_send
  * @property int $status
+ * @property int $parent_id
  * @property string $name
  * @property string $created
  * @property string $updated
@@ -40,7 +41,7 @@ class AppealAnswer extends \yii\db\ActiveRecord
     {
         return [
             [['appeal_id','preview', 'register_id', 'detail',  'bajaruvchi_id','reaply_send','status','n_olish','date', 'name', 'number',], 'required'],
-            [['appeal_id', 'register_id', 'bajaruvchi_id', 'reaply_send','status','status_boshqa','n_olish'], 'integer'],
+            [['appeal_id', 'register_id', 'bajaruvchi_id','parent_id', 'reaply_send','status','n_olish'], 'integer'],
             [['detail'], 'string'],
             [['date', 'tarqatma_date', 'created', 'updated'], 'safe'],
             [['preview', 'number', 'tarqatma_number', 'name','file'], 'string', 'max' => 255],
@@ -80,5 +81,11 @@ class AppealAnswer extends \yii\db\ActiveRecord
     }
     public function getBajaruvchi(){
         return $this->hasOne(User::className(),['id'=>'bajaruvchi_id']);
+    }
+    public function getParent(){
+        return $this->hasOne(AppealBajaruvchi::className(),['id'=>'parent_id']);
+    }
+    public function getStatus0(){
+        return $this->hasOne(Status::className(),['id'=>'status']);
     }
 }

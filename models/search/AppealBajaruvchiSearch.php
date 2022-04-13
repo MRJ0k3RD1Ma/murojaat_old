@@ -40,7 +40,7 @@ class AppealBajaruvchiSearch extends AppealBajaruvchi
      */
     public function search($params)
     {
-        $query = AppealBajaruvchi::find()->where(['status'=>0])->andWhere(['company_id'=>\Yii::$app->user->identity->company_id]);
+        $query = AppealBajaruvchi::find()->where(['<','status',2])->andWhere(['company_id'=>\Yii::$app->user->identity->company_id]);
 
         // add conditions that should always apply here
 

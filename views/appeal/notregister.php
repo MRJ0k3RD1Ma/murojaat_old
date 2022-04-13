@@ -60,7 +60,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'label'=>'Ташкилот номи, мурожаат рақами ва санаси',
                                 'value'=>function($d){
                                     $reg = $d->register;
-                                    return $reg->company->name.' <br>№'.$reg->number.' '.$reg->date;
+                                    return @$reg->company->name.' <br>№'.@$reg->number.' '.@$reg->date;
                                 },
                                 'format'=>'raw'
                             ],

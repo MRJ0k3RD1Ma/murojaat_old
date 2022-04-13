@@ -5,6 +5,7 @@ namespace app\controllers;
 use app\models\Appeal;
 use app\models\AppealAnswer;
 use app\models\AppealBajaruvchi;
+use app\models\AppealComment;
 use app\models\AppealRegister;
 use app\models\Company;
 use app\models\DeadlineChanges;
@@ -21,6 +22,7 @@ use app\models\search\DeadlineChangesSearch;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpWord\TemplateProcessor;
 use Yii;
+use yii\base\BaseObject;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
@@ -177,8 +179,8 @@ class AppealController extends Controller
         ]);
     }
     public function actionAnswer($id){
+
         $register = AppealRegister::findOne($id);
-        $model = null;
         $file = null;
         $model = new AppealAnswer();
         $model->appeal_id = $register->appeal_id;
@@ -186,7 +188,8 @@ class AppealController extends Controller
         $model->date = date('Y-m-d');
         $model->bajaruvchi_id = Yii::$app->user->id;
         $model->tarqatma_date = date('Y-m-d');
-
+        $model->parent_id = $register->parent_bajaruvchi_id;
+        $model->status = 3;
         if($model->load(Yii::$app->request->post())){
             if($model->file = UploadedFile::getInstance($model,'file')){
                 $name = microtime(true).'.'.$model->file->extension;
@@ -195,38 +198,17 @@ class AppealController extends Controller
             }else{
                 $model->file = $file;
             }
-
             if($model->save()){
-                $register->status = 2;
+                $par = AppealBajaruvchi::findOne($model->parent_id);
+                $par->status = 3;
+                $par->save(false);
+                $register->status = 3;
                 $register->detail = $model->detail;
                 $register->file = $model->file;
                 $register->answer_send = $model->reaply_send;
                 $register->control_id = $model->n_olish;
                 $register->save();
-                if($register->parent_bajaruvchi_id != null){
-                    $appeal = $register->appeal;
-                    $appeal->status = 1;
-                    $appeal->appeal_control_id = $model->n_olish;
-                    $appeal->save();
-                }else{
-                    closeAppeal($register->appeal_id,$register->id);
-                    $appeal = $register->appeal;
-                    $appeal->answer_name = $model->name;
-                    $appeal->answer_file = $model->file;
-                    $appeal->answer_preview = $model->preview;
-                    $appeal->answer_detail = $model->detail;
-                    $appeal->answer_reply_send = $model->reaply_send;
-                    $appeal->answer_number = $model->number;
-                    $appeal->answer_date = $model->date;
-                    $appeal->status = 2;
-                    if($appeal->save()){
-                        $model->delete();
-                    }else{
-                        echo "<pre>";
-                        var_dump($appeal);
-                        exit;
-                    }
-                }
+
                 return $this->redirect(['view','id'=>$register->id]);
             }else{
                 echo "<pre>";
@@ -234,7 +216,9 @@ class AppealController extends Controller
                 exit;
             }
         }
-        $this->renderAjax('_answerform',[
+
+
+        return $this->renderAjax('_answerform',[
             'model'=>$model
         ]);
     }
@@ -338,7 +322,7 @@ class AppealController extends Controller
 
             if($model->save()){
                 $baj->status = 2;
-                $baj->save();
+                $baj->save(false);
                 $app = $model->appeal;
                 $app->appeal_control_id = 1;
                 $app->save();
@@ -652,5 +636,53 @@ class AppealController extends Controller
     }
 
 
+    public function actionShowresult($id){
+
+        $model = AppealBajaruvchi::findOne($id);
+        $register = AppealRegister::findOne($model->register_id);
+        $appeal = Appeal::findOne($model->appeal_id);
+        $answer = AppealAnswer::find()->where(['parent_id'=>$model->id])->orderBy(['id'=>SORT_DESC])->one();
+
+        $result = AppealRegister::findOne($answer->register_id);
+        $com = new AppealComment();
+        $com->answer_id = $answer->id;
+        $com->status = 5;
+        if($com->load(Yii::$app->request->post()) and $com->save()){
+            $result->status = 5;
+            $model->status = 5;
+            $answer->status = 5;
+            $result->save(false);
+            $model->save(false);
+            $answer->save(false);
+            return $this->redirect(['view','id'=>$register->id]);
+        }
+
+
+        return $this->render('viewresult',[
+            'model'=>$appeal,
+            'register'=>$register,
+            'bajaruvchi'=>$model,
+            'result'=>$result,
+            'answer'=>$answer
+        ]);
+
+    }
+
+    public function actionAcceptanswer($id){
+        $model = AppealBajaruvchi::findOne($id);
+        $register = AppealRegister::findOne($model->register_id);
+        $answer = AppealAnswer::find()->where(['parent_id'=>$model->id])->orderBy(['id'=>SORT_DESC])->one();
+
+        $result = AppealRegister::findOne($answer->register_id);
+
+        $result->status = 4;
+        $model->status = 4;
+        $answer->status = 4;
+        $result->save(false);
+        $model->save(false);
+        $answer->save(false);
+        return $this->redirect(['view','id'=>$register->id]);
+
+    }
 
 }
