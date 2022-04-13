@@ -225,7 +225,7 @@ function getColor($status){
 function closeAppeal($id,$reg_id){
     $reg = \app\models\AppealRegister::find()->where(['appeal_id'=>$id])->andWhere(['>=','id',$reg_id])->all();
     foreach ($reg as $item){
-        $item->status = 2;
+        $item->status = 4;
         $item->user_answer = $item->users;
         $item->donetime = date('Y-m-d');
         $item->tashkilot_answer = $item->tashkilot;

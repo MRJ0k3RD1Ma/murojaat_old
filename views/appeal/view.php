@@ -348,7 +348,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             <?php $n=0; foreach ($register->child as $item): $n++?>
                                 <tr>
                                     <td><?= $n?></td>
-                                    <td><?php if($item->status>2){?>
+                                    <td><?php if($item->status==3){?>
                                             <a class="btn btn-default" href="<?= Yii::$app->urlManager->createUrl(['/appeal/showresult','id'=>$item->id])?>"><span class="<?= $item->status0->icon?>"></span></a>
                                         <?php }else{?>
                                             <span class="<?= $item->status0->icon?>"></span>

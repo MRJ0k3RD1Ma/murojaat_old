@@ -678,6 +678,7 @@ class AppealController extends Controller
         $result->status = 4;
         $model->status = 4;
         $answer->status = 4;
+        closeAppeal($model->appeal_id,$result->id);
         $result->save(false);
         $model->save(false);
         $answer->save(false);
