@@ -257,7 +257,7 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
 
             <hr>
-            <?php if($answer->status == 3){?>
+            <?php if($answer->status == 3 and $answer->bajaruvchi->company_id != Yii::$app->user->identity->company_id){?>
             <div id="accordion">
                 <a href="#success" class="btn btn-primary"  data-toggle="collapse">Умумий жавоб сифатида қабул қилиш</a>
                 <a href="<?= Yii::$app->urlManager->createUrl(['/appeal/acceptanswer','id'=>$answer->id])?>"
@@ -266,9 +266,15 @@ $this->params['breadcrumbs'][] = $this->title;
                 <a href="#deni" class="btn btn-danger" data-toggle="collapse">Рад этиш</a>
 
                 <div id="success" class="collapse" style="margin-top: 20px; padding: 20px;border: 1px solid #28a745;" data-parent="#accordion">
-
-                    <?php if($register->status != 3 and $register->status != 4){?>
-                        <?php if($register->parent_bajaruvchi_id){ echo $this->render('_answerform',['model'=>$answer]);} ?>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h3 class="card-title">
+                                Қуйи ташкилот юборган жавобни умумий жавоб сифатида қабул қилиш
+                            </h3>
+                        </div>
+                    </div>
+                    <?php if($register->status != 4){?>
+                        <?php if($register->parent_bajaruvchi_id){ echo $this->render('_answerform',['model'=>$answer]);}else{echo  $this->render('_closeform',['model'=>$model,'register'=>$register,'answer'=>$answer]);} ?>
                     <?php }else{echo "Мурожаатга жавоб юборилган";}?>
 
                 </div>

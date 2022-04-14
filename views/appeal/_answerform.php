@@ -10,7 +10,7 @@ use yii\widgets\ActiveForm;
 
 <div class="appeal-answer-form">
 
-    <?php $form = ActiveForm::begin(['action'=>Yii::$app->urlManager->createUrl(['/appeal/answer','id'=>$model->register_id])]); ?>
+    <?php $form = ActiveForm::begin(['action'=>Yii::$app->urlManager->createUrl(['/appeal/answer','id'=>$model->register_id,'ansid'=>$model->id])]); ?>
 
     <div class="row">
         <div class="col-md-4">
@@ -40,7 +40,11 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'file')->fileInput() ?>
+    <?php if($model->isNewRecord){?>
+        <?= $form->field($model, 'file')->fileInput() ?>
+    <?php }else{?>
+        <p><?php if($model->file){?><a target="_blank" href="/upload/<?= $model->file?>"><span class="fa fa-download"></span> Иловани юклаб олиш</a><?php }else{?>Илова мавжуд эмас<?php }?></p>
+    <?php }?>
 
     <?= $form->field($model, 'reaply_send')->checkbox(['value'=>1]) ?>
 

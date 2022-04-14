@@ -27,12 +27,26 @@ $this->params['breadcrumbs'][] = $this->title;
                             'filterModel' => $searchModel,
                             'columns' => [
                                 ['class' => 'yii\grid\SerialColumn'],
-
-                                'id',
+                                [
+                                    'label'=>'Жавоб рақами',
+                                    'value'=>function($d){
+                                        $ans = \app\models\AppealAnswer::find()->where(['parent_id'=>$d->id])->orderBy(['id'=>SORT_DESC])->one();
+                                        $url = Yii::$app->urlManager->createUrl(['/appeal/showresult','id'=>$d->id]);
+                                        return "<a href='{$url}'>$ans->number<br>$ans->date</a>";
+                                    },
+                                    'format'=>'raw'
+                                ],
+                                [
+                                    'label'=>'Хужжат номи',
+                                    'value'=>function($d){
+                                        $ans = \app\models\AppealAnswer::find()->where(['parent_id'=>$d->id])->orderBy(['id'=>SORT_DESC])->one();
+                                        return $ans->preview;
+                                    }
+                                ],
                                 [
                                     'label'=>'Рақаси ва санаси',
                                     'value'=>function($d){
-                                        return "<b>№ {$d->register->parent->register->number}</b> <br> {$d->register->parent->register->date}";
+                                        return "<b>№ {$d->register->number}</b> <br> {$d->register->date}";
                                     },
                                     'format'=>'raw'
                                 ],
@@ -47,7 +61,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                             $res = "Савол белгиланмаган";
                                         }
 
-                                        $url = Yii::$app->urlManager->createUrl(['/appeal/view','id'=>$d->register->parent->register->id]);
+                                        $url = Yii::$app->urlManager->createUrl(['/appeal/view','id'=>$d->register->id]);
 
                                         $res = $d->appeal->person_name.'<br>'.$res;
                                         return "<a href='{$url}'>{$res}</a>";
@@ -56,50 +70,15 @@ $this->params['breadcrumbs'][] = $this->title;
                                     'filter'=>false
                                 ],
                                 [
-                                    'attribute'=>'bajaruvchi_id',
+                                    'attribute'=>'company_id',
                                     'value'=>function($d){
-                                        return $d->bajaruvchi->company->name;
+                                        return $d->company->name;
                                     },
                                     'filter'=>false,
                                 ],
-                                'preview',
-//                            'detail:ntext',
-                                [
-                                    'attribute'=>'detail',
-                                    'value'=>function($d){
-                                        return mb_substr($d->detail,0,100);
-                                    }
-                                ],
-                                [
-                                    'label'=>'Рақами ва санаси',
-                                    'attribute'=>'number',
-                                    'value'=>function($d){
-                                        return $d->number."<br>".$d->date;
-                                    },
-                                    'format'=>'raw'
-                                ],
-//                            'tarqatma_number',
-//                            'tarqatma_date',
-                                //'bajaruvchi_id',
-                                //'reaply_send',
-                                'name',
-//                            'file',
-                                [
-                                    'attribute'=>'file',
-                                    'value'=>function($d){
-                                        if($d->file){
-                                            return "<a href='/uploads/{$d->file}'>Файлни юклаш</a>";
-                                        }
-                                        return null;
-                                    },
-                                    'format'=>'raw'
-                                ],
-//                            'status',
-                                'status_boshqa',
-                                'created',
-                                //'updated',
+                                'task',
+                                'deadtime',
 
-//                            ['class' => 'yii\grid\ActionColumn'],
                             ],
                         ]); ?>
 

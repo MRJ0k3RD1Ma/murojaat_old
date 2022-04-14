@@ -76,7 +76,8 @@ class Appeal extends \yii\db\ActiveRecord
     {
         return [
             [['pursuit', 'person_id', 'gender', 'nation_id', 'home_id','count_list','count_applicant','answer_reply_send','company_id', 'region_id','boshqa_tashkilot', 'boshqa_tashkilot_group_id','isbusinessman','boshqa_tashkilot_id','district_id', 'village_id', 'question_id', 'appeal_type_id', 'appeal_shakl_id', 'appeal_control_id', 'status'], 'integer'],
-            [['region_id', 'district_id', 'address',  'appeal_detail', 'appeal_type_id'], 'required'],
+            [['region_id', 'district_id', 'address',  'appeal_detail', 'appeal_type_id','appeal_preview','answer_detail',], 'required','on'=>'insert'],
+            [['answer_name','answer_preview','answer_number','appeal_control_id','answer_date',],'required','on'=>'close'],
             [['date_of_birth', 'created', 'updated','boshqa_tashkilot_date','answer_date','deadtime'], 'safe'],
             [['types', 'detail', 'appeal_preview','answer_detail','appeal_detail', 'executor_files'], 'string'],
             [['answer_name','answer_file','answer_preview','answer_number','boshqa_tashkilot_number','passport', 'passport_jshshir', 'person_name', 'person_phone', 'specialization', 'job', 'work_place', 'address', 'email', 'appeal_file', 'appeal_file_extension'], 'string', 'max' => 255],
@@ -124,7 +125,7 @@ class Appeal extends \yii\db\ActiveRecord
             'appeal_file_extension' => 'Жавоб файл кенгайтмаси',
             'appeal_type_id' => 'Мурожаат тури',
             'appeal_shakl_id' => 'Мурожаат шакли',
-            'appeal_control_id' => 'Мурожаатнинг ҳолати',
+            'appeal_control_id' => 'Назорат',
             'count_applicant' => 'Мурожаатчилар сони',
             'count_list' => 'Вароқлар сони',
             'status' => 'Статус',
@@ -136,6 +137,13 @@ class Appeal extends \yii\db\ActiveRecord
             'boshqa_tashkilot_group_id'=>'Ташкилот гуруҳи',
             'boshqa_tashkilot'=>'Бошқа ташкилот',
             'letter'=>'Кузатувчи хат',
+            'answer_file'=>'Файл',
+            'answer_name'=>'Ижрочи',
+            'answer_detail'=>'Мазмуни',
+            'answer_reply_send'=>'Жавоб мурожаатчига юборилди',
+            'answer_date'=>'Санаси',
+            'answer_number'=>'Рақами',
+            'answer_preview'=>'Ҳужжат номи',
         ];
     }
     public function getRegister(){
@@ -177,5 +185,8 @@ class Appeal extends \yii\db\ActiveRecord
             $this->letter->saveAs(Yii::$app->basePath.'/web/upload/'.$name);
             $this->letter = $name;
         }
+    }
+    public function getStatus0(){
+        return $this->hasOne(Status::className(),['id'=>'status']);
     }
 }

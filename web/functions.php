@@ -222,13 +222,14 @@ function getColor($status){
     return $color[$status];
 }
 // type some code
-function closeAppeal($id,$reg_id){
+function closeAppeal($id,$reg_id,$c_id){
     $reg = \app\models\AppealRegister::find()->where(['appeal_id'=>$id])->andWhere(['>=','id',$reg_id])->all();
     foreach ($reg as $item){
         $item->status = 4;
-        $item->user_answer = $item->users;
+        $item->control_id = $c_id;
         $item->donetime = date('Y-m-d');
-        $item->tashkilot_answer = $item->tashkilot;
+        $baj = $item->parent;
+        $baj->status = 4;
         $item->save();
     }
 }

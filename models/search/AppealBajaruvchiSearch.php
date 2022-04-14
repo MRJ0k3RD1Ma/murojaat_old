@@ -40,7 +40,8 @@ class AppealBajaruvchiSearch extends AppealBajaruvchi
      */
     public function search($params)
     {
-        $query = AppealBajaruvchi::find()->where(['<','status',2])->andWhere(['company_id'=>\Yii::$app->user->identity->company_id]);
+        $query = AppealBajaruvchi::find()
+        ->where('register_id in (select id from appeal_register where company_id='.\Yii::$app->user->identity->company_id.')');
 
         // add conditions that should always apply here
 

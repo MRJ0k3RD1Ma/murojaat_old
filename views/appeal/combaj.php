@@ -33,13 +33,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             [
                                 'label'=>'Ҳолати',
                                 'value'=>function($d){
-                                    if($d->status == 0){
-                                        return "Рўйхатга олинмаган";
-                                    }elseif($d->status == 1){
-                                        return "Жараёнда";
-                                    }else{
-                                        return "Бажарилган";
-                                    }
+                                    return $d->status0->name;
                                 },
                                 'format'=>'raw'
                             ],
@@ -53,7 +47,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                         $res = "Савол белгиланмаган";
                                     }
 
-                                    $url = Yii::$app->urlManager->createUrl(['/appeal/view','id'=>$d->id]);
+                                    $url = Yii::$app->urlManager->createUrl(['/appeal/view','id'=>$d->register_id]);
 
                                     $res = $d->appeal->person_name.'<br>'.$res;
                                     return "<a href='{$url}'>{$res}</a>";

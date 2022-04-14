@@ -256,13 +256,57 @@ $this->params['breadcrumbs'][] = $this->title;
                         ]) ?>
 
                     </div>
+                    <?php }elseif($register->status > 2 and !$register->parent_bajaruvchi_id){?>
+                        <div class="col-md-6">
+                            <?= DetailView::widget([
+                                'model' =>$model,
+                                'attributes' => [
+                                    'answer_number',
+                                    'answer_date',
+                                    'answer_preview',
+                                    'answer_detail',
+                                    'answer_name',
+//                                'file',
+                                    [
+                                        'attribute'=>'answer_file',
+                                        'value'=>function($d){
+                                            if($d->answer_file){
+                                                return "<a href='/upload/{$d->answer_file}'>Жавоб хатини юклаб олиш</a>";
+                                            }else{
+                                                return null;
+                                            }
+                                        },
+                                        'format'=>'raw'
+                                    ],
+//                                'reaply_send',
+                                    [
+                                        'attribute'=>'answer_reply_send',
+                                        'value'=>function($d){
+                                            if($d->answer_reply_send == 0){
+                                                return "Мурожаатчига жавоб хати юборилган";
+                                            }else{
+                                                return "Мурожаатчига жавоб хати юборилмаган";
+                                            }
+                                        }
+                                    ],
+//                                'status'
+                                    [
+                                        'attribute'=>'status',
+                                        'value'=>function($d){
+                                            return $d->status0->name;
+                                        }
+                                    ],
+                                ],
+                            ]) ?>
+                        </div>
                     <?php }?>
                 </div>
 
                 <hr>
                 <div id="accordion">
-
                     <a href="<?= Yii::$app->urlManager->createUrl(['/appeal/getappeal','id'=>$register->id])?>" class="btn btn-default" id="downappeal"><span class="fa fa-download"></span> Мурожаат масаласини юклаб олиш</a>
+
+                    <?php if($register->status != 3 and $model->status != 4){?>
 
                     <a href="#success" class="btn btn-primary" data-toggle="collapse">Ташкилотларга топшириқ бериш</a>
                     <a href="#answer" class="btn btn-success" data-toggle="collapse">Жавоб юбориш</a>
@@ -287,6 +331,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             <a class="dropdown-item" href="#">Бошқа давлат органига юбориш</a>
                         </div>
                     </div>
+                    <?php }?>
 
                     <div id="success" class="collapse" style="margin-top: 20px; padding: 20px;border: 1px solid #007bff;" data-parent="#accordion">
 
@@ -309,6 +354,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     </div>
 
                     <div id="answer" class="collapse" style="margin-top: 20px; padding: 20px;border: 1px solid #28a745;" data-parent="#accordion">
+
                         <?php if($register->status != 3 and $register->status != 4){?>
                             <?php if($register->parent_bajaruvchi_id){ echo $this->render('_answerform',['model'=>$answer]);} ?>
                         <?php }else{echo "Мурожаатга жавоб юборилган";}?>
@@ -400,11 +446,8 @@ $this->params['breadcrumbs'][] = $this->title;
                         <?php $n=0; foreach ($register->childanswer as $item): $n++?>
                             <tr>
                                 <td><?= $n?></td>
-                                <td><?php if($item->status==3){?>
-                                        <a class="btn btn-default" href="<?= Yii::$app->urlManager->createUrl(['/appeal/viewresult','id'=>$item->id])?>"><span class="<?= $item->status0->icon?>"></span></a>
-                                    <?php }else{?>
-                                        <span class="<?= $item->status0->icon?>"></span>
-                                    <?php }?>
+                                <td>
+                                    <a class="btn btn-default" href="<?= Yii::$app->urlManager->createUrl(['/appeal/viewresult','id'=>$item->id])?>"><span class="<?= $item->status0->icon?>"></span></a>
                                 </td>
 
                                 <td><?= $item->bajaruvchi->company->name?></td>
