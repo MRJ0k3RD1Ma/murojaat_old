@@ -10,7 +10,7 @@ use yii\widgets\ActiveForm;
 
 <div class="appeal-answer-form">
 
-    <?php $form = ActiveForm::begin(['action'=>Yii::$app->urlManager->createUrl(['/appeal/task','id'=>$model->company_id, 'regid'=>$model->register_id])]); ?>
+    <?php $form = ActiveForm::begin(['action'=>Yii::$app->urlManager->createUrl(['/appeal/task','id'=>$id, 'regid'=>$regid])]); ?>
 
     <?= $form->field($model,'task')->textInput() ?>
 

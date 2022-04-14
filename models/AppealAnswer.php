@@ -88,4 +88,5 @@ class AppealAnswer extends \yii\db\ActiveRecord
     public function getStatus0(){
         return $this->hasOne(Status::className(),['id'=>'status']);
     }
+
 }

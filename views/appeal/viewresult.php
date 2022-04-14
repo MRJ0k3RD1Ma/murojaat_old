@@ -154,61 +154,53 @@ $this->params['breadcrumbs'][] = $this->title;
 
         <div class="card-body">
             <div class="row">
-                <div class="col-md-<?php if($result->status == 0 or $result->status == 1 or $result->status == 2) echo 12; else echo 6?>">
+                <div class="col-md-6">
                     <h3 class="card-title">
-                        Ариза маълумотлари
+                        Топшириқ маълумотлари
                     </h3>
                     <?= DetailView::widget([
-                        'model' => $register,
+                        'model' =>  $bajaruvchi,
                         'attributes' => [
-                            'number',
-                            'date',
-//                        'deadtime',
+                            'deadtime',
+//                            'register_id',
                             [
-                                'attribute'=>'deadtime',
+                                'attribute'=>'register_id',
                                 'value'=>function($d){
-                                    return $d->deadline.' кун '.$d->deadtime;
+                                    return $d->register->number.'<br>'.$d->register->date;
+                                },
+                                'format'=>'raw'
+                            ],
+                            'task',
+//                            'letter',
+                            [
+                                'attribute'=>'letter',
+                                'value'=>function($d){
+                                    if($d->letter){
+                                        return "<a href='/upload/{$d->letter}'>Иловани юклаб олиш</a>";
+                                    }
+                                    return null;
                                 }
                             ],
-                            'donetime',
-//                        'control_id',
+//                            'status',
                             [
-                                'attribute'=>'control_id',
+                                'attribute'=>'status',
                                 'value'=>function($d){
-                                    return $d->control->name;
+                                    return $d->status0->name;
                                 }
                             ],
-//                        'status',
-                            'preview',
-//                        'detail',
-//                        'file',
-//                        'nazorat',
+                            'created',
+//                            'company_id',
                             [
-                                'attribute'=>'nazorat',
+                                'attribute'=>'company_id',
                                 'value'=>function($d){
-                                    return Yii::$app->params['nazorat'][$d->nazorat];
-                                }
-                            ],
-//                        'takroriy',
-//                        'rahbar_id',
-//                        'ijrochi_id',
-                            [
-                                'attribute'=>'rahbar_id',
-                                'value'=>function($d){
-                                    return @$d->rahbar->name;
-                                }
-                            ],
-                            [
-                                'attribute'=>'ijrochi_id',
-                                'value'=>function($d){
-                                    return @$d->ijrochi->name;
+                                    return $d->company->name;
                                 }
                             ],
                         ],
                     ]) ?>
 
                 </div>
-                <?php if($result->status > 2 and $result->parent_bajaruvchi_id){?>
+                <?php if($answer){?>
                     <div class="col-md-6">
                         <h3 class="card-title">
                             Мурожаатнинг жавоби
@@ -265,6 +257,7 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
 
             <hr>
+            <?php if($answer->status == 3){?>
             <div id="accordion">
                 <a href="#success" class="btn btn-primary"  data-toggle="collapse">Умумий жавоб сифатида қабул қилиш</a>
                 <a href="<?= Yii::$app->urlManager->createUrl(['/appeal/acceptanswer','id'=>$answer->id])?>"
@@ -296,6 +289,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 </div>
 
             </div>
+            <?php }?>
 
         </div>
 

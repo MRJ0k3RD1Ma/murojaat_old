@@ -587,13 +587,14 @@ class AppealController extends Controller
     public function actionTask($id,$regid){
         $register = AppealRegister::findOne($regid);
         $model = new AppealBajaruvchi();
-        $model->register_id = $register;
+        $model->register_id = $register->id;
         $model->appeal_id = $register->appeal_id;
         $model->company_id = $id;
         if(AppealBajaruvchi::find()->where(['company_id'=>$id])->andWhere(['appeal_id'=>$model->appeal_id])->andWhere(['register_id'=>$register->id])->one()){
             return "Ушбу ташкилотга аввал мурожаат юборилган";
         }
         if($model->load(Yii::$app->request->post())){
+
             $model->upload();
             if($model->save()){
                 Yii::$app->session->setFlash('success','Топшириқ юборилди');
@@ -603,7 +604,9 @@ class AppealController extends Controller
             return $this->redirect(['view','id'=>$regid]);
         }
         return $this->renderAjax('_task',[
-            'model'=>$model
+            'model'=>$model,
+            'id'=>$id,
+            'regid'=>$regid
         ]);
     }
 
@@ -667,6 +670,39 @@ class AppealController extends Controller
         ]);
 
     }
+
+    public function actionViewresult($id){
+
+        $answer = AppealAnswer::findOne($id);
+        $model = AppealBajaruvchi::findOne($answer->parent_id);
+        $register = AppealRegister::findOne($model->register_id);
+        $appeal = Appeal::findOne($model->appeal_id);
+
+        $result = AppealRegister::findOne($answer->register_id);
+        $com = new AppealComment();
+        $com->answer_id = $answer->id;
+        $com->status = 5;
+        if($com->load(Yii::$app->request->post()) and $com->save()){
+            $result->status = 5;
+            $model->status = 5;
+            $answer->status = 5;
+            $result->save(false);
+            $model->save(false);
+            $answer->save(false);
+            return $this->redirect(['view','id'=>$register->id]);
+        }
+
+
+        return $this->render('viewresult',[
+            'model'=>$appeal,
+            'register'=>$register,
+            'bajaruvchi'=>$model,
+            'result'=>$result,
+            'answer'=>$answer
+        ]);
+
+    }
+
 
     public function actionAcceptanswer($id){
         $model = AppealBajaruvchi::findOne($id);

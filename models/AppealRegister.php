@@ -122,6 +122,14 @@ class AppealRegister extends \yii\db\ActiveRecord
     public function getChild(){
         return $this->hasMany(AppealBajaruvchi::className(),['register_id'=>'id']);
     }
+    public function getAnswer(){
+        return $this->hasMany(AppealAnswer::className(),['register_id'=>'id']);
+    }
+    public function getChildanswer(){
+        return AppealAnswer::find()
+            ->where('parent_id in (select id from appeal_bajaruvchi where register_id='.$this->id.')')
+            ->orderBy(['id'=>SORT_DESC])->all();
+    }
 
     public function getStatus0(){
         return $this->hasOne(Status::className(),['id'=>'status']);
