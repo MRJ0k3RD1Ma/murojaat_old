@@ -287,8 +287,9 @@ $user = Yii::$app->user->identity;
                                                 'attribute'=>'deadtime',
                                                 'value'=>function($d){
 
-                                                    if($d->status == 2){
-                                                        return "<span class='bg-success' style='width: 100%; height: 100%; display: block;text-align: center'>Бажарилган</span>";
+                                                    if($d->status == 4){
+                                                        return "<span class='bg-success' style='display: block;text-align: center'>Бажарилган</span>".
+                                                            $d->donetime;
                                                     }
                                                     $datetime2 = date_create($d->deadtime);
                                                     $datetime1 = date_create(date('Y-m-d'));

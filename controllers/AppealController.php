@@ -635,6 +635,7 @@ class AppealController extends Controller
             $answer->status = 4;
             $answer->save(false);
             closeAppeal($model->id,$register->id,$register->control_id);
+            return $this->redirect(['acceptanswer','id'=>$ansid]);
         }
         return $this->redirect(['view','id'=>$register->id]);
     }
