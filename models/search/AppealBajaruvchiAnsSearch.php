@@ -9,7 +9,7 @@ use app\models\AppealBajaruvchi;
 /**
  * AppealBajaruvchiSearch represents the model behind the search form of `app\models\AppealBajaruvchi`.
  */
-class AppealBajaruvchiSearch extends AppealBajaruvchi
+class AppealBajaruvchiAnsSearch extends AppealBajaruvchi
 {
     /**
      * {@inheritdoc}
@@ -41,7 +41,7 @@ class AppealBajaruvchiSearch extends AppealBajaruvchi
     public function search($params)
     {
         $query = AppealBajaruvchi::find()
-        ->where(['company_id'=>\Yii::$app->user->identity->company_id])->andWhere(['<=','status',1]);
+        ->where('register_id in (select id from appeal_register where company_id='.\Yii::$app->user->identity->company_id.')');
 
         // add conditions that should always apply here
 

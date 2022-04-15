@@ -9,6 +9,7 @@ use app\models\AppealComment;
 use app\models\AppealRegister;
 use app\models\Company;
 use app\models\DeadlineChanges;
+use app\models\search\AppealBajaruvchiAnsSearch;
 use app\models\search\AppealBajaruvchiComSearch;
 use app\models\search\AppealBajaruvchiSearch;
 use app\models\search\AppealRegisterClosedSearch;
@@ -142,7 +143,7 @@ class AppealController extends Controller
     }
 
     public function actionAnswered($status = 3){
-        $searchModel = new AppealBajaruvchiSearch();
+        $searchModel = new AppealBajaruvchiAnsSearch();
         $searchModel->status = $status;
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
@@ -211,7 +212,9 @@ class AppealController extends Controller
                 $register->answer_send = $model->reaply_send;
                 $register->control_id = $model->n_olish;
                 $register->save();
-
+                if($ansid != 0){
+                    return $this->redirect(['acceptanswer','id'=>$ansid]);
+                }
                 return $this->redirect(['view','id'=>$register->id]);
             }else{
                 echo "<pre>";
