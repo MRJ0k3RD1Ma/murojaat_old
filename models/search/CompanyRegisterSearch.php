@@ -53,14 +53,14 @@ WHERE appeal_bajaruvchi.register_id
 GROUP BY appeal_bajaruvchi.company_id ORDER BY cntall DESC";
 
         $query = Company::find()->select(['company.*','COUNT(appeal_bajaruvchi.company_id) as cntall',
-            '(select count(appeal_bajaruvchi.id) from appeal_bajaruvchi WHERE appeal_bajaruvchi.company_id=company.id and appeal_bajaruvchi.status=0) as cntzero',
-            '(select count(appeal_bajaruvchi.id) from appeal_bajaruvchi WHERE appeal_bajaruvchi.company_id=company.id and appeal_bajaruvchi.status=1) as cntone',
-            '(select count(appeal_bajaruvchi.id) from appeal_bajaruvchi WHERE appeal_bajaruvchi.company_id=company.id and appeal_bajaruvchi.status=2) as cnttwo',
-            '(select count(appeal_bajaruvchi.id) from appeal_bajaruvchi WHERE appeal_bajaruvchi.company_id=company.id and appeal_bajaruvchi.deadtime<date(now())) as cntdead',
-            ])->leftJoin('appeal_bajaruvchi','appeal_bajaruvchi.company_id = company.id ')
-        ->where('appeal_bajaruvchi.register_id in (SELECT appeal_register.id FROM appeal_register WHERE appeal_register.company_id='.Yii::$app->user->identity->company_id.') ')
-        ->groupBy(['appeal_bajaruvchi.company_id'])
-        ->orderBy(['cntall'=>SORT_DESC]);
+            '(select count(appeal_bajaruvchi.id) from appeal_bajaruvchi WHERE appeal_bajaruvchi.company_id=company.id and appeal_bajaruvchi.status=0 and appeal_bajaruvchi.register_id in (select id from appeal_register where company_id='.Yii::$app->user->identity->company_id.')) as cntzero',
+            '(select count(appeal_bajaruvchi.id) from appeal_bajaruvchi WHERE appeal_bajaruvchi.company_id=company.id and appeal_bajaruvchi.status=1  and appeal_bajaruvchi.register_id in (select id from appeal_register where company_id='.Yii::$app->user->identity->company_id.')) as cntone',
+            '(select count(appeal_bajaruvchi.id) from appeal_bajaruvchi WHERE appeal_bajaruvchi.company_id=company.id and appeal_bajaruvchi.status=2  and appeal_bajaruvchi.register_id in (select id from appeal_register where company_id='.Yii::$app->user->identity->company_id.')) as cnttwo',
+            '(select count(appeal_bajaruvchi.id) from appeal_bajaruvchi WHERE appeal_bajaruvchi.company_id=company.id and appeal_bajaruvchi.deadtime<date(now())  and appeal_bajaruvchi.register_id in (select id from appeal_register where company_id='.Yii::$app->user->identity->company_id.')) as cntdead',
+        ])->leftJoin('appeal_bajaruvchi','appeal_bajaruvchi.company_id = company.id ')
+            ->where('appeal_bajaruvchi.register_id in (SELECT appeal_register.id FROM appeal_register WHERE appeal_register.company_id='.Yii::$app->user->identity->company_id.') ')
+            ->groupBy(['appeal_bajaruvchi.company_id'])
+            ->orderBy(['cntall'=>SORT_DESC]);
 
         // add conditions that should always apply here
 

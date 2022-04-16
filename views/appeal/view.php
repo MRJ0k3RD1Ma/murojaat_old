@@ -133,7 +133,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         [
                             'attribute'=>'village_id',
                             'value'=>function($d){
-                                return $d->village->name;
+                                return @$d->village->name;
                             }
                         ],
                         'address',
@@ -354,9 +354,8 @@ $this->params['breadcrumbs'][] = $this->title;
                     </div>
 
                     <div id="answer" class="collapse" style="margin-top: 20px; padding: 20px;border: 1px solid #28a745;" data-parent="#accordion">
-
-                        <?php if($register->status != 3 and $register->status != 4){?>
-                            <?php if($register->parent_bajaruvchi_id){ echo $this->render('_answerform',['model'=>$answer]);} ?>
+                        <?php if($register->status != 4){?>
+                            <?php if($register->parent_bajaruvchi_id){ echo $this->render('_answerformmy',['model'=>$answer]);}else{echo  $this->render('_closeform',['model'=>$model,'register'=>$register,'answer'=>$answer]);} ?>
                         <?php }else{echo "Мурожаатга жавоб юборилган";}?>
                     </div>
 

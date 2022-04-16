@@ -195,6 +195,7 @@ class AppealController extends Controller
             $model->file = $old->file;
         }
         if($model->load(Yii::$app->request->post())){
+
             if($model->file = UploadedFile::getInstance($model,'file')){
                 $name = microtime(true).'.'.$model->file->extension;
                 $model->file->saveAs(Yii::$app->basePath.'/web/upload/'.$name);

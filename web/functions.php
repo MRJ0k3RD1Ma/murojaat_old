@@ -228,8 +228,11 @@ function closeAppeal($id,$reg_id,$c_id){
         $item->status = 4;
         $item->control_id = $c_id;
         $item->donetime = date('Y-m-d');
-        $baj = $item->parent;
-        $baj->status = 4;
+        if($baj = $item->parent){
+            $baj->status = 4;
+            $baj->save();
+        }
+
         $item->save();
     }
 }

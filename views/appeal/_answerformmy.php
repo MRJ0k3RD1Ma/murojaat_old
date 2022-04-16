@@ -10,7 +10,7 @@ use yii\widgets\ActiveForm;
 
 <div class="appeal-answer-form">
 
-    <?php $form = ActiveForm::begin(['action'=>Yii::$app->urlManager->createUrl(['/appeal/answer','id'=>$model->parent->register_id,'ansid'=>$model->id])]); ?>
+    <?php $form = ActiveForm::begin(['action'=>Yii::$app->urlManager->createUrl(['/appeal/answer','id'=>$model->register_id])]); ?>
 
     <div class="row">
         <div class="col-md-4">

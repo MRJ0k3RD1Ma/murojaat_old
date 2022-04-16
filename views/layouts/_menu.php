@@ -65,10 +65,9 @@ use yii\helpers\Url; ?>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="<?= Yii::$app->urlManager->createUrl(['/appeal/index'])?>" class="nav-link
+                        <a href="<?= Yii::$app->urlManager->createUrl(['/appeal/answered'])?>" class="nav-link
                 <?=(Yii::$app->controller->id=='appeal'
-                            and Yii::$app->controller->action->id != 'companies'
-                            and Yii::$app->controller->action->id != 'request'
+                            and Yii::$app->controller->action->id != 'answered'
                         )?'active':''?>">
                             <i class="nav-icon fas fa-check"></i>
                             <p>
