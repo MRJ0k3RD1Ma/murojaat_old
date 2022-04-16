@@ -18,7 +18,7 @@ class AppealBajaruvchiAnsSearch extends AppealBajaruvchi
     {
         return [
             [['id', 'company_id', 'appeal_id', 'register_id', 'deadline','status'], 'integer'],
-            [['deadtime', 'created'], 'safe'],
+            [['deadtime', 'created','updated'], 'safe'],
         ];
     }
 
@@ -41,7 +41,7 @@ class AppealBajaruvchiAnsSearch extends AppealBajaruvchi
     public function search($params)
     {
         $query = AppealBajaruvchi::find()
-        ->where('register_id in (select id from appeal_register where company_id='.\Yii::$app->user->identity->company_id.')');
+        ->where('register_id in (select id from appeal_register where company_id='.\Yii::$app->user->identity->company_id.')')->andWhere(['updated'=>SORT_DESC]);
 
         // add conditions that should always apply here
 

@@ -36,7 +36,7 @@ class AppealBajaruvchi extends \yii\db\ActiveRecord
         return [
             [['deadtime','task',], 'required'],
             [['company_id', 'appeal_id', 'register_id', 'deadline','status'], 'integer'],
-            [['deadtime','created'], 'safe'],
+            [['deadtime','created','updated'], 'safe'],
             ['letter','string'],
             ['task','string','max'=>255],
             ['letter','required','on'=>'send'],
