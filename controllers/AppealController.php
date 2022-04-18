@@ -439,10 +439,6 @@ class AppealController extends Controller
                     }
                 }
 
-
-
-
-
                 return $this->redirect(['view','id'=>$register->id]);
             }else{
 
@@ -618,6 +614,26 @@ class AppealController extends Controller
     }
 
 
+    public function actionClosemy($id){
+        $register = AppealRegister::findOne($id);
+        $model = Appeal::findOne($register->appeal_id);
+        $model->scenario = "close";
+        $answer = new AppealAnswer();
+        $model->appeal_file = $answer->file;
+        $model->status = 4;
+        if($model->load(Yii::$app->request->post()) and $model->save()){
+            $register->status = 4;
+            $register->donetime = date('Y-m-d');
+            $register->control_id = $model->appeal_control_id;
+            $register->answer_send = $model->answer_reply_send;
+            $register->save();
+            $answer->status = 4;
+            $answer->save(false);
+            closeAppeal($model->id,$register->id,$register->control_id);
+            return $this->redirect(['acceptanswer','id'=>$answer->id]);
+        }
+        return $this->redirect(['view','id'=>$register->id]);
+    }
 
 
     public function actionClose($id,$ansid){
@@ -639,7 +655,7 @@ class AppealController extends Controller
             $answer->status = 4;
             $answer->save(false);
             closeAppeal($model->id,$register->id,$register->control_id);
-            return $this->redirect(['acceptanswer','id'=>$ansid]);
+            //return $this->redirect(['acceptanswer','id'=>$ansid]);
         }
         return $this->redirect(['view','id'=>$register->id]);
     }

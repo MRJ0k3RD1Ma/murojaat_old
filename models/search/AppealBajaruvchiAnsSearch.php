@@ -41,7 +41,8 @@ class AppealBajaruvchiAnsSearch extends AppealBajaruvchi
     public function search($params)
     {
         $query = AppealBajaruvchi::find()
-        ->where('register_id in (select id from appeal_register where company_id='.\Yii::$app->user->identity->company_id.')')->andWhere(['updated'=>SORT_DESC]);
+        ->where('register_id in (select id from appeal_register where company_id='.\Yii::$app->user->identity->company_id.')')
+            ->orderBy(['updated'=>SORT_DESC]);
 
         // add conditions that should always apply here
 
@@ -67,6 +68,7 @@ class AppealBajaruvchiAnsSearch extends AppealBajaruvchi
             'deadline' => $this->deadline,
             'deadtime' => $this->deadtime,
             'created' => $this->created,
+            'updated' => $this->updated,
         ]);
 
         return $dataProvider;

@@ -257,7 +257,7 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
 
             <hr>
-            <?php if($answer->status == 3 and $answer->bajaruvchi->company_id != Yii::$app->user->identity->company_id){?>
+            <?php if($answer->status == 3 and $answer->register->company_id != Yii::$app->user->identity->company_id){?>
             <div id="accordion">
                 <a href="#success" class="btn btn-primary"  data-toggle="collapse">Умумий жавоб сифатида қабул қилиш</a>
                 <a href="<?= Yii::$app->urlManager->createUrl(['/appeal/acceptanswer','id'=>$answer->id])?>"

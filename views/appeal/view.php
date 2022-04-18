@@ -307,8 +307,15 @@ $this->params['breadcrumbs'][] = $this->title;
                     <a href="<?= Yii::$app->urlManager->createUrl(['/appeal/getappeal','id'=>$register->id])?>" class="btn btn-default" id="downappeal"><span class="fa fa-download"></span> Мурожаат масаласини юклаб олиш</a>
 
                     <?php if($register->status != 3 and $model->status != 4){?>
-
-                    <a href="#success" class="btn btn-primary" data-toggle="collapse">Ташкилотларга топшириқ бериш</a>
+                        <div class="dropdown" style="display: inline-block">
+                            <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Маълумотларни янгилаш
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <a class="dropdown-item" data-toggle="collapse" href="#success">Ташкилотларга топшириқ бериш</a>
+                                <a class="dropdown-item" data-toggle="collapse" href="#taskemp">Ҳодимларга топшириқ бериш</a>
+                            </div>
+                        </div>
                     <a href="#answer" class="btn btn-success" data-toggle="collapse">Жавоб юбориш</a>
 
                     <div class="dropdown" style="float: right; margin-left:5px;">
@@ -353,9 +360,41 @@ $this->params['breadcrumbs'][] = $this->title;
 
                     </div>
 
+                    <div id="taskemp" class="collapse" style="margin-top: 20px; padding: 20px;border: 1px solid #007bff;" data-parent="#accordion">
+
+                        <table class="table table-hover table-bordered datatable_emp">
+                            <thead>
+                            <tr>
+                                <th>№</th>
+                                <th></th>
+                                <th>ФИО</th>
+                                <th>Лавозим</th>
+                                <th>Бўлим</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+
+                            <?php $emp = \app\models\User::find()->where(['company_id'=>Yii::$app->user->identity->company_id])->all();
+                            $n=0;
+                            foreach ($emp as $item): $n++;
+                            ?>
+                                <tr>
+                                    <td><?= $n?></td>
+                                    <td><button class="btn btn-primary taskemp" value="<?= Yii::$app->urlManager->createUrl(['/appeal/taskemp','id'=>$item->id,'regid'=>$register->id])?>"><span class="fa fa-plus"></span></button></td>
+                                    <td><?= $item->name?></td>
+                                    <td><?= $item->lavozim->name?></td>
+                                    <td><?= $item->bulim->name?></td>
+                                </tr>
+                            <?php endforeach;?>
+                            </tbody>
+                        </table>
+
+                    </div>
+
+
                     <div id="answer" class="collapse" style="margin-top: 20px; padding: 20px;border: 1px solid #28a745;" data-parent="#accordion">
                         <?php if($register->status != 4){?>
-                            <?php if($register->parent_bajaruvchi_id){ echo $this->render('_answerformmy',['model'=>$answer]);}else{echo  $this->render('_closeform',['model'=>$model,'register'=>$register,'answer'=>$answer]);} ?>
+                            <?php if($register->parent_bajaruvchi_id){ echo $this->render('_answerformmy',['model'=>$answer]);}else{echo  $this->render('_closeformmy',['model'=>$model,'register'=>$register,'answer'=>$answer,]);} ?>
                         <?php }else{echo "Мурожаатга жавоб юборилган";}?>
                     </div>
 
@@ -569,7 +608,9 @@ $url = Yii::$app->urlManager->createUrl(['/appeal/task','regid'=>$register->id])
         
         tashkilotadd = function(id){
             $('#modaltashkilot').modal('show').find('.modal-body').load('{$url}&id='+id);
-        }      
+        }     
+        
+        $('.datatable_emp').DataTable(); 
         
     ")
 ?>

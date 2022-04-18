@@ -220,7 +220,6 @@ $user = Yii::$app->user->identity;
                                     <?= $this->title?>
                                 </h3>
                                 <div class="card-tools">
-                                    <a href="<?= Yii::$app->urlManager->createUrl(['/appeal/answerlist'])?>" class="btn btn-primary">Жавоби келган мурожаатлар</a>
                                             <?= Html::a('Рўйхатга олинмаган мурожаатлар', ['notregister'], ['class' => 'btn btn-primary']) ?>
                                             <?= Html::a('Янги мурожаат қўшиш', ['create'], ['class' => 'btn btn-success']) ?>
                                     <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
