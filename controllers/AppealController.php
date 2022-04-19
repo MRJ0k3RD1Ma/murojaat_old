@@ -19,9 +19,12 @@ use app\models\search\AppealRegisterRunningSearch;
 use app\models\search\AppealRegisterSearch;
 use app\models\search\CompanyRegisterSearch;
 use app\models\search\DeadlineChangesSearch;
+use app\models\TaskEmp;
+use app\models\User;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpWord\TemplateProcessor;
 use Yii;
+use yii\base\BaseObject;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
@@ -593,6 +596,7 @@ class AppealController extends Controller
         $model->register_id = $register->id;
         $model->appeal_id = $register->appeal_id;
         $model->company_id = $id;
+        $model->deadtime = $register->deadtime;
         if(AppealBajaruvchi::find()->where(['company_id'=>$id])->andWhere(['appeal_id'=>$model->appeal_id])->andWhere(['register_id'=>$register->id])->one()){
             return "Ушбу ташкилотга аввал мурожаат юборилган";
         }
@@ -612,6 +616,38 @@ class AppealController extends Controller
             'regid'=>$regid
         ]);
     }
+
+    public function actionTaskemp($id,$regid){
+        $register = AppealRegister::findOne($regid);
+        $model = new TaskEmp();
+        $model->register_id = $register->id;
+        $model->appeal_id = $register->appeal_id;
+        $model->sender_id = $register->rahbar_id;
+        $model->reciever_id = $id;
+        $model->deadtime = $register->deadtime;
+        if(TaskEmp::find()->where(['sender_id'=>$model->sender_id])->andWhere(['reciever_id'=>$id])->andWhere(['appeal_id'=>$model->appeal_id])->andWhere(['register_id'=>$register->id])->one()
+        or $register->ijrochi_id == $model->reciever_id or $register->rahbar_id==$model->reciever_id
+        ){
+            return "Ушбу ҳодимга аввал топшириқ берилган юборилган";
+        }
+        if($model->load(Yii::$app->request->post())){
+
+            $model->upload();
+            if($model->save()){
+                Yii::$app->session->setFlash('success','Топшириқ юборилди');
+            }else{
+                Yii::$app->session->setFlash('error','Маълумотлар тўлдирилмаган');
+            }
+            return $this->redirect(['view','id'=>$regid]);
+        }
+        return $this->renderAjax('_task_emp',[
+            'model'=>$model,
+            'id'=>$id,
+            'regid'=>$regid,
+            'name'=>User::findOne($model->reciever_id)->name,
+        ]);
+    }
+
 
 
     public function actionClosemy($id){
@@ -758,5 +794,70 @@ class AppealController extends Controller
         return $this->redirect(['view','id'=>$register->id]);
 
     }
+
+    public function actionMerge(){
+        $model = AppealRegister::find()->all();
+        foreach ($model as $item){
+            // rahbarga
+            if($item->rahbar_id){
+                $baj = new TaskEmp();
+                $baj->reciever_id = $item->rahbar_id;
+                $baj->sender_id = $item->rahbar_id;
+                $baj->task = '-';
+                $baj->deadtime = $item->deadtime;
+                $baj->register_id = $item->id;
+                $baj->appeal_id = $item->appeal_id;
+                $baj->status = 0;
+                $baj->created = $item->created;
+                $baj->updated = $item->created;
+                if($baj->save()){
+
+                }
+                $baj = null;
+            }
+
+            // urinbosarga
+            if($item->ijrochi_id){
+                $baj = new TaskEmp();
+                $baj->reciever_id = $item->ijrochi_id;
+                $baj->sender_id = $item->rahbar_id;
+                $baj->task = '-';
+                $baj->deadtime = $item->deadtime;
+                $baj->register_id = $item->id;
+                $baj->appeal_id = $item->appeal_id;
+                $baj->status = 0;
+                $baj->created = $item->created;
+                $baj->updated = $item->created;
+                if($baj->save()){
+
+                }
+                $baj = null;
+            }
+            $users = json_decode($item->users,true);
+            if(is_array($users)){
+                foreach ($users as $us){
+                    if($us != $item->ijrochi_id and $us != $item->rahbar_id){
+                        $baj = new TaskEmp();
+                        $baj->reciever_id = $us;
+                        $baj->sender_id = $item->rahbar_id;
+                        $baj->task = '-';
+                        $baj->deadtime = $item->deadtime;
+                        $baj->register_id = $item->id;
+                        $baj->appeal_id = $item->appeal_id;
+                        $baj->status = 0;
+                        $baj->created = $item->created;
+                        $baj->updated = $item->created;
+                        if($baj->save()){
+
+                        }
+                        $baj = null;
+                    }
+
+                }
+            }
+        }
+        return $this->redirect(['index']);
+    }
+
 
 }

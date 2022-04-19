@@ -37,6 +37,7 @@ class AppAsset extends AssetBundle
         '/theme/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css',
         '/theme/plugins/datatables/jquery.dataTables.min.css',
         '/theme/plugins/datatables-buttons/css/buttons.dataTables.min.css',
+        '/theme/plugins/sweetalert2/sweetalert2.min.css',
         '/theme/dist/css/style.css',
     ];
     public $js = [
@@ -70,7 +71,7 @@ class AppAsset extends AssetBundle
 //        '/theme/plugins/daterangepicker/daterangepicker.js',
 //        '/theme/plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.min.js',
 //        '/theme/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js',
-//        '/theme/plugins/bootstrap-switch/js/bootstrap-switch.min.js',
+        '/theme/plugins/sweetalert2/sweetalert2.min.js',
 
     ];
     public $depends = [

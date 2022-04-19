@@ -1,6 +1,7 @@
 <?php
 
 use yii\helpers\Html;
+use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Appeal */
@@ -12,450 +13,732 @@ $this->title = $model->person_name;
 $this->params['breadcrumbs'][] = ['label' => 'Мурожаатлар', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="appeal-create">
 
 
-    <div class="row">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">
-                        Муожаат маълумотлари
-                    </h3>
-                    <div class="card-tools">
-                        <?php
-                        if($register->status != 2){
+<script>
+    var tashkilotadd = function(){}
+</script>
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    Муожаат маълумотлари
+                </h3>
+            </div>
+            <div class="card-body">
+                <?= DetailView::widget([
+                    'model' => $model,
+                    'attributes' => [
+                        'id',
+                        'appeal_detail',
+//                        'appeal_file',
+                        [
+                            'attribute'=>'appeal_file',
+                            'value'=>function($d){
+                                if($d->appeal_file){
+                                    return "<a href='/upload/{$d->appeal_file}'>Иловани юклаб олиш</a>";
+                                }else{
+                                    return null;
+                                }
+                            },
+                            'format'=>'raw'
+                        ],
+//                        'deadtime',
 
-                            $datetime2 = date_create($register->deadtime);
-                            $datetime1 = date_create(date('Y-m-d'));
-
-                            $interval = date_diff($datetime1, $datetime2);
-                            $days = $interval->format('%a ');
-                            $ds = $interval->format('%R%a ');
-                            $class = "";
-                            if($ds < 0){
-                                $class = "bg-danger";
-                                echo "<span class='{$class}' >Муддати ўтган</span>";
-                            }elseif($ds <= 5){
-                                $class = "bg-warning";
-                                echo "<span class='{$class}' >".$days.' кун қолди'."</span>";
-                            }else{echo "<span class='{$class}' >".$days.' кун қолди'."</span>";}
-
-                        }
-
-                        ?>
-                        <?php
-                            if($register->status != 2){
-                                echo "<span class=\"btn btn-warning\"> Жараёнда</span>";
-                            }else{
-                                echo "<span class=\"btn btn-success\"> Бажарилган</span>";
+                        'updated',
+//                        'boshqa_tashkilot',
+                        [
+                            'attribute'=>'question_id',
+                            'value'=>function($d){
+                                if($d->question_id){
+                                    $q = $d->question;
+                                    return $q->group->code.'-'.$q->code.'.'.$q->name;
+                                }
+                                return null;
+                            },
+                        ],
+                        [
+                            'attribute'=>'appeal_shakl_id',
+                            'value'=>function($d){
+                                return $d->appealShakl->name;
+                            },
+                        ],
+                        [
+                            'attribute'=>'appeal_type_id',
+                            'value'=>function($d){
+                                return $d->appealType->name;
+                            },
+                        ],
+                        [
+                            'label'=>'Қабул қилган ташкилот',
+                            'attribute'=>'boshqa_tashkilot',
+                            'value'=>function($d){
+                                if($d->boshqa_tashkilot){
+                                    return $d->boshqaTashkilot->name.'<br>'.$d->boshqa_tashkilot_number.' '.$d->boshqa_tashkilot_date;
+                                }else{
+                                    return "Бевосита";
+                                }
                             }
+                        ],
+                        [
+                            'attribute'=>'company_id',
+                            'value'=>function($d){
+                                return $d->company->name;
+                            },
+                        ],
+
+                    ],
+                ]) ?>
 
 
-                            ?>
-
-                        <?php if((Yii::$app->user->id == $register->rahbar_id or Yii::$app->user->id == $register->ijrochi_id) and $register->status != 2){?>
-                            <a href="<?= Yii::$app->urlManager->createUrl(['/site/update','id'=>$register->id])?>" class="btn btn-primary"><span class="fa fa-plus"></span> Резолюция</a>
-                        <?php }?>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-
-                        <div class="col-md-12">
-                            <table class="table table-hover table-bordered">
-                                <tbody class="bg-default">
-                                <tr>
-                                    <th>Мурожаат рақами ва санаси:</th>
-                                    <td>
-                                        <?php if($register->nazorat == 1 and $model->status != 2) echo "<span class='bg-danger' style='padding:5px;'>Назоратга олинган</span><br>";?>
-                                        <b>№ <?= $register->number?></b> <br> <?= $register->date ?>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th>Мурожаатни юборувчи ташкилот</th>
-                                    <td>
-                                        <?php if($register->parent_bajaruvchi_id == null){?>
-                                            Бевоситa келган
-                                        <?php }else{?>
-                                            <?php $reg = $register->parent->register; echo $reg->company->name.' '.$register->parent->id;?>
-                                            <br>
-                                            <b><?= $reg->number.' '.$reg->date ?></b> <br>
-                                            <?php if($register->parent->letter){?>
-                                                <a href="/upload/<?= $register->parent->letter?>" target="_blank">Кузатув хати (виза)ни юклаб олиш</a>
-                                            <?php }else{ ?>
-                                                Кузатув хати мавжуд эмас
-                                            <?php }}?>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th>Мурожаатчи ФИО</th>
-                                    <td><?= $model->person_name?></td>
-                                </tr>
-                                <tr>
-                                    <th>Мурожаат саволи:</th>
-                                    <td><?php if($q = $model->question)  echo $q->group->code.'-'.$q->code.'.'.$q->name; else { ?>
-                                            Қийматланмаган
-                                            <br>
-                                            <select name="questions" id="questions" class="form-control js-select2">
-                                                <?php
-                                                $quest = [];
-                                                foreach (\app\models\AppealQuestionGroup::find()->all() as $item) {
-                                                    $q = $item->code.'-'.$item->name;
-                                                    echo " <optgroup label=\"$q\">";
-                                                    foreach ($item->question as $i){
-                                                        $q = $item->code.' '.$i->code.')'.$i->name;
-                                                        echo "<option value=\"{$i->id}\">{$q}</option>";
-                                                    }
-                                                    echo " </optgroup>";
-                                                }
-                                                ?>
-
-                                            </select>
-                                            <button class="btn btn-success" id="savebtn">Сақлаш</button>
-                                        <?php }?>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th>Мурожаат иловаси:</th>
-                                    <td><?php if($model->appeal_file){ if(file_exists(Yii::$app->basePath.'/web/upload/'.$model->appeal_file)){?>
-                                            <a href="/upload/<?=$model->appeal_file?>" download>Юклаб олинг</a>
-
-                                        <?php }else{
-                                            // Remote file url
-                                            $remoteFile = 'http://e-aholi.uz/appealfiles/'.$model->appeal_file;
-
-                                            // Open file
-                                            $handle = @fopen($remoteFile, 'r');
-
-                                            if($handle){?>
-                                                <a href="http://e-aholi.uz/appealfiles/<?=$model->appeal_file?>" download>Юклаб олинг</a>
-                                            <?php }else{?>
-                                                Илова мавжуд эмас
-                                            <?php }
-
-                                        }}?>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th><b>Мурожаат матни</b></th>
-                                    <td><?= $model->pursuit == 1 ? '<b>Тақиб ҳақида огоҳлантириш</b> <br>' : ''?>
-                                        <?= $model->appeal_detail ?></td>
-                                </tr>
-
-
-
-                                <?php if($model->boshqa_tashkilot == 1){?>
-                                    <tr>
-                                        <th>Бошқа Ташкилот:</th>
-                                        <td><b>Ташкилот:</b> <?= isset($model->boshqaTashkilot) ? $model->boshqaTashkilot->name : 'Қийматланмаган'?>
-                                            <br>
-                                            <b>Ташкилот гуруҳи: </b><?= isset($model->boshqaTashkilot->group) ? $model->boshqaTashkilot->group->name : 'Қийматланмаган'?>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th>Хат рақами ва санаси:</th>
-                                        <td><?= $model->boshqa_tashkilot_number?> <br> <?= $model->boshqa_tashkilot_date?></td>
-                                    </tr>
-                                <?php }?>
-
-
-                                </tbody>
-                            </table>
-                            <?php if($model->status == 2){?>
-                                <table class="table table-hover table-bordered">
-
-                                    <tbody class="bg-default">
-                                    <tr>
-                                        <th colspan="2">Мурожаатнинг жавоби</th>
-                                    </tr>
-                                    <tr>
-                                        <th>Ҳолати</th>
-                                        <td><?= $register->control->name ?></td>
-                                    </tr>
-                                    <tr>
-                                        <th>Ижрочи</th>
-                                        <td>
-
-                                            <?= $model->answer_name?>
-                                            <br>
-                                            <b><?php if($model->answer_reply_send == 1)echo "Жавоб хати юборилган"; else echo "Жавоб хати юборилмаган";?></b>
-                                            <b>№<?= $model->answer_number?></b>
-                                            <b><?= $model->answer_date?></b>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th>Қисқача мазмуни:</th>
-                                        <td><?= $model->answer_preview?></td>
-                                    </tr>
-                                    <tr>
-                                        <th>Жавоб иловаси</th>
-                                        <td><?php if($model->answer_file){echo "<a href='/upload/{$model->answer_file}' download='true'>Юклаб олиш</a>";}else{echo "Илова мавжуд эмас";}?></td>
-                                    </tr>
-                                    <tr>
-                                        <th>Жавоб матни</th>
-                                        <td><?= $model->answer_detail?></td>
-                                    </tr>
-
-                                    </tbody>
-                                </table>
-                            <?php }?>
-
-
-                            <table class="table table-hover table-bordered">
-                                <tbody>
-                                <tr>
-                                    <th>Мурожаатга маъсул раҳбар:</th>
-                                    <td><?= isset($register->rahbar) ? $register->rahbar->name : 'Қийматланмаган'?></td>
-                                </tr>
-
-                                <tr>
-                                    <th>Раҳбар резолюцияси:</th>
-                                    <td><?= $register->preview?></td>
-                                </tr>
-                                <tr>
-                                    <th>Муддат:</th>
-                                    <td>
-                                        <?php
-
-                                        echo "<span style='width: 100%; height: 100%; display: block;'>".$register->deadtime.' санагача <br> Умумий: '.$register->deadline.' кун'."</span>";
-
-                                        ?>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-
-                            <div class="cardd card-pridmary card-outline card-outline-tabs">
-                                <div class="card-header p-0 border-bottom-0">
-                                    <ul class="nav nav-tabs" id="custom-tabs-three-tab" role="tablist">
-                                        <li class="nav-item">
-                                            <a class="nav-link active" id="custom-tabs-three-home-tab" data-toggle="pill" href="#custom-tabs-three-home" role="tab" aria-controls="custom-tabs-three-home" aria-selected="true">Мурожаатчи маълумотлари</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" id="custom-tabs-three-profile-tab" data-toggle="pill" href="#custom-tabs-three-profile" role="tab" aria-controls="custom-tabs-three-profile" aria-selected="false">Мурожаат қўшимча маълумотлари</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" id="custom-tabs-three-ect-tab" data-toggle="pill" href="#custom-tabs-three-ect" role="tab" aria-controls="custom-tabs-three-ect" aria-selected="false">Бажарувчилар рўйхати</a>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <div class="card-body" style="border: 1px solid #dee2e6;border-top: 0px;">
-                                    <div class="tab-content" id="custom-tabs-three-tabContent">
-                                        <div class="tab-pane fade show active" id="custom-tabs-three-home" role="tabpanel" aria-labelledby="custom-tabs-three-home-tab">
-                                            <table class="table table-hover table-bordered">
-                                                <tbody>
-                                                <tr>
-                                                    <th>ФИО:</th>
-                                                    <td colspan="3"><a href="#"><?= $model->person_name?></a> (<?= $model->isbusinessman == 0 ? 'Жисмоний шахс' : 'Юридик шахс'?>)</td>
-                                                </tr>
-                                                <tr>
-                                                    <td><b>Туғилган санаси</b>:</td>
-                                                    <td><?= $model->date_of_birth?></td>
-                                                    <td><b>Миллати:</b></td>
-                                                    <td><?= $model->nation->name?></td>
-
-                                                </tr>
-                                                <tr>
-                                                    <th>Яшаш манзили:</th>
-                                                    <td colspan="3"><?= $model->region->name.' '.$model->district->name.' '?> <?php if(isset($model->village_id)) { echo $model->village->name;}  ?> <?=' '.$model->address?></td>
-                                                </tr>
-                                                <tr>
-                                                    <th>Алоқа маълумотлари:</th>
-                                                    <td colspan="3"><b>Тел:</b> <?= $model->person_phone?><br><b>Эл-почта:</b> <?= $model->email?></td>
-                                                </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                        <div class="tab-pane fade" id="custom-tabs-three-profile" role="tabpanel" aria-labelledby="custom-tabs-three-profile-tab">
-                                            <table class="table table-hover table-bordered">
-                                                <tbody>
-                                                <tr>
-                                                    <th>Мурожаат шакли:</th>
-                                                    <td> <?= $model->appealShakl->name ?></td>
-                                                </tr>
-                                                <tr>
-                                                    <th>Мурожаат тури:</th>
-                                                    <td><?= $model->appealType->name ?></td>
-                                                </tr>
-                                                <tr>
-                                                    <th>Мурожаат ҳолати:</th>
-                                                    <td><?= $model->appealControl->name ?></td>
-                                                </tr>
-                                                <tr>
-                                                    <th>Мурожаат рақами ва санаси:</th>
-                                                    <td><b>№ <?= $register->number?></b> <br> <?= $register->date?></td>
-                                                </tr>
-
-                                                </tbody>
-                                            </table>
-                                        </div>
-
-                                        <div class="tab-pane fade" id="custom-tabs-three-ect" role="tabpanel" aria-labelledby="custom-tabs-three-ect-tab">
-                                            <table class="table table-hover table-bordered">
-                                                <tbody>
-                                                <tr>
-                                                    <th colspan="2">Бажарувчилар рўйхати</th>
-                                                </tr>
-
-                                                <tr>
-                                                    <th>Ҳодимлар:</th>
-                                                    <td>
-                                                        <?php $baj = isset($register->users) ? json_decode($register->users,true) : [];
-                                                        $ans = isset($register->user_answer) ? json_decode($register->user_answer,true) : [];
-                                                        if($baj){
-                                                            $n=0; foreach ($baj as $u): $n++;
-                                                                $t = "Жараёнда";
-                                                                if(in_array("{$u}",$ans)){
-                                                                    $t = "Қабул қилинган";
-                                                                }
-                                                                ?>
-                                                                <?php if($urs = \app\models\User::findOne($u)){ echo $n.'. ' .$urs->name; ?><br><?php echo $urs->phone; ?>
-                                                                    <br><b>Ҳолат:</b> <?php echo $t; ?>
-
-                                                                    <hr>
-
-                                                                <?php }endforeach; }?>
-                                                    </td>
-                                                </tr>
-
-                                                <tr>
-                                                    <th>Ташкилотлар:</th>
-                                                    <td>
-                                                        <?php $baj = isset($register->tashkilot) ? json_decode($register->tashkilot,true) : [];
-                                                        $ans = isset($register->tashkilot_answer) ? json_decode($register->tashkilot_answer,true) : [];
-
-                                                        if($baj and is_array($baj)){
-                                                            $n=0; foreach ($baj as $u): $n++;
-
-                                                                $t = "<span class='bg-danger'>Кўрилмаган</span>";
-                                                                if($check = \app\models\AppealBajaruvchi::find()->where(['company_id'=>$u,'appeal_id'=>$model->id,'register_id'=>$register->id])->one() and $check->status != 0){
-                                                                    $t = '<span class=\'bg-warning\'>Жараёнда</span>';
-                                                                }
-                                                                if(in_array("{$u}",$ans)){
-                                                                    $t = "<span class='bg-success'>Қабул қилинган</span>";
-                                                                }
-                                                                ?>
-                                                                <?php if($urs = \app\models\Company::findOne($u)){ echo $n.'.'. $urs->name; ?><br><?= $urs->phone?>
-                                                                    <br><b>Ҳолат:</b> <?= $t?>
-                                                                    <br>
-                                                                    <?php
-                                                                    if($bajaruvchi = \app\models\AppealBajaruvchi::find()->where(['company_id'=>$u,'appeal_id'=>$model->id,'register_id'=>$register->id])->one()){
-                                                                        if($bajaruvchi->letter){echo "<a target='_blank' href='/upload/{$bajaruvchi->letter}'>Кузатувчи хат</a>";}else{echo "Хат мавжуд эмас";}
-                                                                    }else{echo "Хат мавжуд эмас";}
-                                                                    ?>
-
-                                                                    <hr>
-                                                                <?php } endforeach; }?>
-                                                    </td>
-                                                </tr>
-
-
-                                                </tbody>
-                                            </table>
-                                        </div>
-
-                                    </div>
-                                </div>
-                                <!-- /.card -->
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    Мурожаатчи ҳақида
+                </h3>
+            </div>
+            <div class="card-body">
 
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
+                <?= DetailView::widget([
+                    'model' => $model,
+                    'attributes' => [
+//                        'id',
+                        'person_name',
+                        'person_phone',
+                        'date_of_birth',
+//                        'gender',
+                        [
+                            'attribute'=>'gender',
+                            'value'=>function($d){
+                                return Yii::$app->params['gender'][$d->gender];
+                            }
+                        ],
+                        [
+                            'attribute'=>'region_id',
+                            'value'=>function($d){
+                                return $d->region->name;
+                            }
+                        ],
+                        [
+                            'attribute'=>'district_id',
+                            'value'=>function($d){
+                                return $d->district->name;
+                            }
+                        ],
+                        [
+                            'attribute'=>'village_id',
+                            'value'=>function($d){
+                                return @$d->village->name;
+                            }
+                        ],
+                        'address',
+                        'email',
+                        'businessman',
+                    ],
+                ]) ?>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<div class="card">
+
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-<?php if($register->status == 0 or $register->status == 1 or $register->status == 2) echo 12; else echo 6?>">
+                <h3 class="card-title">
+                    Ариза маълумотлари
+                </h3>
+                <?= DetailView::widget([
+                    'model' => $register,
+                    'attributes' => [
+                        'number',
+                        'date',
+                        [
+                            'label'=>'Юборувчи ташкилот',
+                            'attribute'=>'parent_bajaruvchi_id',
+                            'value'=>function($d){
+                                if($d->parent_bajaruvchi_id){
+                                    $res = $d->parent->register;
+                                    return $res->company->name.'<br>'.$res->number.'<br>'.$res->date;
+                                }else{
+                                    return 'Бевосита';
+                                }
+                            },
+                            'format'=>'raw'
+                        ],
+//                        'deadtime',
+                        [
+                            'attribute'=>'deadtime',
+                            'value'=>function($d){
+                                return $d->deadline.' кун '.$d->deadtime;
+                            }
+                        ],
+                        'donetime',
+//                        'control_id',
+                        [
+                            'attribute'=>'control_id',
+                            'value'=>function($d){
+                                return $d->control->name;
+                            }
+                        ],
+//                        'status',
+                        'preview',
+//                        'detail',
+//                        'file',
+//                        'nazorat',
+                        [
+                            'attribute'=>'nazorat',
+                            'value'=>function($d){
+                                return Yii::$app->params['nazorat'][$d->nazorat];
+                            }
+                        ],
+//                        'takroriy',
+//                        'rahbar_id',
+//                        'ijrochi_id',
+                        [
+                            'attribute'=>'rahbar_id',
+                            'value'=>function($d){
+                                return @$d->rahbar->name;
+                            }
+                        ],
+                        [
+                            'attribute'=>'ijrochi_id',
+                            'value'=>function($d){
+                                return @$d->ijrochi->name;
+                            }
+                        ],
+                    ],
+                ]) ?>
+
+            </div>
+            <?php if($register->status > 2 and $register->parent_bajaruvchi_id){?>
+                <div class="col-md-6">
                     <h3 class="card-title">
-                        Топшириқга жавоб юбориш
+                        Мурожаатнинг жавоби
                     </h3>
+                    <?= DetailView::widget([
+                        'model' => \app\models\AppealAnswer::find()->where(['parent_id'=>$register->parent_bajaruvchi_id])->orderBy(['created'=>SORT_DESC])->one(),
+                        'attributes' => [
+                            'number',
+                            'date',
+                            'preview',
+                            'detail',
+                            'name',
+//                                'file',
+                            [
+                                'attribute'=>'file',
+                                'value'=>function($d){
+                                    if($d->file){
+                                        return "<a href='/upload/{$d->file}'>Жавоб хатини юклаб олиш</a>";
+                                    }else{
+                                        return null;
+                                    }
+                                },
+                                'format'=>'raw'
+                            ],
+//                                'reaply_send',
+                            [
+                                'attribute'=>'reaply_send',
+                                'value'=>function($d){
+                                    if($d->reaply_send == 0){
+                                        return "Мурожаатчига жавоб хати юборилган";
+                                    }else{
+                                        return "Мурожаатчига жавоб хати юборилмаган";
+                                    }
+                                }
+                            ],
+//                                'status'
+                            [
+                                'attribute'=>'status',
+                                'value'=>function($d){
+                                    return $d->status0->name;
+                                }
+                            ],
+                        ],
+                    ]) ?>
+
                 </div>
-                <div class="card-body">
+            <?php }elseif($register->status > 2 and !$register->parent_bajaruvchi_id){?>
+                <div class="col-md-6">
+                    <?= DetailView::widget([
+                        'model' =>$model,
+                        'attributes' => [
+                            'answer_number',
+                            'answer_date',
+                            'answer_preview',
+                            'answer_detail',
+                            'answer_name',
+//                                'file',
+                            [
+                                'attribute'=>'answer_file',
+                                'value'=>function($d){
+                                    if($d->answer_file){
+                                        return "<a href='/upload/{$d->answer_file}'>Жавоб хатини юклаб олиш</a>";
+                                    }else{
+                                        return null;
+                                    }
+                                },
+                                'format'=>'raw'
+                            ],
+//                                'reaply_send',
+                            [
+                                'attribute'=>'answer_reply_send',
+                                'value'=>function($d){
+                                    if($d->answer_reply_send == 0){
+                                        return "Мурожаатчига жавоб хати юборилган";
+                                    }else{
+                                        return "Мурожаатчига жавоб хати юборилмаган";
+                                    }
+                                }
+                            ],
+//                                'status'
+                            [
+                                'attribute'=>'status',
+                                'value'=>function($d){
+                                    return $d->status0->name;
+                                }
+                            ],
+                        ],
+                    ]) ?>
+                </div>
+            <?php }?>
+        </div>
 
-                    <?php $us = json_decode($register->users,true); ?>
-                    <div class="table-responsive">
+        <hr>
+        <div id="accordion">
+            <a href="<?= Yii::$app->urlManager->createUrl(['/appeal/getappeal','id'=>$register->id])?>" class="btn btn-default" id="downappeal"><span class="fa fa-download"></span> Мурожаат масаласини юклаб олиш</a>
 
-                        <table class="table table-hover table-bordered">
-                            <thead>
-                            <tr>
-                                <th colspan="2">Мурожаатга маъсул ҳодим:</th>
-                                <td colspan="2">
-                                    <?= isset($register->ijrochi)?$register->ijrochi->name : 'Қийматланмаган'?>
-                                    <br> <?= isset($register->ijrochi)? $register->ijrochi->phone : '';?>
-                                </td>
-                            </tr>
-                            </thead>
-
-                            <tbody>
-
-                                <?= $register->rahbar_id == Yii::$app->user->id  ? $this->render('_rahbar',['model'=>$model,'register'=>$register]) : '' ?>
-                                <?= ($register->ijrochi_id == Yii::$app->user->id or $register->rahbar_id == Yii::$app->user->id) ? $this->render('_ijrochi',['model'=>$model,'register'=>$register]) : ''?>
-                                <?= $register->rahbar_id != Yii::$app->user->id ? $this->render('_mening',['model'=>$model,'register'=>$register, 'answer'=>$answer,]) : '' ?>
-
-                            </tbody>
-
-
-
-                        </table>
-
+            <?php if($register->status != 3 and $model->status != 4){?>
+                <div class="dropdown" style="display: inline-block">
+                    <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Топшириқ юбориш
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <a class="dropdown-item" data-toggle="collapse" href="#success">Ташкилотларга топшириқ бериш</a>
+                        <a class="dropdown-item" data-toggle="collapse" href="#taskemp">Ҳодимларга топшириқ бериш</a>
                     </div>
                 </div>
+                <a href="#answer" class="btn btn-success" data-toggle="collapse">Жавоб юбориш</a>
+
+                <div class="dropdown" style="float: right; margin-left:5px;">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Маълумотларни янгилаш
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <a class="dropdown-item" href="<?= Yii::$app->urlManager->createUrl(['/appeal/update','id'=>$register->id])?>">Резолюция</a>
+                        <a class="dropdown-item" href="#">Мурожаат маълумотлари</a>
+                        <a class="dropdown-item" href="#">Мурожаатчи маълумотлари</a>
+                    </div>
+                </div>
+
+                <div class="dropdown" style="float: right">
+                    <button class="btn btn-info dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Сўров юбориш
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <a class="dropdown-item" href="#">Муддатни узайтириш</a>
+                        <a class="dropdown-item" href="#">Бошқа давлат органига юбориш</a>
+                    </div>
+                </div>
+            <?php }?>
+
+            <div id="success" class="collapse" style="margin-top: 20px; padding: 20px;border: 1px solid #007bff;" data-parent="#accordion">
+
+                <table class="table table-hover table-bordered datatable_tashkilot">
+                    <thead>
+                    <tr>
+                        <th></th>
+                        <th>Ташкилот номи</th>
+                        <th>Директор</th>
+                        <th>СТИР(ИНН)</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+
+
+                    </tbody>
+                </table>
+
             </div>
 
-           
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">
-                            Жавоб юбориш
-                        </h3>
-                    </div>
-                    <div class="card-body">
-                       
-                        <?= $this->render('_answerminiform',[
-                            'model'=>$answer
-                        ])?>
-                       
-                    </div>
-                </div>
+            <div id="taskemp" class="collapse" style="margin-top: 20px; padding: 20px;border: 1px solid #007bff;" data-parent="#accordion">
+
+                <table class="table table-hover table-bordered datatable_emp">
+                    <thead>
+                    <tr>
+                        <th>№</th>
+                        <th></th>
+                        <th>ФИО</th>
+                        <th>Лавозим</th>
+                        <th>Бўлим</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    <?php $emp = \app\models\User::find()->where(['company_id'=>Yii::$app->user->identity->company_id])->all();
+                    $n=0;
+                    foreach ($emp as $item): $n++;
+                        ?>
+                        <tr>
+                            <td><?= $n?></td>
+                            <td><button class="btn btn-primary taskemp" value="<?= Yii::$app->urlManager->createUrl(['/appeal/taskemp','id'=>$item->id,'regid'=>$register->id])?>"><span class="fa fa-plus"></span></button></td>
+                            <td><?= $item->name?></td>
+                            <td><?= $item->lavozim->name?></td>
+                            <td><?= $item->bulim->name?></td>
+                        </tr>
+                    <?php endforeach;?>
+                    </tbody>
+                </table>
+
+            </div>
+
+
+            <div id="answer" class="collapse" style="margin-top: 20px; padding: 20px;border: 1px solid #28a745;" data-parent="#accordion">
+                <?php if($register->status != 4){?>
+                    <?php // if($register->parent_bajaruvchi_id){ echo $this->render('_answerformmy',['model'=>$answer]);}else{echo  $this->render('_closeformmy',['model'=>$model,'register'=>$register,'answer'=>$answer,]);} ?>
+                <?php }else{echo "Мурожаатга жавоб юборилган";}?>
+            </div>
+
+
 
         </div>
+
     </div>
 
 
 </div>
 
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">
+            Топшириқ юборилган ташкилотлар рўйхати
+        </h3>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-12 table-responsive">
+                <table class="table table-hover table-bordered">
+                    <thead>
+                    <tr>
+                        <th>№</th>
+                        <th></th>
+                        <th>Ташкилот номи</th>
+                        <th>Топшириқ матни</th>
+                        <th>Илова</th>
+                        <th>Юборилган сана</th>
+                        <th>Ҳолат</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <?php $n=0; foreach ($register->child as $item): $n++?>
+                        <tr>
+                            <td><?= $n?></td>
+                            <td><?php if($item->status==3){?>
+                                    <a class="btn btn-default" href="<?= Yii::$app->urlManager->createUrl(['/appeal/showresult','id'=>$item->id])?>"><span class="<?= $item->status0->icon?>"></span></a>
+                                <?php }else{?>
+                                    <span class="<?= $item->status0->icon?>"></span>
+                                <?php }?>
+                            </td>
 
-    <!-- Modal -->
-    <div id="myfiles" class="modal fade" role="dialog">
-        <div class="modal-dialog">
-
-            <!-- Modal content-->
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title">Юборилган жавоб</h4>
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                </div>
-                <div class="modal-body">
-
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Ёпиш</button>
-                </div>
+                            <td><?= $item->company->name?></td>
+                            <td><?= $item->task?></td>
+                            <td><?= $item->letter? "<a href='/upload/{$item->letter}' download>Иловани юклаб олинг</a>" : 'Илова мавжуд эмас'?></td>
+                            <td><?= $item->created ?></td>
+                            <td><?= $item->status0->name ?></td>
+                            <td>
+                                <?php if($item->status<2){?>
+                                    <a data-method="post" data-confirm="Siz rostdan ham ushbu topshiriqni o`chirmoqchimisiz?" href="<?= Yii::$app->urlManager->createUrl(['/appeal/deletetask','id'=>$item->id])?>"><span class="fa fa-trash"></span></a>
+                                <?php }?>
+                            </td>
+                        </tr>
+                    <?php endforeach;?>
+                    </tbody>
+                </table>
             </div>
-
         </div>
     </div>
+</div>
+
+
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">
+            Ташкилотлар томонидан келган жавоблар рўйхати
+        </h3>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-12 table-responsive">
+                <table class="table table-hover table-bordered">
+                    <thead>
+                    <tr>
+                        <th>№</th>
+                        <th></th>
+                        <th>Ташкилот номи</th>
+                        <th>Рақами</th>
+                        <th>Ҳужжат номи	</th>
+                        <th>Илова</th>
+                        <th>Ижрочи</th>
+                        <th>Юборилган сана</th>
+                        <th>Ҳолат</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <?php $n=0; foreach ($register->childanswer as $item): $n++?>
+                        <tr>
+                            <td><?= $n?></td>
+                            <td>
+                                <a class="btn btn-default" href="<?= Yii::$app->urlManager->createUrl(['/appeal/viewresult','id'=>$item->id])?>"><span class="<?= $item->status0->icon?>"></span></a>
+                            </td>
+
+                            <td><?= $item->bajaruvchi->company->name?></td>
+                            <td><?= $item->number.'<br>'.$item->date ?></td>
+                            <td><?= $item->preview?></td>
+                            <td><?= $item->file? "<a href='/upload/{$item->file}' download>Иловани юклаб олинг</a>" : 'Илова мавжуд эмас'?></td>
+                            <td><?= $item->name?></td>
+                            <td><?= $item->created ?></td>
+                            <td><?= $item->status0->name ?></td>
+                        </tr>
+                    <?php endforeach;?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">
+            Топшириқ юборилган ҳодимлар рўйхати
+        </h3>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-12 table-responsive">
+                <table class="table table-hover table-bordered">
+                    <thead>
+                    <tr>
+                        <th>№</th>
+                        <th></th>
+                        <th>ФИО</th>
+                        <th>Топшириқ матни</th>
+                        <th>Илова</th>
+                        <th>Юборилган сана</th>
+                        <th>Юборувчи</th>
+                        <th>Ҳолат</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    <?php $n=0; foreach ($register->childemp as $item): $n++?>
+                        <tr>
+                            <td><?= $n?></td>
+                            <td><?php if($item->status==3){?>
+                                    <a class="btn btn-default" href="<?= Yii::$app->urlManager->createUrl(['/appeal/showresult',])?>"><span class="<?= $item->status0->icon?>"></span></a>
+                                <?php }else{?>
+                                    <span class="<?= $item->status0->icon?>"></span>
+                                <?php }?>
+                            </td>
+
+                            <td><?= $item->reciever->name ?></td>
+                            <td><?= $item->task ?></td>
+                            <td><?= $item->letter? "<a href='/upload/{$item->letter}' download>Иловани юклаб олинг</a>" : 'Илова мавжуд эмас'?></td>
+                            <td><?= $item->created ?></td>
+                            <td><?= $item->sender->name ?></td>
+                            <td><?= $item->status0->name ?></td>
+                            <td>
+                                <?php if($item->status<2){?>
+                                    <a data-method="post" data-confirm="Siz rostdan ham ushbu topshiriqni o`chirmoqchimisiz?" href="<?= Yii::$app->urlManager->createUrl(['/appeal/deletetask'])?>"><span class="fa fa-trash"></span></a>
+                                <?php }?>
+                            </td>
+                        </tr>
+                    <?php endforeach;?>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Bu joyi hali yoziladi-->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">
+            Ташкилотлар томонидан келган жавоблар рўйхати
+        </h3>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-12 table-responsive">
+                <table class="table table-hover table-bordered">
+                    <thead>
+                    <tr>
+                        <th>№</th>
+                        <th></th>
+                        <th>Ташкилот номи</th>
+                        <th>Рақами</th>
+                        <th>Ҳужжат номи	</th>
+                        <th>Илова</th>
+                        <th>Ижрочи</th>
+                        <th>Юборилган сана</th>
+                        <th>Ҳолат</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <?php $n=0; foreach ($register->childanswer as $item): $n++?>
+                        <tr>
+                            <td><?= $n?></td>
+                            <td>
+                                <a class="btn btn-default" href="<?= Yii::$app->urlManager->createUrl(['/appeal/viewresult','id'=>$item->id])?>"><span class="<?= $item->status0->icon?>"></span></a>
+                            </td>
+
+                            <td><?= $item->bajaruvchi->company->name?></td>
+                            <td><?= $item->number.'<br>'.$item->date ?></td>
+                            <td><?= $item->preview?></td>
+                            <td><?= $item->file? "<a href='/upload/{$item->file}' download>Иловани юклаб олинг</a>" : 'Илова мавжуд эмас'?></td>
+                            <td><?= $item->name?></td>
+                            <td><?= $item->created ?></td>
+                            <td><?= $item->status0->name ?></td>
+                        </tr>
+                    <?php endforeach;?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">
+            Менинг жавобларим
+        </h3>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-12 table-responsive">
+                <table class="table table-hover table-bordered">
+                    <thead>
+                    <tr>
+                        <th>№</th>
+                        <th></th>
+                        <th>Ташкилот номи</th>
+                        <th>Рақами</th>
+                        <th>Ҳужжат номи	</th>
+                        <th>Илова</th>
+                        <th>Ижрочи</th>
+                        <th>Юборилган сана</th>
+                        <th>Ҳолат</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <?php $n=0; foreach ($register->answer as $item): $n++?>
+                        <tr>
+                            <td><?= $n?></td>
+                            <td><?php if($item->status==3){?>
+                                    <a class="btn btn-default" href="<?= Yii::$app->urlManager->createUrl(['/appeal/viewresult','id'=>$item->id])?>"><span class="<?= $item->status0->icon?>"></span></a>
+                                <?php }else{?>
+                                    <span class="<?= $item->status0->icon?>"></span>
+                                <?php }?>
+                            </td>
+
+                            <td><?= $item->bajaruvchi->company->name?></td>
+                            <td><?= $item->number.'<br>'.$item->date ?></td>
+                            <td><?= $item->preview?></td>
+                            <td><?= $item->file? "<a href='/upload/{$item->file}' download>Иловани юклаб олинг</a>" : 'Илова мавжуд эмас'?></td>
+                            <td><?= $item->name?></td>
+                            <td><?= $item->created ?></td>
+                            <td><?= $item->status0->name ?></td>
+                        </tr>
+                    <?php endforeach;?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal -->
+<div id="modaltashkilot" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Топшириқ бериш</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Ёпиш</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+
+<style>
+    .table.table-hover.table-bordered.datatable_tashkilot.dataTable.no-footer{
+        width: 100% !important;
+    }
+</style>
 
 
 <?php
-
+$url = Yii::$app->urlManager->createUrl(['/appeal/task','regid'=>$register->id]);
 $this->registerJs("
-    $('.myfiles').click(function(){
-        var url = this.value;
-        $('#myfiles').modal('show').find('.modal-body').load(url);
-    })
-")
+        $(document).ready(function(){
+              $('.datatable_tashkilot').DataTable({
+                \"processing\": true,
+                \"serverSide\": true,
+
+                \"ajax\": {
+                    \"url\":\"/get/gettashkilot\",
+                    \"type\":\"post\"
+                },
+                \"columns\": [
+                    { \"data\": \"id\" },
+                    { \"data\": \"name\" },
+                    { \"data\": \"director\" },
+                    { \"data\": \"inn\" }
+                ],
+            });
+        })
+        
+        tashkilotadd = function(id){
+            $('#modaltashkilot').modal('show').find('.modal-body').load('{$url}&id='+id);
+        }     
+        
+        $('.datatable_emp').DataTable(); 
+        
+        $('.taskemp').click(function(){
+            var url = this.value;
+            $('#modaltashkilot').modal('show').find('.modal-body').load(url);  
+        })
+        
+        
+    ")
 ?>

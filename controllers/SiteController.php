@@ -90,28 +90,15 @@ class SiteController extends Controller
      *
      * @return string
      */
-    public function actionIndex($type = null, $filter = null)
+    public function actionIndex($status=-1)
     {
         $user = Yii::$app->user->identity;
 
-        if($type=='closed'){
-            $searchModel = new AppealRegisterMyClosedSearch();
-            $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-        }elseif($type == 'running'){
-            $searchModel = new AppealRegisterMyRunningSearch();
-            $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-        }elseif($type == 'dead'){
-            $searchModel = new AppealRegisterMyDeadSearch();
-            $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-        }else{
-            $searchModel = new AppealRegisterMySearch();
-            $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $searchModel = new AppealRegisterMySearch();
+        if($status != -1){
+            $searchModel->status = $status;
         }
-
-        if($filter == 'hasanswer'){
-            // javob fayllari bilan kelgan murojaatlar ro'yhati
-        }
-
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
             'searchModel' => $searchModel,

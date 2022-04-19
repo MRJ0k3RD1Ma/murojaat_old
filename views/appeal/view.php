@@ -85,7 +85,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             'attribute'=>'company_id',
                             'value'=>function($d){
                                 return $d->company->name;
-                            }
+                            },
                         ],
 
                     ],
@@ -164,6 +164,19 @@ $this->params['breadcrumbs'][] = $this->title;
                     'attributes' => [
                         'number',
                         'date',
+                        [
+                            'label'=>'Юборувчи ташкилот',
+                            'attribute'=>'parent_bajaruvchi_id',
+                            'value'=>function($d){
+                                if($d->parent_bajaruvchi_id){
+                                    $res = $d->parent->register;
+                                    return $res->company->name.'<br>'.$res->number.'<br>'.$res->date;
+                                }else{
+                                    return 'Бевосита';
+                                }
+                            },
+                            'format'=>'raw'
+                        ],
 //                        'deadtime',
                         [
                             'attribute'=>'deadtime',
@@ -309,7 +322,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <?php if($register->status != 3 and $model->status != 4){?>
                         <div class="dropdown" style="display: inline-block">
                             <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Маълумотларни янгилаш
+                                Топшириқ юбориш
                             </button>
                             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                 <a class="dropdown-item" data-toggle="collapse" href="#success">Ташкилотларга топшириқ бериш</a>
@@ -446,7 +459,9 @@ $this->params['breadcrumbs'][] = $this->title;
                                     <td><?= $item->created ?></td>
                                     <td><?= $item->status0->name ?></td>
                                     <td>
+                                        <?php if($item->status<2){?>
                                         <a data-method="post" data-confirm="Siz rostdan ham ushbu topshiriqni o`chirmoqchimisiz?" href="<?= Yii::$app->urlManager->createUrl(['/appeal/deletetask','id'=>$item->id])?>"><span class="fa fa-trash"></span></a>
+                                        <?php }?>
                                     </td>
                                 </tr>
                             <?php endforeach;?>
@@ -457,6 +472,113 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
     </div>
 
+
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">
+                Ташкилотлар томонидан келган жавоблар рўйхати
+            </h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-12 table-responsive">
+                    <table class="table table-hover table-bordered">
+                        <thead>
+                        <tr>
+                            <th>№</th>
+                            <th></th>
+                            <th>Ташкилот номи</th>
+                            <th>Рақами</th>
+                            <th>Ҳужжат номи	</th>
+                            <th>Илова</th>
+                            <th>Ижрочи</th>
+                            <th>Юборилган сана</th>
+                            <th>Ҳолат</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <?php $n=0; foreach ($register->childanswer as $item): $n++?>
+                            <tr>
+                                <td><?= $n?></td>
+                                <td>
+                                    <a class="btn btn-default" href="<?= Yii::$app->urlManager->createUrl(['/appeal/viewresult','id'=>$item->id])?>"><span class="<?= $item->status0->icon?>"></span></a>
+                                </td>
+
+                                <td><?= $item->bajaruvchi->company->name?></td>
+                                <td><?= $item->number.'<br>'.$item->date ?></td>
+                                <td><?= $item->preview?></td>
+                                <td><?= $item->file? "<a href='/upload/{$item->file}' download>Иловани юклаб олинг</a>" : 'Илова мавжуд эмас'?></td>
+                                <td><?= $item->name?></td>
+                                <td><?= $item->created ?></td>
+                                <td><?= $item->status0->name ?></td>
+                            </tr>
+                        <?php endforeach;?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">
+                Топшириқ юборилган ҳодимлар рўйхати
+            </h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-12 table-responsive">
+                    <table class="table table-hover table-bordered">
+                        <thead>
+                        <tr>
+                            <th>№</th>
+                            <th></th>
+                            <th>ФИО</th>
+                            <th>Топшириқ матни</th>
+                            <th>Илова</th>
+                            <th>Юборилган сана</th>
+                            <th>Юборувчи</th>
+                            <th>Ҳолат</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        <?php $n=0; foreach ($register->childemp as $item): $n++?>
+                            <tr>
+                                <td><?= $n?></td>
+                                <td><?php if($item->status==3){?>
+                                        <a class="btn btn-default" href="<?= Yii::$app->urlManager->createUrl(['/appeal/showresult',])?>"><span class="<?= $item->status0->icon?>"></span></a>
+                                    <?php }else{?>
+                                        <span class="<?= $item->status0->icon?>"></span>
+                                    <?php }?>
+                                </td>
+
+                                <td><?= $item->reciever->name ?></td>
+                                <td><?= $item->task ?></td>
+                                <td><?= $item->letter? "<a href='/upload/{$item->letter}' download>Иловани юклаб олинг</a>" : 'Илова мавжуд эмас'?></td>
+                                <td><?= $item->created ?></td>
+                                <td><?= $item->sender->name ?></td>
+                                <td><?= $item->status0->name ?></td>
+                                <td>
+                                    <?php if($item->status<2){?>
+                                        <a data-method="post" data-confirm="Siz rostdan ham ushbu topshiriqni o`chirmoqchimisiz?" href="<?= Yii::$app->urlManager->createUrl(['/appeal/deletetask'])?>"><span class="fa fa-trash"></span></a>
+                                    <?php }?>
+                                </td>
+                            </tr>
+                        <?php endforeach;?>
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!--Bu joyi hali yoziladi-->
     <div class="card">
         <div class="card-header">
             <h3 class="card-title">
@@ -611,6 +733,12 @@ $url = Yii::$app->urlManager->createUrl(['/appeal/task','regid'=>$register->id])
         }     
         
         $('.datatable_emp').DataTable(); 
+        
+        $('.taskemp').click(function(){
+            var url = this.value;
+            $('#modaltashkilot').modal('show').find('.modal-body').load(url);  
+        })
+        
         
     ")
 ?>

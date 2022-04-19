@@ -283,7 +283,7 @@ table tr:first-child th:nth-child(3){
 .card-title {
     float: left;
     font-size: 1.1rem;
-    margin: 0;
+    white-space: nowrap;margin: 0;
     color: #0080d9 !important;
     font-weight: 500;
     letter-spacing: 0.7px;

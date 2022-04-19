@@ -204,12 +204,15 @@ AppAsset::register($this);
 
     </div>
     <style>
+        body.sidebar-collapse .telegram-popup{
+            display: none !important;
+        }
         /*Body css here just to demonstrate scrolling*/
         .telegram-popup{
             width: 291px;
             position: fixed;
             bottom: 10px;
-            right: 10px;
+            left: -22px;
             z-index: 2000;
             /*round corners*/
             border-radius: 10px;
@@ -221,7 +224,7 @@ AppAsset::register($this);
 
         /*text stuff*/
         .telegram-popup p{
-            color: #000000;
+            color: #fff;
             padding: 4px;
         }
 
@@ -246,14 +249,18 @@ AppAsset::register($this);
             text-decoration: none;
         }
 
+        .swal2-checkbox input{
+            display: none;
+        }
+
     </style>
     <?php
     $this->registerJs("
-    //Animation. 
-$(document).ready(function(){
-    $(\".telegram-popup\").delay(3000).show(0);
-});
-")
+        //Animation. 
+        $(document).ready(function(){
+            $(\".telegram-popup\").delay(3000).show(0);
+        });
+    ")
     ?>
 <?php
     $this->registerJs("
@@ -262,6 +269,41 @@ $(document).ready(function(){
     });
 ")
 ?>
+
+
+
+<?php
+if(Yii::$app->session->hasFlash('error')){
+    $txt = Yii::$app->session->getFlash('error');
+    $xato = 'Хатолик';
+    $this->registerJs("
+        $(document).ready(function(){
+            Swal.fire({
+              icon: 'error',
+              title: \"{$xato}\",
+              text: \"{$txt}\"
+            })
+        })
+    ");
+
+}
+if(Yii::$app->session->hasFlash('success')){
+    $txt = Yii::$app->session->getFlash('success');
+    $xato = 'Muvvofaqiyatli';
+    $this->registerJs("
+        $(document).ready(function(){
+            Swal.fire({
+              icon: 'success',
+              title: \"{$xato}\",
+              text: \"{$txt}\"
+            })
+        })
+    ");
+
+}
+?>
+
+
 <?php $this->endBody() ?>
 </body>
 </html>

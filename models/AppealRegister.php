@@ -134,4 +134,8 @@ class AppealRegister extends \yii\db\ActiveRecord
     public function getStatus0(){
         return $this->hasOne(Status::className(),['id'=>'status']);
     }
+
+    public function getChildemp(){
+        return $this->hasMany(TaskEmp::className(),['register_id'=>'id'])->orderBy(['created'=>SORT_DESC]);
+    }
 }
