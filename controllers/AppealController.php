@@ -280,6 +280,24 @@ class AppealController extends Controller
                 $register->tashkilot = json_encode($register->tashkilot);
                 try {
                     $register->save();
+                    $task = new TaskEmp();
+                    $task->appeal_id = $model->id;
+                    $task->register_id = $register->id;
+                    $task->reciever_id = $register->rahbar_id;
+                    $task->sender_id = $register->rahbar_id;
+                    $task->deadtime = $register->deadtime;
+                    $task->task = '-';
+                    $task->status = 0;
+                    $task->save();
+                    $task = new TaskEmp();
+                    $task->appeal_id = $model->id;
+                    $task->register_id = $register->id;
+                    $task->sender_id = $register->rahbar_id;
+                    $task->reciever_id = $register->ijrochi_id;
+                    $task->deadtime = $register->deadtime;
+                    $task->task = '-';
+                    $task->status = 0;
+                    $task->save();
                     if(count($tashkilot)>0){
                         foreach ($tashkilot as $user) {
                             $baj = new AppealBajaruvchi();
@@ -564,7 +582,7 @@ class AppealController extends Controller
 
         $word->setValue('company',$model->company->name);
         $word->setValue('date',$register->date);
-        $word->setValue('person_name',$model->person_phone);
+        $word->setValue('person_name',$model->person_name);
         $word->setValue('address',$address);
 //        $word->setValue('sector',$register->number);
         $word->setValue('gender',Yii::$app->params['gender'][$model->gender]);
@@ -575,8 +593,6 @@ class AppealController extends Controller
         $word->setValue('deadline',$register->deadline.' кун '.$register->deadtime.' гача');
         $word->setValue('detail',$model->appeal_detail);
         $word->setValue('tocompany',Yii::$app->user->identity->company->name.'га');
-
-
 
 
         $fileName = 'e-murojaat.uz_'.$register->number.'.docx';
@@ -601,7 +617,7 @@ class AppealController extends Controller
             return "Ушбу ташкилотга аввал мурожаат юборилган";
         }
         if($model->load(Yii::$app->request->post())){
-
+            $model->sender_id = $register->rahbar_id;
             $model->upload();
             if($model->save()){
                 Yii::$app->session->setFlash('success','Топшириқ юборилди');

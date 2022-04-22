@@ -43,10 +43,8 @@ class AppealRegisterMySearch extends AppealRegister
     {
         $user = \Yii::$app->user->identity;
         $query = AppealRegister::find()
-            ->where(['appeal_register.company_id'=>$user->company_id])->innerJoin('appeal','appeal.id=appeal_register.appeal_id')
-            ->andFilterWhere(['like','users',"{$user->id}"])
-        ->orWhere(['ijrochi_id'=>$user->id])->orWhere(['rahbar_id'=>$user->id])
-            ->orderBy(['appeal_register.deadtime'=>SORT_DESC]);
+            ->innerJoin('appeal','appeal.id=appeal_register.appeal_id')
+            ->where(['appeal_register.company_id'=>$user->company_id]);
 
         // add conditions that should always apply here
 
@@ -55,10 +53,19 @@ class AppealRegisterMySearch extends AppealRegister
         ]);
 
         $this->load($params);
+
         if (!$this->validate()) {
             // uncomment the following line if you do not want to return any records when validation fails
             // $query->where('0=1');
             return $dataProvider;
+        }
+
+        if($this->status == -1){
+            $query->where('appeal_register.id in (select register_id from task_emp where reciever_id='.\Yii::$app->user->id.' or sender_id='.\Yii::$app->user->id.')')
+                ->orderBy(['appeal_register.deadtime'=>SORT_DESC]);
+        }else{
+            $query->where('appeal_register.id in (select register_id from task_emp where (reciever_id='.\Yii::$app->user->id.' or sender_id='.\Yii::$app->user->id.') and status='.$this->status.')')
+                ->orderBy(['appeal_register.deadtime'=>SORT_DESC]);
         }
 
         // grid filtering conditions
@@ -73,7 +80,6 @@ class AppealRegisterMySearch extends AppealRegister
             'deadtime' => $this->deadtime,
             'donetime' => $this->donetime,
             'control_id' => $this->control_id,
-            'appeal_register.status' => $this->status,
             'created' => $this->created,
             'updated' => $this->updated,
             'company_id' => $this->company_id,

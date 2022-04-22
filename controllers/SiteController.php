@@ -7,20 +7,15 @@ use app\models\AppealAnswer;
 use app\models\AppealBajaruvchi;
 use app\models\AppealComment;
 use app\models\AppealRegister;
-use app\models\Company;
-use app\models\search\AppealRegisterMyClosedSearch;
-use app\models\search\AppealRegisterMyDeadSearch;
 use app\models\search\AppealRegisterMyHasSearch;
-use app\models\search\AppealRegisterMyRunningSearch;
 use app\models\search\AppealRegisterMySearch;
+use app\models\search\CompanyMyRegisterSearch;
+use app\models\search\CompanyRegisterSearch;
+use app\models\TaskEmp;
 use app\models\User;
-use app\models\Village;
-use Codeception\Step\Comment;
-use PhpOffice\PhpSpreadsheet\Reader\Xls;
-use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use Yii;
 use yii\base\BaseObject;
-use yii\db\Exception;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\Response;
@@ -95,9 +90,7 @@ class SiteController extends Controller
         $user = Yii::$app->user->identity;
 
         $searchModel = new AppealRegisterMySearch();
-        if($status != -1){
-            $searchModel->status = $status;
-        }
+        $searchModel->status = $status;
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -207,10 +200,25 @@ class SiteController extends Controller
         ]);
     }
 
+    public function actionOk($id){
+        $register = AppealRegister::findOne($id);
+        $task = TaskEmp::findOne(['register_id'=>$id,'appeal_id'=>$register->appeal_id,'reciever_id'=>Yii::$app->user->id]);
+
+        $task->status = 2;
+        $task->save();
+
+        return $this->redirect(['view','id'=>$id]);
+    }
+
     public function actionView($id){
 
         $register = AppealRegister::findOne($id);
         $model = Appeal::findOne($register->appeal_id);
+        $task = TaskEmp::findOne(['register_id'=>$id,'appeal_id'=>$register->appeal_id,'reciever_id'=>Yii::$app->user->id]);
+        if($task->status == 0){
+            $task->status = 1;
+            $task->save();
+        }
         $answer = new AppealAnswer();
         $answer->appeal_id = $register->appeal_id;
         $answer->register_id = $register->id;
@@ -222,6 +230,7 @@ class SiteController extends Controller
             'model'=>$model,
             'register'=>$register,
             'answer'=>$answer,
+            'task_emp'=>$task
         ]);
     }
 
@@ -426,5 +435,114 @@ class SiteController extends Controller
         ]);
     }
 
+    public function actionTask($id,$regid){
+        $register = AppealRegister::findOne($regid);
+        $model = new AppealBajaruvchi();
+        $model->register_id = $register->id;
+        $model->appeal_id = $register->appeal_id;
+        $model->company_id = $id;
+        $model->deadtime = $register->deadtime;
+        $model->sender_id = Yii::$app->user->id;
+        if(AppealBajaruvchi::find()->where(['company_id'=>$id])->andWhere(['appeal_id'=>$model->appeal_id])->andWhere(['register_id'=>$register->id])->one()){
+            return "Ушбу ташкилотга аввал мурожаат юборилган";
+        }
+        if($model->load(Yii::$app->request->post())){
+            $model->sender_id = Yii::$app->user->id;
+            $model->upload();
+            if($model->save()){
+                Yii::$app->session->setFlash('success','Топшириқ юборилди');
+            }else{
+                Yii::$app->session->setFlash('error','Маълумотлар тўлиқ тўлдирилмаган');
+            }
+            return $this->redirect(['view','id'=>$regid]);
+        }
+        return $this->renderAjax('_task',[
+            'model'=>$model,
+            'id'=>$id,
+            'regid'=>$regid,
+            'name'=>$model->company->name
+        ]);
+    }
+
+    public function actionTaskemp($id,$regid){
+        $register = AppealRegister::findOne($regid);
+        $model = new TaskEmp();
+        $model->register_id = $register->id;
+        $model->appeal_id = $register->appeal_id;
+        $model->sender_id = Yii::$app->user->id;
+        $model->reciever_id = $id;
+        $model->deadtime = $register->deadtime;
+        if(TaskEmp::find()->where(['sender_id'=>$model->sender_id])->andWhere(['reciever_id'=>$id])->andWhere(['appeal_id'=>$model->appeal_id])->andWhere(['register_id'=>$register->id])->one()
+            or $register->ijrochi_id == $model->reciever_id or $register->rahbar_id==$model->reciever_id
+        ){
+            return "Ушбу ҳодимга аввал топшириқ берилган юборилган";
+        }
+        if($model->load(Yii::$app->request->post())){
+
+            $model->upload();
+            if($model->save()){
+                Yii::$app->session->setFlash('success','Топшириқ юборилди');
+            }else{
+                Yii::$app->session->setFlash('error','Маълумотлар тўлдирилмаган');
+            }
+            return $this->redirect(['view','id'=>$regid]);
+        }
+        return $this->renderAjax('_task_emp',[
+            'model'=>$model,
+            'id'=>$id,
+            'regid'=>$regid,
+            'name'=>User::findOne($model->reciever_id)->name,
+        ]);
+    }
+
+
+    public function actionCompanies(){
+        $searchModel = new CompanyMyRegisterSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+        if(Yii::$app->request->isPost){
+
+            header('Content-Type: application/vnd.ms-excel');
+            header('Content-Disposition: attachment;filename="hisobot.xlsx"');
+            $spreadsheet = new Spreadsheet();
+            $sheet = $spreadsheet->getActiveSheet();
+            $n = 0;
+            $sheet->setCellValue('A1', '№');
+            $sheet->setCellValue('B1', 'Ташкилот номи');
+            $sheet->setCellValue('C1', 'Юборилган мурожаатлар');
+            $sheet->setCellValue('D1', 'Қабул қилинмаган');
+            $sheet->setCellValue('E1', 'Янги');
+            $sheet->setCellValue('F1', 'Жараёнда');
+            $sheet->setCellValue('G1', 'Тасдиқланиши кутилмоқда');
+            $sheet->setCellValue('H1', 'Бажарилган');
+            $sheet->setCellValue('I1', 'Рад этилган');
+            $sheet->setCellValue('J1', 'Муддати бузилган');
+//            $sheet->setCellValue('J1', 'Муддати бузиб бажарилган');
+            foreach ($dataProvider->query->all() as $item){
+                $n++;
+                $m = $n+1;
+                $sheet->setCellValue('A'.$m, $n);
+                $sheet->setCellValue('B'.$m, $item->name);
+                $sheet->setCellValue('C'.$m, $item->cntall);
+                $sheet->setCellValue('D'.$m, $item->cnt0);
+                $sheet->setCellValue('E'.$m, $item->cnt1);
+                $sheet->setCellValue('F'.$m, $item->cnt2);
+                $sheet->setCellValue('G'.$m, $item->cnt3);
+                $sheet->setCellValue('H'.$m, $item->cnt4);
+                $sheet->setCellValue('I'.$m, $item->cnt5);
+            }
+
+            $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+            $writer->save("php://output");
+
+        }
+        return $this->render('companies', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
+
+
+
+    }
 
 }

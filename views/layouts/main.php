@@ -67,11 +67,11 @@ AppAsset::register($this);
                 <li class="nav-item"><a href="<?= Yii::$app->urlManager->createUrl(['/appeal/create'])?>" class="btn btn-primary"><span class="fa fa-plus"></span> Янги мурожаат</a></li>
 
                 <li class="nav-item"><a href="<?= Yii::$app->urlManager->createUrl(['/appeal/notregister'])?>" class="btn btn-success"><span class="fa fa-registered"></span> Рўйхатга олинмаган</a></li>
-            <?php }?>
+
             <li class="nav-item dropdown">
                 <a class="nav-link" data-toggle="dropdown" href="#">
                     <i class="far fa-envelope"></i>
-                    <span class="badge badge-warning navbar-badge">
+                    <span class="badge badge-warning navbar-badge mycolor">
 
 
                         <?php $cnt_ans = \app\models\AppealAnswer::find()->select(['appeal_answer.*'])
@@ -94,7 +94,7 @@ AppAsset::register($this);
             <li class="nav-item dropdown">
                 <a class="nav-link" data-toggle="dropdown" href="#">
                     <i class="far fa-envelope"></i>
-                    <span class="badge badge-warning navbar-badge">
+                    <span class="badge badge-warning navbar-badge mycolor">
 
 
                         <?php $cnt_ans = \app\models\AppealBajaruvchi::find()
@@ -116,7 +116,7 @@ AppAsset::register($this);
             <li class="nav-item dropdown">
                 <a class="nav-link" data-toggle="dropdown" href="#">
                     <i class="far fa-bell"></i>
-                    <span class="badge badge-warning navbar-badge"><?php $cnt = \app\models\AppealBajaruvchi::find()->where(['status'=>0])->andWhere(['company_id'=>Yii::$app->user->identity->company_id])->count('id'); echo $cnt?></span>
+                    <span class="badge badge-warning navbar-badge mycolor"><?php $cnt = \app\models\AppealBajaruvchi::find()->where(['status'=>0])->andWhere(['company_id'=>Yii::$app->user->identity->company_id])->count('id'); echo $cnt?></span>
                 </a>
                 <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
                     <span class="dropdown-item dropdown-header">Мурожаатлар</span>
@@ -127,7 +127,7 @@ AppAsset::register($this);
 
                 </div>
             </li>
-
+            <?php }?>
             <li class="nav-item">
                 <?=Html::a('<i class="fa fa-door-open"></i> Chiqish',['/site/logout'],[
                     'class'=>'nav-link',
@@ -252,7 +252,10 @@ AppAsset::register($this);
         .swal2-checkbox input{
             display: none;
         }
-
+        .mycolor{
+            color: #ffffff !important;
+            background-color: #9c27b0 !important;
+        }
     </style>
     <?php
     $this->registerJs("

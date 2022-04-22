@@ -9,7 +9,7 @@ use Yii;
 /**
  * CompanySearch represents the model behind the search form of `app\models\Company`.
  */
-class CompanyRegisterSearch extends Company
+class CompanyMyRegisterSearch extends Company
 {
     /**
      * {@inheritdoc}
@@ -41,15 +41,20 @@ class CompanyRegisterSearch extends Company
     public function search($params)
     {
 
+        $uid = Yii::$app->user->id;
 
-        $query = Company::find()->select(['company.*','COUNT(appeal_bajaruvchi.company_id) as cntall',
-            '(select count(appeal_bajaruvchi.id) from appeal_bajaruvchi WHERE appeal_bajaruvchi.company_id=company.id and appeal_bajaruvchi.status=0 and appeal_bajaruvchi.register_id in (select id from appeal_register where company_id='.Yii::$app->user->identity->company_id.')) as cntzero',
-            '(select count(appeal_bajaruvchi.id) from appeal_bajaruvchi WHERE appeal_bajaruvchi.company_id=company.id and appeal_bajaruvchi.status=1  and appeal_bajaruvchi.register_id in (select id from appeal_register where company_id='.Yii::$app->user->identity->company_id.')) as cntone',
-            '(select count(appeal_bajaruvchi.id) from appeal_bajaruvchi WHERE appeal_bajaruvchi.company_id=company.id and appeal_bajaruvchi.status=2  and appeal_bajaruvchi.register_id in (select id from appeal_register where company_id='.Yii::$app->user->identity->company_id.')) as cnttwo',
-            '(select count(appeal_bajaruvchi.id) from appeal_bajaruvchi WHERE appeal_bajaruvchi.company_id=company.id and appeal_bajaruvchi.deadtime<date(now())  and appeal_bajaruvchi.register_id in (select id from appeal_register where company_id='.Yii::$app->user->identity->company_id.')) as cntdead',
-        ])->leftJoin('appeal_bajaruvchi','appeal_bajaruvchi.company_id = company.id ')
-            ->where('appeal_bajaruvchi.register_id in (SELECT appeal_register.id FROM appeal_register WHERE appeal_register.company_id='.Yii::$app->user->identity->company_id.') ')
-            ->groupBy(['appeal_bajaruvchi.company_id'])
+        $query = Company::find()->select(['company.*',
+            '(select count(appeal_bajaruvchi.sender_id) from appeal_bajaruvchi WHERE appeal_bajaruvchi.sender_id ='.$uid.' and appeal_bajaruvchi.company_id=company.id) as cntall',
+            '(select count(appeal_bajaruvchi.sender_id) from appeal_bajaruvchi WHERE appeal_bajaruvchi.status=0 and appeal_bajaruvchi.sender_id ='.$uid.' and appeal_bajaruvchi.company_id=company.id) as cnt0',
+            '(select count(appeal_bajaruvchi.sender_id) from appeal_bajaruvchi WHERE appeal_bajaruvchi.status=1 and appeal_bajaruvchi.sender_id ='.$uid.' and appeal_bajaruvchi.company_id=company.id) as cnt1',
+            '(select count(appeal_bajaruvchi.sender_id) from appeal_bajaruvchi WHERE appeal_bajaruvchi.status=2 and appeal_bajaruvchi.sender_id ='.$uid.' and appeal_bajaruvchi.company_id=company.id) as cnt2',
+            '(select count(appeal_bajaruvchi.sender_id) from appeal_bajaruvchi WHERE appeal_bajaruvchi.status=3 and appeal_bajaruvchi.sender_id ='.$uid.' and appeal_bajaruvchi.company_id=company.id) as cnt3',
+            '(select count(appeal_bajaruvchi.sender_id) from appeal_bajaruvchi WHERE appeal_bajaruvchi.status=4 and appeal_bajaruvchi.sender_id ='.$uid.' and appeal_bajaruvchi.company_id=company.id) as cnt4',
+            '(select count(appeal_bajaruvchi.sender_id) from appeal_bajaruvchi WHERE appeal_bajaruvchi.status=5 and appeal_bajaruvchi.sender_id ='.$uid.' and appeal_bajaruvchi.company_id=company.id) as cnt5',
+            '(select count(appeal_bajaruvchi.sender_id) from appeal_bajaruvchi WHERE appeal_bajaruvchi.deadtime<date(now()) and appeal_bajaruvchi.status<>4 and appeal_bajaruvchi.sender_id ='.$uid.' and appeal_bajaruvchi.company_id=company.id) as cntdead',
+            '(select count(appeal_bajaruvchi.sender_id) from appeal_bajaruvchi WHERE appeal_bajaruvchi.deadtime<date(now()) and appeal_bajaruvchi.status=4 and appeal_bajaruvchi.sender_id ='.$uid.' and appeal_bajaruvchi.company_id=company.id) as cntwithdead',
+
+        ])
             ->orderBy(['cntall'=>SORT_DESC]);
 
         // add conditions that should always apply here

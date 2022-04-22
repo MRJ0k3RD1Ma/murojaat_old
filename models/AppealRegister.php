@@ -130,6 +130,12 @@ class AppealRegister extends \yii\db\ActiveRecord
             ->where('parent_id in (select id from appeal_bajaruvchi where register_id='.$this->id.')')
             ->orderBy(['id'=>SORT_DESC])->all();
     }
+    public function getChildanswermy(){
+        return AppealAnswer::find()
+            ->where('parent_id in (select id from appeal_bajaruvchi where register_id='.$this->id.' and sender_id='.Yii::$app->user->id.')')
+            ->orderBy(['id'=>SORT_DESC])->all();
+    }
+
 
     public function getStatus0(){
         return $this->hasOne(Status::className(),['id'=>'status']);

@@ -12,6 +12,7 @@ use yii\web\UploadedFile;
  * @property int $company_id
  * @property int $appeal_id
  * @property int $register_id
+ * @property int $sender_id
  * @property int $deadline
  * @property int $status
  * @property string $deadtime
@@ -34,8 +35,8 @@ class AppealBajaruvchi extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['deadtime','task',], 'required'],
-            [['company_id', 'appeal_id', 'register_id', 'deadline','status'], 'integer'],
+            [['deadtime','task','sender_id',], 'required'],
+            [['company_id','sender_id', 'appeal_id', 'register_id', 'deadline','status'], 'integer'],
             [['deadtime','created','updated'], 'safe'],
             ['letter','string'],
             ['task','string','max'=>255],
@@ -59,6 +60,7 @@ class AppealBajaruvchi extends \yii\db\ActiveRecord
             'letter' => 'Кузатув хати (виза)',
             'created' => 'Юборилган вақти',
             'task' => 'Топшириқ матни',
+            'sender_id' => 'Юборувчи',
         ];
     }
 
@@ -79,6 +81,9 @@ class AppealBajaruvchi extends \yii\db\ActiveRecord
         }
     }
 
+    public function getSender(){
+        return $this->hasOne(User::className(),['id'=>'sender_id']);
+    }
     public function getStatus0(){
         return $this->hasOne(Status::className(),['id'=>'status']);
     }

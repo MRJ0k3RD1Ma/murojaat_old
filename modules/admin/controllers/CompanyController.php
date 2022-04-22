@@ -47,8 +47,6 @@ class CompanyController extends Controller
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         if(Yii::$app->request->isPost){
 
-            header('Content-Type: application/vnd.ms-excel');
-            header('Content-Disposition: attachment;filename="hello_world.xlsx"');
             $spreadsheet = new Spreadsheet();
             $sheet = $spreadsheet->getActiveSheet();
             $n = 0;
@@ -66,8 +64,10 @@ class CompanyController extends Controller
             }
 
             $writer = new Xlsx($spreadsheet);
-            $writer->save("php://output");
+//            $writer->save("php://output");
 
+            $writer->save('tashkilotlar.xlsx');
+            Yii::$app->response->sendFile('tashkilotlar.xlsx');
         }
         return $this->render('index', [
             'searchModel' => $searchModel,

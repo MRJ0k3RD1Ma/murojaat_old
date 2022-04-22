@@ -318,6 +318,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <hr>
         <div id="accordion">
             <a href="<?= Yii::$app->urlManager->createUrl(['/appeal/getappeal','id'=>$register->id])?>" class="btn btn-default" id="downappeal"><span class="fa fa-download"></span> Мурожаат масаласини юклаб олиш</a>
+            <?php if($task_emp->status>1){?>
 
             <?php if($register->status != 3 and $model->status != 4){?>
                 <div class="dropdown" style="display: inline-block">
@@ -326,33 +327,15 @@ $this->params['breadcrumbs'][] = $this->title;
                     </button>
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                         <a class="dropdown-item" data-toggle="collapse" href="#success">Ташкилотларга топшириқ бериш</a>
-                        <a class="dropdown-item" data-toggle="collapse" href="#taskemp">Ҳодимларга топшириқ бериш</a>
+                        <a class="dropdown-item" data-toggle="collapse" href="#">Ҳодимларга топшириқ бериш</a>
                     </div>
                 </div>
                 <a href="#answer" class="btn btn-success" data-toggle="collapse">Жавоб юбориш</a>
 
-                <div class="dropdown" style="float: right; margin-left:5px;">
-                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Маълумотларни янгилаш
-                    </button>
-                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                        <a class="dropdown-item" href="<?= Yii::$app->urlManager->createUrl(['/appeal/update','id'=>$register->id])?>">Резолюция</a>
-                        <a class="dropdown-item" href="#">Мурожаат маълумотлари</a>
-                        <a class="dropdown-item" href="#">Мурожаатчи маълумотлари</a>
-                    </div>
-                </div>
-
-                <div class="dropdown" style="float: right">
-                    <button class="btn btn-info dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Сўров юбориш
-                    </button>
-                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                        <a class="dropdown-item" href="#">Муддатни узайтириш</a>
-                        <a class="dropdown-item" href="#">Бошқа давлат органига юбориш</a>
-                    </div>
-                </div>
             <?php }?>
-
+            <?php }else{?>
+                <a class="btn btn-success" href="<?= Yii::$app->urlManager->createUrl(['/site/ok','id'=>$register->id])?>">Мурожаатни қабул қилиш</a>
+            <?php }?>
             <div id="success" class="collapse" style="margin-top: 20px; padding: 20px;border: 1px solid #007bff;" data-parent="#accordion">
 
                 <table class="table table-hover table-bordered datatable_tashkilot">
@@ -393,7 +376,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         ?>
                         <tr>
                             <td><?= $n?></td>
-                            <td><button class="btn btn-primary taskemp" value="<?= Yii::$app->urlManager->createUrl(['/appeal/taskemp','id'=>$item->id,'regid'=>$register->id])?>"><span class="fa fa-plus"></span></button></td>
+                            <td><button class="btn btn-primary taskemp" value="<?= Yii::$app->urlManager->createUrl(['/site/taskemp','id'=>$item->id,'regid'=>$register->id])?>"><span class="fa fa-plus"></span></button></td>
                             <td><?= $item->name?></td>
                             <td><?= $item->lavozim->name?></td>
                             <td><?= $item->bulim->name?></td>
@@ -446,8 +429,9 @@ $this->params['breadcrumbs'][] = $this->title;
                     <?php $n=0; foreach ($register->child as $item): $n++?>
                         <tr>
                             <td><?= $n?></td>
-                            <td><?php if($item->status==3){?>
-                                    <a class="btn btn-default" href="<?= Yii::$app->urlManager->createUrl(['/appeal/showresult','id'=>$item->id])?>"><span class="<?= $item->status0->icon?>"></span></a>
+                            <td>
+                                <?php if($item->status==3 and $item->sender_id==Yii::$app->user->id){?>
+                                    <a class="btn btn-default" href="<?= Yii::$app->urlManager->createUrl(['/site/showresult','id'=>$item->id])?>"><span class="<?= $item->status0->icon?>"></span></a>
                                 <?php }else{?>
                                     <span class="<?= $item->status0->icon?>"></span>
                                 <?php }?>
@@ -460,57 +444,9 @@ $this->params['breadcrumbs'][] = $this->title;
                             <td><?= $item->status0->name ?></td>
                             <td>
                                 <?php if($item->status<2){?>
-                                    <a data-method="post" data-confirm="Siz rostdan ham ushbu topshiriqni o`chirmoqchimisiz?" href="<?= Yii::$app->urlManager->createUrl(['/appeal/deletetask','id'=>$item->id])?>"><span class="fa fa-trash"></span></a>
+                                    <a data-method="post" data-confirm="Siz rostdan ham ushbu topshiriqni o`chirmoqchimisiz?" href="<?= Yii::$app->urlManager->createUrl(['/site/deletetask','id'=>$item->id])?>"><span class="fa fa-trash"></span></a>
                                 <?php }?>
                             </td>
-                        </tr>
-                    <?php endforeach;?>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-<div class="card">
-    <div class="card-header">
-        <h3 class="card-title">
-            Ташкилотлар томонидан келган жавоблар рўйхати
-        </h3>
-    </div>
-    <div class="card-body">
-        <div class="row">
-            <div class="col-md-12 table-responsive">
-                <table class="table table-hover table-bordered">
-                    <thead>
-                    <tr>
-                        <th>№</th>
-                        <th></th>
-                        <th>Ташкилот номи</th>
-                        <th>Рақами</th>
-                        <th>Ҳужжат номи	</th>
-                        <th>Илова</th>
-                        <th>Ижрочи</th>
-                        <th>Юборилган сана</th>
-                        <th>Ҳолат</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <?php $n=0; foreach ($register->childanswer as $item): $n++?>
-                        <tr>
-                            <td><?= $n?></td>
-                            <td>
-                                <a class="btn btn-default" href="<?= Yii::$app->urlManager->createUrl(['/appeal/viewresult','id'=>$item->id])?>"><span class="<?= $item->status0->icon?>"></span></a>
-                            </td>
-
-                            <td><?= $item->bajaruvchi->company->name?></td>
-                            <td><?= $item->number.'<br>'.$item->date ?></td>
-                            <td><?= $item->preview?></td>
-                            <td><?= $item->file? "<a href='/upload/{$item->file}' download>Иловани юклаб олинг</a>" : 'Илова мавжуд эмас'?></td>
-                            <td><?= $item->name?></td>
-                            <td><?= $item->created ?></td>
-                            <td><?= $item->status0->name ?></td>
                         </tr>
                     <?php endforeach;?>
                     </tbody>
@@ -603,11 +539,11 @@ $this->params['breadcrumbs'][] = $this->title;
                     </tr>
                     </thead>
                     <tbody>
-                    <?php $n=0; foreach ($register->childanswer as $item): $n++?>
+                    <?php $n=0; foreach ($register->childanswermy as $item): $n++?>
                         <tr>
                             <td><?= $n?></td>
                             <td>
-                                <a class="btn btn-default" href="<?= Yii::$app->urlManager->createUrl(['/appeal/viewresult','id'=>$item->id])?>"><span class="<?= $item->status0->icon?>"></span></a>
+                                <a class="btn btn-default" href="<?= Yii::$app->urlManager->createUrl(['/site/viewresult','id'=>$item->id])?>"><span class="<?= $item->status0->icon?>"></span></a>
                             </td>
 
                             <td><?= $item->bajaruvchi->company->name?></td>
@@ -615,57 +551,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             <td><?= $item->preview?></td>
                             <td><?= $item->file? "<a href='/upload/{$item->file}' download>Иловани юклаб олинг</a>" : 'Илова мавжуд эмас'?></td>
                             <td><?= $item->name?></td>
-                            <td><?= $item->created ?></td>
-                            <td><?= $item->status0->name ?></td>
-                        </tr>
-                    <?php endforeach;?>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="card">
-    <div class="card-header">
-        <h3 class="card-title">
-            Менинг жавобларим
-        </h3>
-    </div>
-    <div class="card-body">
-        <div class="row">
-            <div class="col-md-12 table-responsive">
-                <table class="table table-hover table-bordered">
-                    <thead>
-                    <tr>
-                        <th>№</th>
-                        <th></th>
-                        <th>Ташкилот номи</th>
-                        <th>Рақами</th>
-                        <th>Ҳужжат номи	</th>
-                        <th>Илова</th>
-                        <th>Ижрочи</th>
-                        <th>Юборилган сана</th>
-                        <th>Ҳолат</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <?php $n=0; foreach ($register->answer as $item): $n++?>
-                        <tr>
-                            <td><?= $n?></td>
-                            <td><?php if($item->status==3){?>
-                                    <a class="btn btn-default" href="<?= Yii::$app->urlManager->createUrl(['/appeal/viewresult','id'=>$item->id])?>"><span class="<?= $item->status0->icon?>"></span></a>
-                                <?php }else{?>
-                                    <span class="<?= $item->status0->icon?>"></span>
-                                <?php }?>
-                            </td>
-
-                            <td><?= $item->bajaruvchi->company->name?></td>
-                            <td><?= $item->number.'<br>'.$item->date ?></td>
-                            <td><?= $item->preview?></td>
-                            <td><?= $item->file? "<a href='/upload/{$item->file}' download>Иловани юклаб олинг</a>" : 'Илова мавжуд эмас'?></td>
-                            <td><?= $item->name?></td>
-                            <td><?= $item->created ?></td>
+                            <td><?= $item->parent->sender->name.'<br>'.$item->created ?></td>
                             <td><?= $item->status0->name ?></td>
                         </tr>
                     <?php endforeach;?>
@@ -708,7 +594,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
 <?php
-$url = Yii::$app->urlManager->createUrl(['/appeal/task','regid'=>$register->id]);
+$url = Yii::$app->urlManager->createUrl(['/site/task','regid'=>$register->id]);
 $this->registerJs("
         $(document).ready(function(){
               $('.datatable_tashkilot').DataTable({

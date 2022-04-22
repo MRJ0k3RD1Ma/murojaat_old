@@ -30,7 +30,7 @@ use Yii;
  */
 class Company extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
 {
-    public $cntall,$cntzero,$cntone,$cnttwo,$cntdead;
+    public $cntall,$cntzero,$cntone,$cnttwo,$cntdead,$cntwithdead,$cnt0,$cnt1,$cnt2,$cnt3,$cnt4,$cnt5;
     /**
      * {@inheritdoc}
      */
@@ -84,6 +84,13 @@ class Company extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
             'cntone' => 'Жараёнда',
             'cnttwo' => 'Бажарилган',
             'cntdead' => 'Муддати бузилган',
+            'cntwithdead' => 'Муддати бузилиб бажарилган',
+            'cnt0' => 'Кўрилмаган',
+            'cnt1' => 'Янги',
+            'cnt2' => 'Жараёнда',
+            'cnt3' => 'Тасдиқланиши кутилмоқда',
+            'cnt4' => 'Бажарилган',
+            'cnt5' => 'Рад этилган',
         ];
     }
 
