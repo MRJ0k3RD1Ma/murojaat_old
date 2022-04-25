@@ -3,6 +3,7 @@
 /* @var $this \yii\web\View */
 /* @var $content string */
 
+use app\models\AppealBajaruvchi;
 use app\widgets\Alert;
 use yii\bootstrap\Progress;
 use yii\helpers\Html;
@@ -63,6 +64,8 @@ AppAsset::register($this);
 
         <!-- Right navbar links -->
         <ul class="navbar-nav ml-auto">
+
+
             <?php if(!Yii::$app->user->isGuest and Yii::$app->user->identity->is_registration==1){?>
                 <li class="nav-item"><a href="<?= Yii::$app->urlManager->createUrl(['/appeal/create'])?>" class="btn btn-primary"><span class="fa fa-plus"></span> Янги мурожаат</a></li>
 
@@ -127,6 +130,30 @@ AppAsset::register($this);
 
                 </div>
             </li>
+            <?php }else{?>
+                <li class="nav-item dropdown">
+                    <a class="nav-link" data-toggle="dropdown" href="#">
+                        <i class="far fa-envelope"></i>
+                        <span class="badge badge-warning navbar-badge mycolor">
+
+
+                        <?php $cnt_ans = AppealBajaruvchi::find()
+                            ->where('register_id in (select id from appeal_register where company_id='.\Yii::$app->user->identity->company_id.')')
+                            ->andWhere(['status'=>3])->andWhere(['sender_id'=>Yii::$app->user->identity->id])
+                            ->count('id'); echo $cnt_ans?>
+
+
+                    </span>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+                        <span class="dropdown-item dropdown-header">Жавоби келган</span>
+                        <div class="dropdown-divider"></div>
+                        <a href="<?= Yii::$app->urlManager->createUrl(['/site/answered'])?>" class="dropdown-item">
+                            <i class="fas fa-envelope mr-2"></i> <?= $cnt_ans ?> та жавоб келган
+                        </a>
+
+                    </div>
+                </li>
             <?php }?>
             <li class="nav-item">
                 <?=Html::a('<i class="fa fa-door-open"></i> Chiqish',['/site/logout'],[

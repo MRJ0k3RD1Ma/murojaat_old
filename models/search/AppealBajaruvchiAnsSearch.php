@@ -2,6 +2,7 @@
 
 namespace app\models\search;
 
+use yii\base\BaseObject;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\AppealBajaruvchi;
@@ -42,6 +43,43 @@ class AppealBajaruvchiAnsSearch extends AppealBajaruvchi
     {
         $query = AppealBajaruvchi::find()
         ->where('register_id in (select id from appeal_register where company_id='.\Yii::$app->user->identity->company_id.')')
+            ->orderBy(['updated'=>SORT_DESC]);
+
+        // add conditions that should always apply here
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+        ]);
+
+        $this->load($params);
+
+        if (!$this->validate()) {
+            // uncomment the following line if you do not want to return any records when validation fails
+            // $query->where('0=1');
+            return $dataProvider;
+        }
+
+        // grid filtering conditions
+        $query->andFilterWhere([
+            'id' => $this->id,
+            'status' => $this->status,
+            'company_id' => $this->company_id,
+            'appeal_id' => $this->appeal_id,
+            'register_id' => $this->register_id,
+            'deadline' => $this->deadline,
+            'deadtime' => $this->deadtime,
+            'created' => $this->created,
+            'updated' => $this->updated,
+        ]);
+
+        return $dataProvider;
+    }
+
+    public function searchUser($params)
+    {
+        $query = AppealBajaruvchi::find()
+            ->where('register_id in (select id from appeal_register where company_id='.\Yii::$app->user->identity->company_id.')')
+            ->andWhere(['sender_id'=>\Yii::$app->user->id])
             ->orderBy(['updated'=>SORT_DESC]);
 
         // add conditions that should always apply here

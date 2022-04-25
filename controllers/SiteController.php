@@ -7,6 +7,7 @@ use app\models\AppealAnswer;
 use app\models\AppealBajaruvchi;
 use app\models\AppealComment;
 use app\models\AppealRegister;
+use app\models\search\AppealBajaruvchiAnsSearch;
 use app\models\search\AppealRegisterMyHasSearch;
 use app\models\search\AppealRegisterMySearch;
 use app\models\search\CompanyMyRegisterSearch;
@@ -543,6 +544,49 @@ class SiteController extends Controller
 
 
 
+    }
+    public function actionShowresult($id){
+
+        $model = AppealBajaruvchi::findOne($id);
+        $register = AppealRegister::findOne($model->register_id);
+        $appeal = Appeal::findOne($model->appeal_id);
+        $answer = AppealAnswer::find()->where(['parent_id'=>$model->id])->orderBy(['id'=>SORT_DESC])->one();
+        $appeal->scenario = 'close';
+        $result = AppealRegister::findOne($answer->register_id);
+        $com = new AppealComment();
+        $com->answer_id = $answer->id;
+        $com->status = 5;
+        if($com->load(Yii::$app->request->post()) and $com->save()){
+            $result->status = 5;
+            $model->status = 5;
+            $answer->status = 5;
+            $result->save(false);
+            $model->save(false);
+            $answer->save(false);
+            return $this->redirect(['view','id'=>$register->id]);
+        }
+
+
+        return $this->render('viewresult',[
+            'model'=>$appeal,
+            'register'=>$register,
+            'bajaruvchi'=>$model,
+            'result'=>$result,
+            'answer'=>$answer
+        ]);
+
+    }
+
+
+    public function actionAnswered($status = 3){
+        $searchModel = new AppealBajaruvchiAnsSearch();
+        $searchModel->status = $status;
+        $dataProvider = $searchModel->searchUser(Yii::$app->request->queryParams);
+
+        return $this->render('answered', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
     }
 
 }

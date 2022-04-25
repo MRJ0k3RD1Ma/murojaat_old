@@ -132,7 +132,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             [
                                 'attribute'=>'village_id',
                                 'value'=>function($d){
-                                    return @$d->village->name;
+                                    return $d->village->name;
                                 }
                             ],
                             'address',
@@ -260,7 +260,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <?php if($answer->status == 3 and $answer->register->company_id != Yii::$app->user->identity->company_id){?>
             <div id="accordion">
                 <a href="#success" class="btn btn-primary"  data-toggle="collapse">Умумий жавоб сифатида қабул қилиш</a>
-                <a href="<?= Yii::$app->urlManager->createUrl(['/appeal/acceptanswer','id'=>$answer->id])?>"
+                <a href="<?= Yii::$app->urlManager->createUrl(['/site/acceptanswer','id'=>$answer->id])?>"
                    data-method="post" data-confirm="Сиз ростдан ҳам ушбу жавобни қабул қилмоқчимисиз?"
                    class="btn btn-success">Қабул қилиш</a>
                 <a href="#deni" class="btn btn-danger" data-toggle="collapse">Рад этиш</a>
