@@ -43,7 +43,7 @@ class AppealRegisterRunningSearch extends AppealRegister
         $user = \Yii::$app->user->identity;
 
         $query = AppealRegister::find()->where(['company_id'=>$user->company_id])
-        ->andWhere(['<>','status',2])->orderBy(['status'=>SORT_ASC,'deadtime'=>SORT_ASC]);
+        ->andWhere(['<>','status',4])->orderBy(['status'=>SORT_ASC,'deadtime'=>SORT_ASC]);
 
         // add conditions that should always apply here
 

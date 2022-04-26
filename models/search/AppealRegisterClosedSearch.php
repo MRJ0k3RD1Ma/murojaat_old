@@ -45,7 +45,7 @@ class AppealRegisterClosedSearch extends AppealRegister
              $user = \Yii::$app->user->identity;
 
         $query = AppealRegister::find()->where(['appeal_register.company_id'=>$user->company_id])->innerJoin('appeal','appeal.id=appeal_register.appeal_id')
-            ->andWhere(['=','appeal_register.status',2])->orderBy(['appeal_register.status'=>SORT_ASC,'appeal_register.deadtime'=>SORT_ASC]);
+            ->andWhere(['=','appeal_register.status',4])->orderBy(['appeal_register.status'=>SORT_ASC,'appeal_register.deadtime'=>SORT_ASC]);
 
         // add conditions that should always apply here
 

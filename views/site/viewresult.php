@@ -159,7 +159,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         Топшириқ маълумотлари
                     </h3>
                     <?= DetailView::widget([
-                        'model' =>  $bajaruvchi,
+                        'model' => $bajaruvchi,
                         'attributes' => [
                             'deadtime',
 //                            'register_id',

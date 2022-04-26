@@ -53,7 +53,7 @@ $user = Yii::$app->user->identity;
                                         <h5 class="card-title text-uppercase text-muted mb-0">Бажарилган</h5>
                                         <br />
                                         <span style="color: #32325d;background: url(/theme/dist/img/link_hover_tolqin.svg);padding-bottom: 3px;" class="h4 mb-0"><?= prettyNumber(AppealRegister::find()->where(['company_id'=>$user->company_id])
-                                                ->andWhere(['=','status',2])->orderBy(['status'=>SORT_ASC,'deadtime'=>SORT_ASC])->count('id')) ?> та</span>
+                                                ->andWhere(['=','status',4])->orderBy(['status'=>SORT_ASC,'deadtime'=>SORT_ASC])->count('id')) ?> та</span>
                                     </div>
                                     <div class="col-auto">
                                         <div class="icon icon-shape">
@@ -76,7 +76,7 @@ $user = Yii::$app->user->identity;
                                         <h5 class="card-title text-uppercase text-muted mb-0">Жараёнда</h5>
                                         <br />
                                         <span style="color: #32325d;background: url(/theme/dist/img/link_hover_tolqin.svg);padding-bottom: 3px;" class="h4 mb-0"><?= prettyNumber(AppealRegister::find()->where(['company_id'=>$user->company_id])
-                                                ->andWhere(['<>','status',2])->orderBy(['status'=>SORT_ASC,'deadtime'=>SORT_ASC])->count('id'))?> та</span>
+                                                ->andWhere(['<>','status',4])->orderBy(['status'=>SORT_ASC,'deadtime'=>SORT_ASC])->count('id'))?> та</span>
                                     </div>
                                     <div class="col-auto">
                                         <div class="icon icon-shape">
@@ -102,7 +102,7 @@ $user = Yii::$app->user->identity;
                                         <span style="color: #32325d;background: url(/theme/dist/img/link_hover_tolqin.svg);padding-bottom: 3px;" class="h4 mb-0"><?php
                                             $sql = "deadtime<date(now())";
                                             $query = AppealRegister::find()->where(['company_id'=>$user->company_id])
-                                                ->andWhere(['<>','status',2])->andWhere($sql)->orderBy(['status'=>SORT_ASC,'deadtime'=>SORT_ASC])->count('id');
+                                                ->andWhere(['<>','status',4])->andWhere($sql)->orderBy(['status'=>SORT_ASC,'deadtime'=>SORT_ASC])->count('id');
                                             echo prettyNumber($query)?> та</span>
                                     </div>
                                     <div class="col-auto">

@@ -319,7 +319,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div id="accordion">
                     <a href="<?= Yii::$app->urlManager->createUrl(['/appeal/getappeal','id'=>$register->id])?>" class="btn btn-default" id="downappeal"><span class="fa fa-download"></span> Мурожаат масаласини юклаб олиш</a>
 
-                    <?php if($register->status != 3 and $model->status != 4){?>
+                    <?php if($register->status != 3 and $model->status !=   4){?>
                         <div class="dropdown" style="display: inline-block">
                             <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 Топшириқ юбориш
