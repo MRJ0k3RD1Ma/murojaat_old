@@ -274,7 +274,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         </div>
                     </div>
                     <?php if($register->status != 4){?>
-                        <?php if($register->parent_bajaruvchi_id){ echo $this->render('_answerform',['model'=>$answer]);}else{echo  $this->render('_closeform',['model'=>$model,'register'=>$register,'answer'=>$answer]);} ?>
+                        <?php if($register->parent_bajaruvchi_id){ echo $this->render('view/_answerform',['model'=>$answer]);}else{echo  $this->render('view/_closeform',['model'=>$model,'register'=>$register,'answer'=>$answer]);} ?>
                     <?php }else{echo "Мурожаатга жавоб юборилган";}?>
 
                 </div>

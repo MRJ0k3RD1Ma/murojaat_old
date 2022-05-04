@@ -43,6 +43,8 @@ class AppealRegisterMySearch extends AppealRegister
     {
         $user = \Yii::$app->user->identity;
         $query = AppealRegister::find()
+            ->select(['appeal_register.*',
+                '(select task_emp.status from task_emp where (reciever_id='.\Yii::$app->user->id.' or sender_id='.\Yii::$app->user->id.') and appeal_register.id=register_id limit 1) as mystatus'])
             ->innerJoin('appeal','appeal.id=appeal_register.appeal_id')
             ->where(['appeal_register.company_id'=>$user->company_id]);
 

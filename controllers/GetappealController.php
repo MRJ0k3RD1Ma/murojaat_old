@@ -52,19 +52,19 @@ class GetappealController extends Controller
 
     public function actionMyfiles($id,$reg = 0){
         $model = AppealAnswer::findOne($id);
-		if($model->status != 2){
-			if($comment = AppealComment::findOne(['answer_id'=>$id])){
+        if($model->status != 2){
+            if($comment = AppealComment::findOne(['answer_id'=>$id])){
 
             }else{
                 $comment = new AppealComment();
                 $comment->answer_id = $id;
             }
-		}else{
-			$comment = new AppealComment();
-			$comment->answer_id = $id;
-		}
-        
-        
+        }else{
+            $comment = new AppealComment();
+            $comment->answer_id = $id;
+        }
+
+
         return $this->renderAjax('_myfiles',[
             'model'=>$model,
             'comment'=>$comment,

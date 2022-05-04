@@ -19,13 +19,30 @@ $user = Yii::$app->user->identity;
 
 
             <!-- Card stats -->
-            <div class="row">
+            <div class="row justify-content-around topheader">
+                <div  style="min-width: 200px;"  >
+                    <a href="<?= Yii::$app->urlManager->createUrl(['/site/index'])?>">
+                        <div class="card card-stats">
+                            <!-- Card body -->
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col">
+                                        <h5 class="card-title text-uppercase text-muted mb-0">Барчаси</h5>
+                                        <br />
+                                        <span style="color: #32325d; background: url(/theme/dist/img/link_hover_tolqin.svg); padding-bottom: 3px;" class="h4 mb-0">
+                                            <?= prettyNumber(\app\models\TaskEmp::find()->where(['reciever_id'=>Yii::$app->user->id])->count('reciever_id')) ?> та</span>
+                                    </div>
+                                </div>
 
+                            </div>
+                        </div>
+                    </a>
+                </div>
                 <?php $status = \app\models\Status::find()->all();
                     foreach ($status as $item):
                 ?>
 
-                <div class="col-xl-2 col-md-3">
+                <div style="min-width: 200px;">
                     <a href="<?= Yii::$app->urlManager->createUrl(['/site/index','status'=>$item->id])?>">
                         <div class="card card-stats">
                             <!-- Card body -->
@@ -158,6 +175,12 @@ $user = Yii::$app->user->identity;
 
                                 <?= GridView::widget([
                                     'dataProvider' => $dataProvider,
+                                    'rowOptions'=>function($model){
+                                        if($model->mystatus == 0){
+                                            return ['style' => 'font-weight:bold'];
+                                        }
+                                        return [];
+                                    },
                                     'columns' => [
                                         ['class' => 'yii\grid\SerialColumn'],
 
@@ -295,3 +318,11 @@ $user = Yii::$app->user->identity;
         </div>
     </div>
 </div>
+
+
+<style>
+    .topheader .card-body{
+           padding: 0.8rem !important;
+
+    }
+</style>

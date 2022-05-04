@@ -576,7 +576,74 @@ class SiteController extends Controller
         ]);
 
     }
+    public function actionAcceptanswer($id){
 
+        $answer = AppealAnswer::findOne($id);
+        $model = $answer->parent;
+        $register = AppealRegister::findOne($model->register_id);
+
+        $result = AppealRegister::findOne($answer->register_id);
+
+        $result->status = 4;
+        $model->status = 4;
+        $answer->status = 4;
+        closeAppeal($model->appeal_id,$result->id,$result->control_id);
+        $result->save(false);
+        $model->save(false);
+        $answer->save(false);
+        return $this->redirect(['view','id'=>$register->id]);
+
+    }
+
+    public function actionClose($id,$ansid){
+        $register = AppealRegister::findOne($id);
+        $model = Appeal::findOne($register->appeal_id);
+        $model->scenario = "close";
+        $answer = AppealAnswer::findOne($ansid);
+        $bajaruvchi = $answer->parent;
+        $model->answer_file = $answer->file;
+        $model->status = 4;
+        if($model->load(Yii::$app->request->post()) and $model->save()){
+            $register->status = 4;
+            $register->donetime = date('Y-m-d');
+            $register->control_id = $model->appeal_control_id;
+            $register->answer_send = $model->answer_reply_send;
+            $register->save();
+            $bajaruvchi->status = 4;
+            $bajaruvchi->save(false);
+            $answer->status = 4;
+            $answer->save(false);
+            closeAppeal($model->id,$register->id,$register->control_id);
+            //return $this->redirect(['acceptanswer','id'=>$ansid]);
+        }
+        return $this->redirect(['view','id'=>$register->id]);
+    }
+
+    public function actionClosemy($id){
+        $register = AppealRegister::findOne($id);
+        $model = Appeal::findOne($register->appeal_id);
+        $model->scenario = "close";
+
+        $model->status = 4;
+        if($model->load(Yii::$app->request->post())){
+            if($model->answer_file = UploadedFile::getInstance($model,'answer_file')){
+                $name = microtime(true).'.'.$model->answer_file->extension;
+                $model->answer_file->saveAs(Yii::$app->basePath.'/web/upload/'.$name);
+                $model->answer_file = $name;
+            }
+            if($model->save()){
+                $register->status = 4;
+                $register->donetime = date('Y-m-d');
+                $register->control_id = $model->appeal_control_id;
+                $register->answer_send = $model->answer_reply_send;
+                $register->save();
+                closeAppeal($model->id,$register->id,$register->control_id);
+            }
+
+            //return $this->redirect(['acceptanswer','id'=>$answer->id]);
+        }
+        return $this->redirect(['view','id'=>$register->id]);
+    }
 
     public function actionAnswered($status = 3){
         $searchModel = new AppealBajaruvchiAnsSearch();
@@ -588,5 +655,39 @@ class SiteController extends Controller
             'dataProvider' => $dataProvider,
         ]);
     }
+
+
+    public function actionViewresult($id){
+
+        $answer = AppealAnswer::findOne($id);
+        $model = AppealBajaruvchi::findOne($answer->parent_id);
+        $register = AppealRegister::findOne($model->register_id);
+        $appeal = Appeal::findOne($model->appeal_id);
+
+        $result = AppealRegister::findOne($answer->register_id);
+        $com = new AppealComment();
+        $com->answer_id = $answer->id;
+        $com->status = 5;
+        if($com->load(Yii::$app->request->post()) and $com->save()){
+            $result->status = 5;
+            $model->status = 5;
+            $answer->status = 5;
+            $result->save(false);
+            $model->save(false);
+            $answer->save(false);
+            return $this->redirect(['view','id'=>$register->id]);
+        }
+        $appeal->scenario = 'close';
+
+        return $this->render('viewresult',[
+            'model'=>$appeal,
+            'register'=>$register,
+            'bajaruvchi'=>$model,
+            'result'=>$result,
+            'answer'=>$answer
+        ]);
+
+    }
+
 
 }

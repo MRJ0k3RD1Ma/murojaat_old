@@ -14,143 +14,27 @@ $this->title = $model->person_name;
 $this->params['breadcrumbs'][] = ['label' => 'Мурожаатлар', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-    <script>
-        var tashkilotadd = function(){}
-    </script>
-    <div class="row">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">
-                        Муожаат маълумотлари
-                    </h3>
-                </div>
-                <div class="card-body">
-                    <?= DetailView::widget([
-                        'model' => $model,
-                        'attributes' => [
-                            'id',
-                            'appeal_detail',
-//                        'appeal_file',
-                            [
-                                'attribute'=>'appeal_file',
-                                'value'=>function($d){
-                                    if($d->appeal_file){
-                                        return "<a href='/upload/{$d->appeal_file}'>Иловани юклаб олиш</a>";
-                                    }else{
-                                        return null;
-                                    }
-                                },
-                                'format'=>'raw'
-                            ],
-//                        'deadtime',
 
-                            'updated',
-//                        'boshqa_tashkilot',
-                            [
-                                'attribute'=>'question_id',
-                                'value'=>function($d){
-                                    if($d->question_id){
-                                        $q = $d->question;
-                                        return $q->group->code.'-'.$q->code.'.'.$q->name;
-                                    }
-                                    return null;
-                                },
-                            ],
-                            [
-                                'attribute'=>'appeal_shakl_id',
-                                'value'=>function($d){
-                                    return $d->appealShakl->name;
-                                },
-                            ],
-                            [
-                                'attribute'=>'appeal_type_id',
-                                'value'=>function($d){
-                                    return $d->appealType->name;
-                                },
-                            ],
-                            [
-                                'label'=>'Қабул қилган ташкилот',
-                                'attribute'=>'boshqa_tashkilot',
-                                'value'=>function($d){
-                                    if($d->boshqa_tashkilot){
-                                        return $d->boshqaTashkilot->name.'<br>'.$d->boshqa_tashkilot_number.' '.$d->boshqa_tashkilot_date;
-                                    }else{
-                                        return "Бевосита";
-                                    }
-                                }
-                            ],
-                            [
-                                'attribute'=>'company_id',
-                                'value'=>function($d){
-                                    return $d->company->name;
-                                }
-                            ],
+<script>
+    var tashkilotadd = function(){}
+</script>
+<div class="row">
+    <div class="col-md-6">
 
-                        ],
-                    ]) ?>
+        <?= $this->render('view/_appeal',['model'=>$model])?>
 
-
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">
-                        Мурожаатчи ҳақида
-                    </h3>
-                </div>
-                <div class="card-body">
-
-                    <?= DetailView::widget([
-                        'model' => $model,
-                        'attributes' => [
-//                        'id',
-                            'person_name',
-                            'person_phone',
-                            'date_of_birth',
-//                        'gender',
-                            [
-                                'attribute'=>'gender',
-                                'value'=>function($d){
-                                    return Yii::$app->params['gender'][$d->gender];
-                                }
-                            ],
-                            [
-                                'attribute'=>'region_id',
-                                'value'=>function($d){
-                                    return $d->region->name;
-                                }
-                            ],
-                            [
-                                'attribute'=>'district_id',
-                                'value'=>function($d){
-                                    return $d->district->name;
-                                }
-                            ],
-                            [
-                                'attribute'=>'village_id',
-                                'value'=>function($d){
-                                    return $d->village->name;
-                                }
-                            ],
-                            'address',
-                            'email',
-                            'businessman',
-                        ],
-                    ]) ?>
-
-
-                </div>
-            </div>
-        </div>
     </div>
+    <div class="col-md-6">
+
+        <?= $this->render('view/_appealer',['model'=>$model])?>
+
+    </div>
+</div>
 
 
 
 
-    <div class="card">
+<div class="card">
 
         <div class="card-body">
             <div class="row">
@@ -257,7 +141,7 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
 
             <hr>
-            <?php if($answer->status == 3 and $answer->register->company_id != Yii::$app->user->identity->company_id){?>
+            <?php if($answer->status == 3 and $answer->parent->sender_id == Yii::$app->user->id){?>
             <div id="accordion">
                 <a href="#success" class="btn btn-primary"  data-toggle="collapse">Умумий жавоб сифатида қабул қилиш</a>
                 <a href="<?= Yii::$app->urlManager->createUrl(['/site/acceptanswer','id'=>$answer->id])?>"
@@ -274,7 +158,10 @@ $this->params['breadcrumbs'][] = $this->title;
                         </div>
                     </div>
                     <?php if($register->status != 4){?>
-                        <?php if($register->parent_bajaruvchi_id){ echo $this->render('_answerform',['model'=>$answer]);}else{echo  $this->render('_closeform',['model'=>$model,'register'=>$register,'answer'=>$answer]);} ?>
+                        <?php if($register->parent_bajaruvchi_id){
+                            echo $this->render('view/_answerform',['model'=>$answer]);
+                        }else{
+                            echo  $this->render('view/_closeform',['model'=>$model,'register'=>$register,'answer'=>$answer]);} ?>
                     <?php }else{echo "Мурожаатга жавоб юборилган";}?>
 
                 </div>

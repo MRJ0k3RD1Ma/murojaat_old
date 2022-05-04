@@ -349,6 +349,28 @@ class AppealController extends Controller
         if($model->load(Yii::$app->request->post())){
 
             if($model->save()){
+
+                $task = new TaskEmp();
+                $task->appeal_id = $model->appeal_id;
+                $task->register_id = $model->id;
+                $task->reciever_id = $model->rahbar_id;
+                $task->sender_id = $model->rahbar_id;
+                $task->deadtime = $model->deadtime;
+                $task->task = '-';
+                $task->status = 0;
+                $task->save();
+                if($model->rahbar_id != $model->ijrochi_id){
+                    $task = new TaskEmp();
+                    $task->appeal_id = $model->appeal_id;
+                    $task->register_id = $model->id;
+                    $task->reciever_id = $model->ijrochi_id;
+                    $task->sender_id = $model->rahbar_id;
+                    $task->deadtime = $model->deadtime;
+                    $task->task = '-';
+                    $task->status = 0;
+                    $task->save();
+                }
+
                 $baj->status = 2;
                 $baj->save(false);
                 $app = $model->appeal;
@@ -670,19 +692,24 @@ class AppealController extends Controller
         $register = AppealRegister::findOne($id);
         $model = Appeal::findOne($register->appeal_id);
         $model->scenario = "close";
-        $answer = new AppealAnswer();
-        $model->appeal_file = $answer->file;
+
         $model->status = 4;
-        if($model->load(Yii::$app->request->post()) and $model->save()){
-            $register->status = 4;
-            $register->donetime = date('Y-m-d');
-            $register->control_id = $model->appeal_control_id;
-            $register->answer_send = $model->answer_reply_send;
-            $register->save();
-            $answer->status = 4;
-            $answer->save(false);
-            closeAppeal($model->id,$register->id,$register->control_id);
-            return $this->redirect(['acceptanswer','id'=>$answer->id]);
+        if($model->load(Yii::$app->request->post())){
+            if($model->answer_file = UploadedFile::getInstance($model,'answer_file')){
+                $name = microtime(true).'.'.$model->answer_file->extension;
+                $model->answer_file->saveAs(Yii::$app->basePath.'/web/upload/'.$name);
+                $model->answer_file = $name;
+            }
+            if($model->save()){
+                $register->status = 4;
+                $register->donetime = date('Y-m-d');
+                $register->control_id = $model->appeal_control_id;
+                $register->answer_send = $model->answer_reply_send;
+                $register->save();
+                closeAppeal($model->id,$register->id,$register->control_id);
+            }
+
+            //return $this->redirect(['acceptanswer','id'=>$answer->id]);
         }
         return $this->redirect(['view','id'=>$register->id]);
     }
@@ -694,7 +721,7 @@ class AppealController extends Controller
         $model->scenario = "close";
         $answer = AppealAnswer::findOne($ansid);
         $bajaruvchi = $answer->parent;
-        $model->appeal_file = $answer->file;
+        $model->answer_file = $answer->file;
         $model->status = 4;
         if($model->load(Yii::$app->request->post()) and $model->save()){
             $register->status = 4;

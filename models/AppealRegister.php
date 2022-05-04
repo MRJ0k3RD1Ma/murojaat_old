@@ -33,7 +33,7 @@ use yii\web\UploadedFile;
  */
 class AppealRegister extends \yii\db\ActiveRecord
 {
-    public $letter;
+    public $letter,$mystatus;
     /**
      * {@inheritdoc}
      */

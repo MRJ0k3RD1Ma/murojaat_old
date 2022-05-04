@@ -4,6 +4,7 @@
 /* @var $content string */
 
 use app\models\AppealBajaruvchi;
+use app\models\AppealRegister;
 use app\widgets\Alert;
 use yii\bootstrap\Progress;
 use yii\helpers\Html;
@@ -67,37 +68,15 @@ AppAsset::register($this);
 
 
             <?php if(!Yii::$app->user->isGuest and Yii::$app->user->identity->is_registration==1){?>
-                <li class="nav-item"><a href="<?= Yii::$app->urlManager->createUrl(['/appeal/create'])?>" class="btn btn-primary"><span class="fa fa-plus"></span> Янги мурожаат</a></li>
+
+                <li class="nav-item" style="margin-right: 10px;"><a href="<?= Yii::$app->urlManager->createUrl(['/appeal/create'])?>" class="btn btn-primary"><span class="fa fa-plus"></span> Янги мурожаат</a></li>
 
                 <li class="nav-item"><a href="<?= Yii::$app->urlManager->createUrl(['/appeal/notregister'])?>" class="btn btn-success"><span class="fa fa-registered"></span> Рўйхатга олинмаган</a></li>
 
-            <li class="nav-item dropdown">
-                <a class="nav-link" data-toggle="dropdown" href="#">
-                    <i class="far fa-envelope"></i>
-                    <span class="badge badge-warning navbar-badge mycolor">
-
-
-                        <?php $cnt_ans = \app\models\AppealAnswer::find()->select(['appeal_answer.*'])
-                            ->innerJoin('appeal_register','appeal_register.id = appeal_answer.register_id')
-                            ->where('appeal_register.parent_bajaruvchi_id IN (SELECT ar.id FROM appeal_register ar WHERE ar.company_id='.Yii::$app->user->identity->company_id.')')
-                            ->andWhere(['appeal_answer.status'=>0])
-                            ->orderBy(['created'=>SORT_DESC])->count('appeal_answer.id'); echo $cnt_ans?>
-                    </span>
-                </a>
-                <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-                    <span class="dropdown-item dropdown-header">Жавоби келган</span>
-                    <div class="dropdown-divider"></div>
-                    <a href="<?= Yii::$app->urlManager->createUrl(['/appeal/answered'])?>" class="dropdown-item">
-                        <i class="fas fa-envelope mr-2"></i> <?= $cnt_ans ?> та жавоб келган
-                    </a>
-
-                </div>
-            </li>
-
-            <li class="nav-item dropdown">
-                <a class="nav-link" data-toggle="dropdown" href="#">
-                    <i class="far fa-envelope"></i>
-                    <span class="badge badge-warning navbar-badge mycolor">
+                <li class="nav-item dropdown">
+                    <a class="nav-link" data-toggle="dropdown" href="#">
+                        <i class="far fa-envelope"></i>
+                        <span class="badge badge-warning navbar-badge mycolor">
 
 
                         <?php $cnt_ans = \app\models\AppealBajaruvchi::find()
@@ -106,26 +85,99 @@ AppAsset::register($this);
 
                         echo $cnt_ans?>
                     </span>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+                        <span class="dropdown-item dropdown-header">Жавоби келган</span>
+                        <div class="dropdown-divider"></div>
+                        <a href="<?= Yii::$app->urlManager->createUrl(['/appeal/answered'])?>" class="dropdown-item">
+                            <i class="fas fa-envelope mr-2"></i> <?= $cnt_ans ?> та жавоб келган
+                        </a>
+
+                    </div>
+                </li>
+
+            <li class="nav-item dropdown">
+                <a class="nav-link" data-toggle="dropdown" href="#">
+                    <i class="fas fa-sync"></i>
+                    <span class="badge badge-warning navbar-badge mycolor">
+                    <?php
+                    $request_deadline_comp = \app\models\Request::find()
+                        ->where('(reciever_id in (select id from user where company_id='.Yii::$app->user->identity->company_id.')) and '.
+                            '(sender_id not in (select id from user where company_id='.Yii::$app->user->identity->company_id.'))'
+                        )
+                        ->andWhere(['type_id'=>1])
+                        ->andWhere(['<=','status_id',1])
+                        ->count('id');
+
+                    $request_deadline_user = \app\models\Request::find()
+                        ->where('(reciever_id in (select id from user where company_id='.Yii::$app->user->identity->company_id.')) and '.
+                            '(sender_id in (select id from user where company_id='.Yii::$app->user->identity->company_id.'))'
+                        )
+                        ->andWhere(['type_id'=>1])
+                        ->andWhere(['<=','status_id',1])
+                        ->count('id');
+
+                    $request_change_comp = \app\models\Request::find()
+                        ->where('(reciever_id in (select id from user where company_id='.Yii::$app->user->identity->company_id.')) and '.
+                            '(sender_id not in (select id from user where company_id='.Yii::$app->user->identity->company_id.'))'
+                        )
+                        ->andWhere(['type_id'=>2])
+                        ->andWhere(['<=','status_id',1])
+                        ->count('id');
+
+                    $request_change_user = \app\models\Request::find()
+                        ->where('(reciever_id in (select id from user where company_id='.Yii::$app->user->identity->company_id.')) and '.
+                            '(sender_id in (select id from user where company_id='.Yii::$app->user->identity->company_id.'))'
+                        )
+                        ->andWhere(['type_id'=>3])
+                        ->andWhere(['<=','status_id',1])
+                        ->count('id');
+
+                    echo $request_deadline_comp+$request_deadline_user+$request_change_comp+$request_change_user;
+                    ?>
+                </span>
                 </a>
                 <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-                    <span class="dropdown-item dropdown-header">Жавоби келган</span>
+                    <span class="dropdown-item dropdown-header">Сўровлар</span>
                     <div class="dropdown-divider"></div>
-                    <a href="<?= Yii::$app->urlManager->createUrl(['/appeal/answered'])?>" class="dropdown-item">
-                        <i class="fas fa-envelope mr-2"></i> <?= $cnt_ans ?> та жавоб келган
+                    <a href="<?= Yii::$app->urlManager->createUrl(['/appeal/request'])?>" class="dropdown-item">
+                        <i class="fas fa-timer mr-2"></i> <?= $request_deadline_comp ?> та бошқа ташкилотдан
+                    </a>
+                    <a href="<?= Yii::$app->urlManager->createUrl(['/appeal/request'])?>" class="dropdown-item">
+                        <i class="fas fa-timer mr-2"></i> <?= $request_deadline_user ?> та ҳодимлардан
+                    </a>
+                    <a href="<?= Yii::$app->urlManager->createUrl(['/appeal/request'])?>" class="dropdown-item">
+                        <i class="fas fa-refresh mr-2"></i> <?= $request_change_comp ?> та бошқа ташкилотдан
+                    </a>
+                    <a href="<?= Yii::$app->urlManager->createUrl(['/appeal/request'])?>" class="dropdown-item">
+                        <i class="fas fa-refresh mr-2"></i> <?= $request_change_user ?> та ҳодимлардан
                     </a>
 
                 </div>
             </li>
+
+
             <li class="nav-item dropdown">
                 <a class="nav-link" data-toggle="dropdown" href="#">
                     <i class="far fa-bell"></i>
-                    <span class="badge badge-warning navbar-badge mycolor"><?php $cnt = \app\models\AppealBajaruvchi::find()->where(['status'=>0])->andWhere(['company_id'=>Yii::$app->user->identity->company_id])->count('id'); echo $cnt?></span>
+                    <span class="badge badge-warning navbar-badge mycolor"><?php
+                        $cnt = \app\models\AppealBajaruvchi::find()->where(['<=','status',1])->andWhere(['company_id'=>Yii::$app->user->identity->company_id])->count('id');
+                        $cnt1 = AppealRegister::find()
+                            ->innerJoin('appeal','appeal.id=appeal_register.appeal_id')
+                            ->where(['appeal_register.company_id'=>Yii::$app->user->identity->company_id])
+                            ->where('appeal_register.id in (select register_id from task_emp where (reciever_id='.\Yii::$app->user->id.' or sender_id='.\Yii::$app->user->id.') and status=0)')
+                            ->orderBy(['appeal_register.deadtime'=>SORT_DESC])->count('appeal_register.id');
+                        echo $cnt + $cnt1;
+                        ?></span>
                 </a>
                 <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
                     <span class="dropdown-item dropdown-header">Мурожаатлар</span>
                     <div class="dropdown-divider"></div>
                     <a href="<?= Yii::$app->urlManager->createUrl(['/appeal/notregister'])?>" class="dropdown-item">
                         <i class="fas fa-envelope mr-2"></i> <?= $cnt ?> та рўйхатга олинмаган
+                    </a>
+                    <a href="<?= Yii::$app->urlManager->createUrl(['/site/index','status'=>0])?>" class="dropdown-item">
+                        <i class="fas fa-envelope mr-2"></i> <?= $cnt1 ?> та менга келган
                     </a>
 
                 </div>
@@ -140,10 +192,10 @@ AppAsset::register($this);
                         <?php $cnt_ans = AppealBajaruvchi::find()
                             ->where('register_id in (select id from appeal_register where company_id='.\Yii::$app->user->identity->company_id.')')
                             ->andWhere(['status'=>3])->andWhere(['sender_id'=>Yii::$app->user->identity->id])
-                            ->count('id'); echo $cnt_ans?>
+                            ->count('id'); echo $cnt_ans ?>
 
 
-                    </span>
+                        </span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
                         <span class="dropdown-item dropdown-header">Жавоби келган</span>
@@ -154,9 +206,30 @@ AppAsset::register($this);
 
                     </div>
                 </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link" data-toggle="dropdown" href="#">
+                        <i class="far fa-bell"></i>
+                        <span class="badge badge-warning navbar-badge mycolor"><?php
+                            $cnt1 = AppealRegister::find()
+                                ->innerJoin('appeal','appeal.id=appeal_register.appeal_id')
+                                ->where(['appeal_register.company_id'=>Yii::$app->user->identity->company_id])
+                                ->where('appeal_register.id in (select register_id from task_emp where (reciever_id='.\Yii::$app->user->id.' or sender_id='.\Yii::$app->user->id.') and status=0)')
+                                ->orderBy(['appeal_register.deadtime'=>SORT_DESC])->count('appeal_register.id');
+                            echo  $cnt1;
+                            ?></span>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+                        <span class="dropdown-item dropdown-header">Мурожаатлар</span>
+                        <div class="dropdown-divider"></div>
+                        <a href="<?= Yii::$app->urlManager->createUrl(['/site/index','status'=>0])?>" class="dropdown-item">
+                            <i class="fas fa-envelope mr-2"></i> <?= $cnt1 ?> та менга келган
+                        </a>
+
+                    </div>
+                </li>
             <?php }?>
             <li class="nav-item">
-                <?=Html::a('<i class="fa fa-door-open"></i> Chiqish',['/site/logout'],[
+                <?=Html::a('<i class="fa fa-door-open"></i> Чиқиш',['/site/logout'],[
                     'class'=>'nav-link',
                     'data' => [
                         'confirm' => Yii::t('app', 'Haqiqatdan ham dasturdan chiqmoqchimisiz?'),
