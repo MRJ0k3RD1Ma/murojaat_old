@@ -36,7 +36,8 @@ class Request extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['sender_id', 'reciever_id', 'type_id', 'register_id', 'appeal_id'], 'required'],
+            [['detail','sender_id', 'reciever_id', 'type_id', 'register_id', 'appeal_id', 'status_id'], 'required'],
+            [['date'], 'required','on'=>'change'],
             [['sender_id', 'reciever_id', 'type_id', 'register_id', 'appeal_id', 'status_id'], 'integer'],
             [['detail'], 'string'],
             [['date', 'created', 'updated'], 'safe'],
@@ -51,17 +52,35 @@ class Request extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'sender_id' => 'Sender ID',
-            'reciever_id' => 'Reciever ID',
-            'type_id' => 'Type ID',
-            'register_id' => 'Register ID',
-            'appeal_id' => 'Appeal ID',
-            'status_id' => 'Status ID',
-            'detail' => 'Detail',
-            'date' => 'Date',
-            'file' => 'File',
-            'created' => 'Created',
-            'updated' => 'Updated',
+            'sender_id' => 'Юборувчи',
+            'reciever_id' => 'Қабул қилувчи',
+            'type_id' => 'Тури',
+            'register_id' => 'Мурожаат рақами',
+            'appeal_id' => 'Ариза рақами',
+            'status_id' => 'Status',
+            'detail' => 'Батафсил',
+            'date' => 'Қайси санагача',
+            'file' => 'Файл',
+            'created' => 'Юборилган вақт',
+            'updated' => 'Ўзгартирилган вақт',
         ];
+    }
+    public function getSender(){
+        return $this->hasOne(User::className(),['id'=>'sender_id']);
+    }
+    public function getReciever(){
+        return $this->hasOne(User::className(),['id'=>'reciever_id']);
+    }
+    public function getType(){
+        return $this->hasOne(RequestType::className(),['id'=>'type_id']);
+    }
+    public function getRegister(){
+        return $this->hasOne(AppealRegister::className(),['id'=>'register_id']);
+    }
+    public function getAppeal(){
+        return $this->hasOne(Appeal::className(),['id'=>'appeal_id']);
+    }
+    public function getStatus(){
+        return $this->hasOne(RequestStatus::className(),['id'=>'status_id']);
     }
 }

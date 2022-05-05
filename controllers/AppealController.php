@@ -9,6 +9,7 @@ use app\models\AppealComment;
 use app\models\AppealRegister;
 use app\models\Company;
 use app\models\DeadlineChanges;
+use app\models\Request;
 use app\models\search\AppealBajaruvchiAnsSearch;
 use app\models\search\AppealBajaruvchiComSearch;
 use app\models\search\AppealBajaruvchiSearch;
@@ -19,6 +20,7 @@ use app\models\search\AppealRegisterRunningSearch;
 use app\models\search\AppealRegisterSearch;
 use app\models\search\CompanyRegisterSearch;
 use app\models\search\DeadlineChangesSearch;
+use app\models\search\RequestSearch;
 use app\models\TaskEmp;
 use app\models\User;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -174,10 +176,37 @@ class AppealController extends Controller
         $answer = new AppealAnswer();
         $answer->appeal_id = $model->id;
         $answer->register_id = $register->id;
+        $changetime = new Request();
+        $changetime->status_id = 0;
+        $changetime->type_id = 1;
+        $changetime->sender_id = Yii::$app->user->id;
+        $changetime->appeal_id = $model->id;
+        $changetime->scenario = "change";
+        $changetime->register_id = $register->id;
+        if($register->parent_bajaruvchi_id){
+            $changetime->reciever_id = $register->parent->register->rahbar_id;
+        }else{
+            $changetime->reciever_id = $register->rahbar_id;
+        }
+
+        $reject = new Request();
+        $reject->status_id = 0;
+        $reject->type_id = 2;
+        $reject->sender_id = Yii::$app->user->id;
+        $reject->appeal_id = $model->id;
+        $reject->scenario = "change";
+        $reject->register_id = $register->id;
+        if($register->parent_bajaruvchi_id){
+            $reject->reciever_id = $register->parent->register->rahbar_id;
+        }else{
+            $reject->reciever_id = $register->rahbar_id;
+        }
         return $this->render('view',[
             'model'=>$model,
             'register'=>$register,
             'answer'=>$answer,
+            'changetime'=>$changetime,
+            'reject'=>$reject
         ]);
     }
     public function actionAnswer($id,$ansid=0){
@@ -579,18 +608,6 @@ class AppealController extends Controller
         ]);
     }
 
-
-    public function actionRequest(){
-
-        $searchModel = new DeadlineChangesSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-
-        return $this->render('request', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
-        ]);
-    }
-
     public function actionGetappeal($id){
         $register = AppealRegister::findOne($id);
         $model = Appeal::findOne($register->appeal_id);
@@ -902,5 +919,81 @@ class AppealController extends Controller
         return $this->redirect(['index']);
     }
 
+    public function actionSendrequest(){
+       $model = new Request();
+       $model->status_id = 0;
+       if($model->load(Yii::$app->request->post())){
 
+           if($model->save()){
+               Yii::$app->session->setFlash('success','Сўров мувоффақиятли юборилди');
+               // muddatni uzaytirishda tashkilotga tegishli murojaat bo'lsa uni bajarib yuborish yani parent null bo'lsa
+               if($model->type_id == 1 and !$model->register->parent_bajaruvchi_id){
+                   changeTime($model->id);
+               }
+           }else{
+               Yii::$app->session->setFlash('error','Сўров маълумотлари тўлиқ эмас');
+           }
+       }
+        return $this->redirect(['view','id'=>$model->register_id]);
+    }
+
+    public function actionAcceptrequest($id){
+        $model = Request::findOne($id);
+        if($model->type_id == 1){
+            changeTime($id);
+        }else{
+            changeCompany($id);
+        }
+        return $this->redirect(['request']);
+    }
+
+    public function actionRequest($do=null,$all=null){
+        $searchModel = new RequestSearch();
+        if($do){
+            $searchModel->do = $do;
+        }
+        if($all){
+            $searchModel->sts = 1;
+        }
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+        return $this->render('request', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+
+    public function actionViewrequest($id){
+
+        $request = Request::findOne($id);
+        if($request->status_id == 0){
+            $request->status_id = 1;
+            $request->save();
+        }
+        if($request->sender->company_id == Yii::$app->user->identity->company_id){
+            $model = TaskEmp::find()
+                ->where(['register_id'=>$request->register_id])
+                ->andWhere(['appeal_id'=>$request->appeal_id])
+                ->andWhere(['reciever_id'=>$request->sender_id])->one();
+            $type = 1;
+        }else{
+            $model = AppealBajaruvchi::findOne($request->register->parent_bajaruvchi_id);
+            $type = 2;
+        }
+
+        $register = AppealRegister::findOne($model->register_id);
+        $appeal = Appeal::findOne($model->appeal_id);
+
+
+        $appeal->scenario = 'close';
+
+        return $this->render('viewrequest',[
+            'model'=>$appeal,
+            'register'=>$register,
+            'bajaruvchi'=>$model,
+            'request'=>$request,
+            'type'=>$type
+        ]);
+
+    }
 }

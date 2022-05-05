@@ -129,7 +129,7 @@ AppAsset::register($this);
                         ->where('(reciever_id in (select id from user where company_id='.Yii::$app->user->identity->company_id.')) and '.
                             '(sender_id in (select id from user where company_id='.Yii::$app->user->identity->company_id.'))'
                         )
-                        ->andWhere(['type_id'=>3])
+                        ->andWhere(['type_id'=>2])
                         ->andWhere(['<=','status_id',1])
                         ->count('id');
 
@@ -138,19 +138,22 @@ AppAsset::register($this);
                 </span>
                 </a>
                 <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-                    <span class="dropdown-item dropdown-header">Сўровлар</span>
+                    <span class="dropdown-item dropdown-header">Муддат узайтиришга</span>
                     <div class="dropdown-divider"></div>
-                    <a href="<?= Yii::$app->urlManager->createUrl(['/appeal/request'])?>" class="dropdown-item">
-                        <i class="fas fa-timer mr-2"></i> <?= $request_deadline_comp ?> та бошқа ташкилотдан
+                    <a href="<?= Yii::$app->urlManager->createUrl(['/appeal/request','do'=>'time'])?>" class="dropdown-item">
+                        <i class="fas fa-clock mr-2"></i> <?= $request_deadline_comp ?> та бошқа ташкилотдан
                     </a>
-                    <a href="<?= Yii::$app->urlManager->createUrl(['/appeal/request'])?>" class="dropdown-item">
-                        <i class="fas fa-timer mr-2"></i> <?= $request_deadline_user ?> та ҳодимлардан
+                    <a href="<?= Yii::$app->urlManager->createUrl(['/appeal/request','do'=>'timemy'])?>" class="dropdown-item">
+                        <i class="fas fa-clock mr-2"></i> <?= $request_deadline_user ?> та ҳодимлардан
                     </a>
-                    <a href="<?= Yii::$app->urlManager->createUrl(['/appeal/request'])?>" class="dropdown-item">
-                        <i class="fas fa-refresh mr-2"></i> <?= $request_change_comp ?> та бошқа ташкилотдан
+                    <div class="dropdown-divider"></div>
+                    <span class="dropdown-item dropdown-header">Ижрочини ўзгартиришга</span>
+                    <div class="dropdown-divider"></div>
+                    <a href="<?= Yii::$app->urlManager->createUrl(['/appeal/request','do'=>'reject'])?>" class="dropdown-item">
+                        <i class="fas fa-random mr-2"></i> <?= $request_change_comp ?> та бошқа ташкилотдан
                     </a>
-                    <a href="<?= Yii::$app->urlManager->createUrl(['/appeal/request'])?>" class="dropdown-item">
-                        <i class="fas fa-refresh mr-2"></i> <?= $request_change_user ?> та ҳодимлардан
+                    <a href="<?= Yii::$app->urlManager->createUrl(['/appeal/request','do'=>'rejectmy'])?>" class="dropdown-item">
+                        <i class="fas fa-random mr-2"></i> <?= $request_change_user ?> та ҳодимлардан
                     </a>
 
                 </div>

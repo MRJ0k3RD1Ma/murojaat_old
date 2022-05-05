@@ -119,6 +119,10 @@ class AppealRegister extends \yii\db\ActiveRecord
         return $this->hasOne(AppealBajaruvchi::className(),['id'=>'parent_bajaruvchi_id']);
     }
 
+    public function getMyrequest(){
+        return $this->hasMany(Request::className(),['register_id'=>'id']);
+    }
+
     public function getChild(){
         return $this->hasMany(AppealBajaruvchi::className(),['register_id'=>'id']);
     }

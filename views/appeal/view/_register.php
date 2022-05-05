@@ -23,8 +23,37 @@
         [
             'attribute'=>'deadtime',
             'value'=>function($d){
-                return $d->deadline.' кун '.$d->deadtime;
-            }
+                if($d->status == 4){
+                    return "<span class='bg-success' style='display: block;text-align: center'>Бажарилган</span>".
+                        $d->donetime;
+                }
+                $datetime2 = date_create($d->deadtime);
+                $datetime1 = date_create(date('Y-m-d'));
+                $interval = date_diff($datetime1, $datetime2);
+                $days = $interval->format('%a ');
+                $ds = $interval->format('%R%a ');
+                $d->deadtime = date('d-m-Y',strtotime($d->deadtime));
+                $class = "";
+                if($ds <= 5){
+                    $class = "bg-warning";
+                }
+                if($ds < 0){
+                    $class = "bg-danger";
+                }
+                $res = "<span class='{$class}' style='width: 100%; height: 100%; display: block;text-align: center'>".$days.' кун<br>'.$d->deadtime."</span> ";
+
+
+                if($ds < 0){
+                    $class = "bg-danger";
+                    $res = "<span class='{$class}' style='width: 100%; height: 100%; display: block;'>Муддати ўтган</span>";
+                }elseif($ds <= 5){
+                    $class = "bg-warning";
+                    $res = "<span class='{$class}' style='width: 100%; height: 100%; display: block;'>".$days.' кун'."</span><br>{$d->deadtime}";
+                }else{$res = "<span class='{$class}' style='width: 100%; height: 100%; display: block;'>".$days.' кун'."</span><br>{$d->deadtime}";}
+
+                return $res;
+            },
+            'format'=>'raw'
         ],
         'donetime',
         [

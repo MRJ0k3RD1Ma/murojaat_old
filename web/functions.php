@@ -1,5 +1,7 @@
 <?php
 
+use app\models\AppealBajaruvchi;
+use app\models\TaskEmp;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
@@ -72,6 +74,81 @@ function closeAppeal($id,$reg_id,$c_id){
     }
 }
 
+function changeTime($id){
+    $model = \app\models\Request::findOne($id);
+    $model->status_id = 2;
+    if($model->save()){
+        $register = $model->register;
+        $appeal = $model->appeal;
+        // murojaat javobi hodimdan kelgan holda hodimga berilgan topshiriq muddatini o'zgartirish
+        if($model->sender->company_id == Yii::$app->user->identity->company_id){
+            if($task = TaskEmp::find()->where(['appeal_id'=>$appeal->id])
+                ->andWhere(['register_id'=>$register->id])
+                ->andWhere(['reciever_id'=>$model->sender_id])->one()){
+                $task->deadtime = date('Y-m-d',strtotime($model->date));
+                $task->save(false);
+            }
+            if(!$register->parent_bajaruvchi_id){
+                if(new DateTime($model->date) > new DateTime($register->deadtime)){
+                    $register->deadtime = $model->date;
+                    $register->save();
+                }
+            }
+        }else{
+            $task = AppealBajaruvchi::findOne($register->parent_bajaruvchi_id);
+            $task->deadtime = $model->date;
+            $register->deadtime = $model->date;
+            $task->save();
+            $register->save();
+            if(new DateTime($model->date) > new DateTime($register->deadtime)){
+                $register->deadtime = $model->date;
+                $register->save();
+            }
+        }
+        return true;
+    }else{
+        return false;
+    }
+}
 
+function changeCompany($id){
+    $model = \app\models\Request::findOne($id);
+    $model->status_id = 2;
+    if($model->save()){
+        $register = $model->register;
+        $appeal = $model->appeal;
+        // murojaatni quyi tashkilotdan olib tashlash o'chirish yoki topshiriq berilgan xodimdan o'chirish.
+        if($model->sender->company_id == Yii::$app->user->identity->company_id){
+            // hodimlar kesimida yana ham ko'rib chiqish kerak
+            /*$task = TaskEmp::find()->where(['appeal_id'=>$appeal->id])
+                ->andWhere(['register_id'=>$register->id])
+                ->andWhere(['reciever_id'=>$model->sender_id])->one();
+            $task->delete();
 
+            */
+        }else{
+            $task = AppealBajaruvchi::findOne($register->parent_bajaruvchi_id);
+
+            deleteTask($task->id);
+        }
+    }
+}
+
+function deleteTask($tid){
+    $task = AppealBajaruvchi::findOne($tid);
+    $register = \app\models\AppealRegister::find()->where(['parent_bajaruvchi_id'=>$task->id])
+        ->andWhere(['company_id'=>$task->company_id])
+    ->andWhere(['appeal_id'=>$task->appeal_id])->one();
+
+    foreach (AppealBajaruvchi::find()->where(['register_id'=>$register->id])->all() as $item){
+        deleteTask($item->id);
+    }
+
+    $ans = \app\models\AppealAnswer::find()->where(['register_id'=>$register->id])->all();
+    foreach ($ans as $item){
+        $item->delete();
+    }
+    $register->delete();
+    $task->delete();
+}
 ?>

@@ -68,7 +68,6 @@ $this->params['breadcrumbs'][] = $this->title;
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                             <a class="dropdown-item btn btn-default" href="<?= Yii::$app->urlManager->createUrl(['/appeal/getappeal','id'=>$register->id])?>"  id="downappeal"><span class="fa fa-download"></span> Мурожаат масаласини юклаб олиш</a>
                             <a class="dropdown-item btn btn-default" href="<?= Yii::$app->urlManager->createUrl(['/getappeal/print','id'=>$register->id])?>"  id="downappeal"><span class="fa fa-download"></span> Назорат карточкани юклаб олиш</a>
-
                         </div>
                     </div>
 
@@ -80,8 +79,20 @@ $this->params['breadcrumbs'][] = $this->title;
 
                     <?= $this->render('view/_task',['register'=>$register])?>
 
+                    <div id="changetime" class="collapse" style="margin-top: 20px; padding: 20px;border: 1px solid #17a2b8;" data-parent="#accordion">
+                        <?= $this->render('view/_changetime',['model'=>$changetime,'appeal'=>$model,'register'=>$register])?>
+                    </div>
+
+                    <div id="reject" class="collapse" style="margin-top: 20px; padding: 20px;border: 1px solid #17a2b8;" data-parent="#accordion">
+                        <?php if($register->parent_bajaruvchi_id){?>
+                        <?= $this->render('view/_changetime',['model'=>$reject,'appeal'=>$model,'register'=>$register])?>
+                        <?php }else{?>
+                            Мурожаатни қабул қилувчиси сизнинг <b><?= $register->company->name?></b> бўлганлиги учун бу <b>функцидан фойдалана олмайсиз</b>.
+                        <?php }?>
+                    </div>
 
                     <div id="answer" class="collapse" style="margin-top: 20px; padding: 20px;border: 1px solid #28a745;" data-parent="#accordion">
+
                         <?php if($register->status != 4){?>
                             <?php if($register->parent_bajaruvchi_id){
                                 echo $this->render('view/_answerformmy',['model'=>$answer]);
@@ -91,6 +102,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         <?php }else{
                             echo "Мурожаатга жавоб юборилган";
                         }?>
+
                     </div>
 
 
@@ -116,5 +128,10 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
 <?= $this->render('view/_myanswer',['register'=>$register])?>
+
+<?php // $this->render('view/_request',['register'=>$register])?>
+
+<?=  $this->render('view/_requestmy',['register'=>$register])?>
+
 
 <?= $this->render('view/_footer',['register'=>$register])?>

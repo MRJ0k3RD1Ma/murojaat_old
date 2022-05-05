@@ -22,15 +22,30 @@ $this->params['breadcrumbs'][] = $this->title;
 
                     <?= GridView::widget([
                         'dataProvider' => $dataProvider,
-                        'filterModel' => $searchModel,
+//                        'filterModel' => $searchModel,
                         'columns' => [
                             ['class' => 'yii\grid\SerialColumn'],
 
-//                            'id',
+                            [
+                                'attribute'=>'detail',
+                                'value'=>function($d){
+                                    $res = mb_substr($d->detail,0,100);
+                                    $url = Yii::$app->urlManager->createUrl(['/appeal/viewrequest','id'=>$d->id]);
+                                    return "<a href='{$url}'>{$res}</a>";
+                                },
+                                'format'=>'raw'
+                            ],
+
+                            [
+                                'attribute'=>'type_id',
+                                'value'=>function($d){
+                                    return $d->type->name;
+                                }
+                            ],
                             [
                                 'label'=>'Рақаси ва санаси',
                                 'value'=>function($d){
-                                    return "<b>№ {$d->register->parent->register->number}</b> <br> {$d->register->parent->register->date}";
+                                    return "<b>№ {$d->register->number}</b> <br> {$d->register->date}";
                                 },
                                 'format'=>'raw'
                             ],
@@ -45,7 +60,12 @@ $this->params['breadcrumbs'][] = $this->title;
                                         $res = "Савол белгиланмаган";
                                     }
 
-                                    $url = Yii::$app->urlManager->createUrl(['/appeal/view','id'=>$d->register->parent->register->id]);
+                                    if($d->register->parent_bajaruvchi_id){
+                                        $url = Yii::$app->urlManager->createUrl(['/appeal/view','id'=>$d->register->parent->register_id]);
+
+                                    }else{
+                                        $url = Yii::$app->urlManager->createUrl(['/appeal/view','id'=>$d->register->id]);
+                                    }
 
                                     $res = $d->appeal->person_name.'<br>'.$res;
                                     return "<a href='{$url}'>{$res}</a>";
@@ -53,22 +73,33 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'format'=>'raw',
                                 'filter'=>false
                             ],
-                            'comment',
-                            'file',
-//                            'appeal_id',
-//                            'register_id',
-                            'deadline',
-//                            'status_id',
+                            [
+                                'attribute'=>'sender_id',
+                                'value'=>function($d){
+                                    if($d->sender->company_id == Yii::$app->user->identity->company_id){
+                                        return $d->sender->name;
+                                    }
+                                    return $d->sender->company->name;
+                                }
+                            ],
+                            [
+                                'attribute'=>'file',
+                                'value'=>function($d){
+                                    if($d->file){
+                                        return "<a href='/upload/{$d->file}' target='_blank'>Иловани юклаб олиш</a>";
+                                    }
+                                    return "Илова мавжуд эмас";
+                                },
+                                'format'=>'raw'
+                            ],
                             [
                                 'attribute'=>'status_id',
                                 'value'=>function($d){return $d->status->name;},
-                                'filter'=>\yii\helpers\ArrayHelper::map(\app\models\DeadlineStatus::find()->all(),'id','name')
+                                'filter'=>\yii\helpers\ArrayHelper::map(\app\models\RequestStatus::find()->all(),'id','name')
                             ],
                             //'ads',
                             'created',
                             //'updated',
-
-                            ['class' => 'yii\grid\ActionColumn'],
                         ],
                     ]); ?>
 

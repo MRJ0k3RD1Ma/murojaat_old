@@ -25,7 +25,7 @@
         Сўров юбориш
     </button>
     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-        <a class="dropdown-item" href="#">Муддатни узайтириш</a>
-        <a class="dropdown-item" href="#">Бошқа давлат органига юбориш</a>
+        <a class="dropdown-item" data-toggle="collapse" href="#changetime">Муддатни узайтириш</a>
+        <a class="dropdown-item" data-toggle="collapse" href="#reject">Бошқа давлат органига юбориш</a>
     </div>
 </div>
