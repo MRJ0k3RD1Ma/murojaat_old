@@ -19,6 +19,7 @@ use Yii;
  * @property string $created
  * @property string $updated
  * @property int $status
+ * @property int $parent_id
  * @property int $type_id
  * @property int $group_id
  * @property int $management
@@ -47,7 +48,7 @@ class Company extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
         return [
             [['inn', 'password', 'name', 'director', 'phone',  'region_id', 'district_id', 'village_id', 'address','type_id','group_id'], 'required'],
             [['active_to', 'active_each', 'created', 'updated'], 'safe'],
-            [['status', 'management', 'region_id', 'district_id', 'village_id','type_id','group_id'], 'integer'],
+            [['status', 'parent_id','management', 'region_id', 'district_id', 'village_id','type_id','group_id'], 'integer'],
             [['inn', 'name', 'director', 'phone', 'telegram', 'address','token'], 'string', 'max' => 255],
             [['password'], 'string', 'max' => 500],
             [['inn'], 'unique'],
@@ -79,6 +80,8 @@ class Company extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
             'district_id' => 'Туман',
             'village_id' => 'Маҳалла',
             'address' => 'Манзил',
+            'paid' => 'Тўлов',
+            'parent_id' => 'Юқори турувчи',
             'cntall' => 'Юборилган мурожаатлар',
             'cntzero' => 'Қабул қилинмаган',
             'cntone' => 'Жараёнда',
@@ -111,6 +114,14 @@ class Company extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
     }
     public function getVillage(){
         return $this->hasOne(Village::className(),['id'=>'village_id']);
+    }
+    public function getParent(){
+        if($this->parent_id == -1){
+            return "Танланмаган";
+        }elseif($this->parent_id == 0){
+            return "Ўзи юқори турувчи";
+        }
+        return $this->hasOne(Company::className(),['id'=>'parent_id']);
     }
     public static function findIdentity($id)
     {

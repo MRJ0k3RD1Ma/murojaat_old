@@ -18,13 +18,40 @@ use yii\helpers\Url; ?>
             </a>
         </li>
 
-        <li class="nav-item">
-            <a href="<?= Yii::$app->urlManager->createUrl(['/admin/company'])?>" class="nav-link <?=(Yii::$app->controller->id=='company' && Yii::$app->controller->action->id=='index')?'active':''?>">
-                <i class="nav-icon fas fa-list"></i>
+        <li class="nav-item has-treeview">
+            <a href="#" class="nav-link <?=(Yii::$app->controller->id=='company' && Yii::$app->controller->action->id=='index')?'active':''?>">
+                <i class="nav-icon fas fa-filter"></i>
                 <p>
                     Ташкилотлар
+                    <i class="right fas fa-angle-left"></i>
                 </p>
             </a>
+            <ul class="nav nav-treeview" style="display: none;">
+                <li class="nav-item">
+                    <a class="nav-link" href="<?= Yii::$app->urlManager->createUrl(['/admin/company/index'])?>">
+                        <i class="nav-icon fa fa-circle"></i>
+                        <p>
+                            Ташкилотлар
+                        </p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="<?= Yii::$app->urlManager->createUrl(['/admin/company/index','type'=>'notpaid'])?>">
+                        <i class="nav-icon fa fa-circle"></i>
+                        <p>
+                            Тўлов қилигмаган
+                        </p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="nav-icon fa fa-circle"></i>
+                        <p>
+                            Муддати ўтган
+                        </p>
+                    </a>
+                </li>
+            </ul>
         </li>
 
         <li class="nav-item">

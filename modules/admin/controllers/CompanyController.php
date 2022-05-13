@@ -699,5 +699,61 @@ class CompanyController extends Controller
             'model'=>$model
         ]);
     }
+	
+	public function actionVillage(){
+		$model = new SchoolModel();
+		if($model->load(Yii::$app->request->post())){
+			$vil = Village::find()->where(['district_id'=>$model->district])->all();
+			$dist_name = District::findOne($model->district)->name;
+			foreach($vil  as $item){
+				$com = new Company();
 
+                $com->region_id = $model->region;
+                $com->district_id = $model->district;
+                $com->village_id = $item->id;
+                $com->address = '-';
+
+                $com->inn = 'mfy'.$item->id;
+                $com->password = 1111;
+                $com->name = $dist_name.' '.$item->name;
+                $com->director = $com->name;
+                $com->phone = "-";
+                $com->group_id = 14;
+                $com->type_id = 52;
+                $com->encrypt();
+                $com->save();
+                $user = new User();
+                $user->username = $com->inn;
+                $user->lavozim_id = 13;
+                $user->is_rahbar = 1;
+                $user->is_registration = 1;
+                $user->is_resolution = 1;
+                $user->address = '-';
+                $user->name = $com->name;
+                $user->phone = "-";
+                $user->password = $com->password;
+                $user->address = "-";
+                $user->role_id = 1;
+                $user->bulim_id = 1;
+                $user->company_id = $com->id;
+//                $user->encrypt();
+                $user->save();
+				
+			}
+		}
+		
+		return $this->render('school',[
+			'model'=>$model,
+		]);
+	}
+	
+	public function actionVillageregen(){
+		$model = Company::find()->filterWhere(['like','inn','mfy'])->all();
+		foreach($model as $item){
+			$item->name = District::findOne($item->district_id)->name.' '.Village::findOne($item->village_id)->name;
+			$item->save();
+		}
+		
+		return $this->redirect(['index']);
+	}
 }

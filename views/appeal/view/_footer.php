@@ -56,10 +56,9 @@ $this->registerJs("
         
         $('.datatable_emp').DataTable(); 
         
-        $('.taskemp').click(function(){
-            var url = this.value;
-            $('#modaltashkilot').modal('show').find('.modal-body').load(url);  
-        })
+        taskemployee = function(url){
+            $('#modaltashkilot').modal('show').find('.modal-body').load(url);
+        }
         
         
     ")

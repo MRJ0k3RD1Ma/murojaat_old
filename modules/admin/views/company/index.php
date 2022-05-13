@@ -20,6 +20,8 @@ $this->params['breadcrumbs'][] = $this->title;
                         <a href="" class="btn btn-danger" data-method="post"><span class="fa fa-file-excel"></span> Эхпорт</a>
                         <?= Html::a('Ташкилотни туман бўлимлари билан қўшиш', ['createwithdist'], ['class' => 'btn btn-primary']) ?>
                         <?= Html::a('Ташкилот қўшиш', ['create'], ['class' => 'btn btn-success']) ?>
+
+                        <button class="btn btn-info"><i class="fa fa-search"></i> Филтер</button>
                     </div>
                 </div>
                 <div class="card-body">
@@ -37,36 +39,53 @@ $this->params['breadcrumbs'][] = $this->title;
                                 },
                                 'format'=>'raw'
                             ],
-//            'id',
-//                            'management',
-
                             'inn',
-//            'password',
                             'director',
-//            'phone',
-//            'telegram',
-//            'active_to',
-//            'active_each',
-//            'created',
-//            'updated',
-//            'region_id',
+                            'phone',
                             'district_id',
-//                            'village_id',
-//            'address',
-//                            'status',
                             [
-                                'attribute'=>'group_id',
+                                'attribute'=>'active_each',
                                 'value'=>function($d){
-                                    return $d->group->name;
+                                    $res = '';
+                                    $t = 0;
+                                    if($d->active_to){
+                                        $res = $d->active_to;
+                                        $t = 1;
+                                    }
+                                    if($d->active_each){
+                                        if($t == 1){
+                                            $res = $d->active_each .' гача';
+                                        }else{
+                                            $res .= ':'.$d->active_each .' гача';
+                                        }
+                                        $t = 2;
+                                    }
+                                    if($t > 0){
+                                        return $res;
+                                    }
+                                    return "-";
                                 },
-                                'filter'=>\yii\helpers\ArrayHelper::map(\app\models\CompanyGroup::find()->all(),'id','name')
+                                'filter'=>false,
                             ],
                             [
-                                'attribute'=>'type_id',
+                                'attribute'=>'paid',
                                 'value'=>function($d){
-                                    return $d->type->name;
-                                },
-                                'filter'=>\yii\helpers\ArrayHelper::map(\app\models\CompanyType::find()->where(['group_id'=>$searchModel->group_id])->all(),'id','name')
+                                    if($d->paid==0){
+                                        return "Тўланмаган";
+                                    }else{
+                                        return $d->paid_date;
+                                    }
+                                }
+                            ],
+                            [
+                                'attribute'=>'parent_id',
+                                'value'=>function($d){
+                                    if($d->parent_id>0){
+                                        return $d->parent->name;
+                                    }else{
+                                        return $d->parent;
+                                    }
+                                }
                             ],
 
                             ['class' => 'yii\grid\ActionColumn'],
