@@ -133,6 +133,18 @@ use yii\helpers\Url; ?>
                 </a>
             </li>
 
+
+           <?php if(Yii::$app->user->identity->is_village==1){?>
+                <li class="nav-item">
+                    <a href="<?= Yii::$app->urlManager->createUrl(['/appeal/indexhok'])?>" class="nav-link <?=(Yii::$app->controller->id=='appeal' and Yii::$app->controller->action->id == 'indexhok')?'active':''?>">
+                        <i class="nav-icon fas fa-list"></i>
+                        <p>
+                            Вилоят ҳокимлигига юборилган
+                        </p>
+                    </a>
+                </li>
+               <?php }?>
+
         <?php }?>
 
 

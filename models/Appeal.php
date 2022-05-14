@@ -57,6 +57,9 @@ use yii\web\UploadedFile;
  * @property integer $answer_detail
  * @property integer $answer_preview
  * @property integer $letter
+ * @property integer $register_id
+ * @property integer $register_company_id
+ * @property integer $type
  */
 class Appeal extends \yii\db\ActiveRecord
 {
@@ -75,13 +78,15 @@ class Appeal extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['pursuit', 'person_id', 'gender', 'nation_id', 'home_id','count_list','count_applicant','answer_reply_send','company_id', 'region_id','boshqa_tashkilot', 'boshqa_tashkilot_group_id','isbusinessman','boshqa_tashkilot_id','district_id', 'village_id', 'question_id', 'appeal_type_id', 'appeal_shakl_id', 'appeal_control_id', 'status'], 'integer'],
-            [['region_id', 'district_id', 'address',  'appeal_detail', 'appeal_type_id','appeal_preview','answer_detail',], 'required','on'=>'insert'],
+            [['pursuit', 'person_id','number','year', 'gender','type','register_id','register_company_id', 'nation_id', 'home_id','count_list','count_applicant','answer_reply_send','company_id', 'region_id','boshqa_tashkilot', 'boshqa_tashkilot_group_id','isbusinessman','boshqa_tashkilot_id','district_id', 'village_id', 'question_id', 'appeal_type_id', 'appeal_shakl_id', 'appeal_control_id', 'status'], 'integer'],
+            [['region_id', 'district_id', 'address','gender',  'appeal_detail', 'appeal_type_id','appeal_preview','answer_detail',], 'required','on'=>'insert'],
             [['answer_name','answer_preview','answer_number','appeal_control_id','answer_date',],'required','on'=>'close'],
             [['date_of_birth', 'created', 'updated','boshqa_tashkilot_date','answer_date','deadtime'], 'safe'],
             [['types', 'detail', 'appeal_preview','answer_detail','appeal_detail', 'executor_files'], 'string'],
-            [['answer_name','answer_file','answer_preview','answer_number','boshqa_tashkilot_number','passport', 'passport_jshshir', 'person_name', 'person_phone', 'specialization', 'job', 'work_place', 'address', 'email', 'appeal_file', 'appeal_file_extension'], 'string', 'max' => 255],
+            [['answer_name','answer_file','number_full','answer_preview','answer_number','boshqa_tashkilot_number','passport', 'passport_jshshir', 'person_name', 'person_phone', 'specialization', 'job', 'work_place', 'address', 'email', 'appeal_file', 'appeal_file_extension'], 'string', 'max' => 255],
             [['businessman',], 'string', 'max' => 500],
+            [['register_id'],'default','value'=>Yii::$app->user->id],
+            [['register_company_id'],'default','value'=>Yii::$app->user->identity->company_id],
             ['company_id','default','value'=>Yii::$app->user->identity->company_id],
             ['letter','file'],
         ];
@@ -144,6 +149,8 @@ class Appeal extends \yii\db\ActiveRecord
             'answer_date'=>'Санаси',
             'answer_number'=>'Рақами',
             'answer_preview'=>'Ҳужжат номи',
+            'number_full'=>'Мурожаат рақами',
+            'deadtime'=>'Муддат',
         ];
     }
     public function getRegister(){

@@ -11,6 +11,8 @@
             'model' => $model,
             'attributes' => [
 //                        'id',
+                'id',
+                'number_full',
                 'appeal_detail',
 //                        'appeal_file',
                 [

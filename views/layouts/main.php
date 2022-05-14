@@ -69,7 +69,13 @@ AppAsset::register($this);
 
             <?php if(!Yii::$app->user->isGuest and Yii::$app->user->identity->is_registration==1){?>
 
-                <li class="nav-item" style="margin-right: 10px;"><a href="<?= Yii::$app->urlManager->createUrl(['/appeal/create'])?>" class="btn btn-primary"><span class="fa fa-plus"></span> Янги мурожаат</a></li>
+               <?php if(Yii::$app->user->identity->is_village==1){ ?>
+                    <li class="nav-item" style="margin-right: 10px;"><a href="<?= Yii::$app->urlManager->createUrl(['/appeal/tohok'])?>" class="btn btn-primary"><span class="fa fa-plus"></span> Янги мурожаат</a></li>
+
+               <?php }else{?>
+                    <li class="nav-item" style="margin-right: 10px;"><a href="<?= Yii::$app->urlManager->createUrl(['/appeal/create'])?>" class="btn btn-primary"><span class="fa fa-plus"></span> Янги мурожаат</a></li>
+
+                <?php }?>
 
                 <li class="nav-item"><a href="<?= Yii::$app->urlManager->createUrl(['/appeal/notregister'])?>" class="btn btn-success"><span class="fa fa-registered"></span> Рўйхатга олинмаган</a></li>
 

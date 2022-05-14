@@ -18,6 +18,7 @@ use app\models\search\AppealRegisterDeadSearch;
 use app\models\search\AppealRegisterHasSearch;
 use app\models\search\AppealRegisterRunningSearch;
 use app\models\search\AppealRegisterSearch;
+use app\models\search\AppealSearch;
 use app\models\search\CompanyRegisterSearch;
 use app\models\search\DeadlineChangesSearch;
 use app\models\search\RequestSearch;
@@ -995,5 +996,59 @@ class AppealController extends Controller
             'type'=>$type
         ]);
 
+    }
+
+    public function actionTohok(){
+        $model = new Appeal();
+        $model->company_id = 1;
+        $model->register_id = Yii::$app->user->id;
+        $model->register_company_id = Yii::$app->user->identity->company_id;
+        $model->type = 1;
+        $model->count_applicant = 1;
+        $model->count_list = 1;
+        $com = Yii::$app->user->identity->company;
+        $model->region_id = $com->region_id;
+        $model->district_id = $com->district_id;
+        $model->village_id = $com->village_id;
+        $model->deadtime = date('Y-m-d', strtotime(date('Y-m-d') . ' +15 day'));
+        if($model->load(Yii::$app->request->post())){
+            if($model->appeal_file = UploadedFile::getInstance($model,'appeal_file')){
+                $name = microtime(true).'.'.$model->appeal_file->extension;
+                $model->appeal_file->saveAs(Yii::$app->basePath.'/web/upload/'.$name);
+                $model->appeal_file = $name;
+            }
+            $model->year = date('Y');
+            if($model->number = Appeal::find()->where(['year'=>$model->year])->max('number')){
+                $model->number = $model->number+1;
+            }else{
+                $model->number = 0;
+            }
+
+            $model->number_full = $model->number.'/'.substr($model->year,2,2);
+
+            if($model->save()){
+                Yii::$app->session->setFlash('success','Мурожаат Хоразм вилоят ҳокимлигига мувоффақиятли юборилди.');
+                return $this->redirect(['viewhok','id'=>$model->id]);
+            }
+        }
+        return $this->render('tohok',[
+            'model'=>$model
+        ]);
+    }
+    public function actionViewhok($id){
+        $model = Appeal::findOne($id);
+
+        return $this->render('viewhok',[
+            'model'=>$model
+        ]);
+    }
+    public function actionIndexhok(){
+        $searchModel = new AppealSearch();
+        $dataProvider = $searchModel->searchVillage(Yii::$app->request->queryParams);
+
+        return $this->render('indexhok', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
     }
 }
