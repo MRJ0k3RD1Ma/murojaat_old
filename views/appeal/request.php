@@ -43,7 +43,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 }
                             ],
                             [
-                                'label'=>'Рақаси ва санаси',
+                                'label'=>'Рақами ва санаси',
                                 'value'=>function($d){
                                     return "<b>№ {$d->register->number}</b> <br> {$d->register->date}";
                                 },

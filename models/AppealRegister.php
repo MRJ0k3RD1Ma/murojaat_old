@@ -23,6 +23,7 @@ use yii\web\UploadedFile;
  * @property int $user_answer
  * @property int $tashkilot_answer
  * @property int $tashkilot
+ * @property int $question_id
  * @property string $created
  * @property string $updated
  * @property string|null $preview
@@ -50,7 +51,7 @@ class AppealRegister extends \yii\db\ActiveRecord
         return [
 //            [['number', 'date', 'appeal_id',], 'required'],
             [['number','date','rahbar_id','preview','ijrochi_id'],'required','on'=>'reg'],
-            [['date', 'deadtime', 'donetime', 'created', 'updated','takroriy_date'], 'safe'],
+            [['date', 'question_id','deadtime', 'donetime', 'created', 'updated','takroriy_date'], 'safe'],
             [['appeal_id', 'ijrochi_id','rahbar_id', 'parent_bajaruvchi_id','nazorat', 'takroriy','takroriy_id','deadline', 'control_id', 'status', 'company_id', 'answer_send'], 'integer'],
             [['users', 'detail','user_answer','user_answer','tashkilot','tashkilot_answer'], 'string'],
             [['number', 'preview', 'file','takroriy_number'], 'string', 'max' => 255],
@@ -88,7 +89,11 @@ class AppealRegister extends \yii\db\ActiveRecord
             'company_id' => 'Company ID',
             'answer_send' => 'Answer Send',
             'letter'=>'Кузатувчи хат',
+            'question_id'=>'Масаласи',
         ];
+    }
+    public function getQuestion(){
+        return $this->hasOne(AppealQuestion::className(),['id'=>'question_id']);
     }
     public function getAppeal(){
         return $this->hasOne(Appeal::className(),['id'=>'appeal_id']);

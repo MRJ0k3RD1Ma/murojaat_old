@@ -1037,14 +1037,47 @@ class AppealController extends Controller
     }
     public function actionViewhok($id){
         $model = Appeal::findOne($id);
+        if($model->status==0){
+            $model->status=1;
+            $model->save();
+        }
+        $register = new AppealRegister();
+        $register->scenario = 'reg';
+        $register->preview = "Мурожаатни кўриб чиқиб, кўтарилган масалани ўрнатилган тартибда ҳал қилиб, натижаси ҳақида муаллифга жавоб хати тайёрлансин.";
+        if($register->load(Yii::$app->request->post())){
+            $register->appeal_id = $model->id;
+            $register->deadtime = $model->deadtime;
+            $register->deadline = 15;
+            $register->status = 2;
+            $register->company_id = $model->company_id;
+            if($register->save()){
+                $model->question_id = $register->question_id;
+                $model->appeal_control_id = 1;
+                $model->status = 2;
+                $model->save();
+                return $this->redirect(['view','id'=>$register->id]);
+            }
+        }
+
 
         return $this->render('viewhok',[
-            'model'=>$model
+            'model'=>$model,
+            'register'=>$register
         ]);
     }
     public function actionIndexhok(){
         $searchModel = new AppealSearch();
         $dataProvider = $searchModel->searchVillage(Yii::$app->request->queryParams);
+
+        return $this->render('indexhok', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+
+    public function actionNotregvil(){
+        $searchModel = new AppealSearch();
+        $dataProvider = $searchModel->searchNotreg(Yii::$app->request->queryParams);
 
         return $this->render('indexhok', [
             'searchModel' => $searchModel,

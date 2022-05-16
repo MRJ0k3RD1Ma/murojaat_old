@@ -176,7 +176,13 @@ AppAsset::register($this);
                             ->where(['appeal_register.company_id'=>Yii::$app->user->identity->company_id])
                             ->where('appeal_register.id in (select register_id from task_emp where (reciever_id='.\Yii::$app->user->id.' or sender_id='.\Yii::$app->user->id.') and status=0)')
                             ->orderBy(['appeal_register.deadtime'=>SORT_DESC])->count('appeal_register.id');
-                        echo $cnt + $cnt1;
+                        if(Yii::$app->user->identity->company_id == 1){
+                            $cnt2 = \app\models\Appeal::find()->where(['type'=>1])->andWhere(['<','status',2])->count('id');
+                            echo $cnt + $cnt1 + $cnt2;
+                        }else{
+                            $cnt2 = \app\models\Appeal::find()->where(['type'=>1])->andWhere(['<','status',2])->count('id');
+                            echo $cnt + $cnt1;
+                        }
                         ?></span>
                 </a>
                 <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
@@ -185,6 +191,11 @@ AppAsset::register($this);
                     <a href="<?= Yii::$app->urlManager->createUrl(['/appeal/notregister'])?>" class="dropdown-item">
                         <i class="fas fa-envelope mr-2"></i> <?= $cnt ?> та рўйхатга олинмаган
                     </a>
+                    <?php if(Yii::$app->user->identity->company_id==1){?>
+                        <a href="<?= Yii::$app->urlManager->createUrl(['/appeal/notregvil'])?>" class="dropdown-item">
+                            <i class="fas fa-envelope mr-2"></i> <?= $cnt2 ?> та МФЙ орқали келган
+                        </a>
+                    <?php }?>
                     <a href="<?= Yii::$app->urlManager->createUrl(['/site/index','status'=>0])?>" class="dropdown-item">
                         <i class="fas fa-envelope mr-2"></i> <?= $cnt1 ?> та менга келган
                     </a>

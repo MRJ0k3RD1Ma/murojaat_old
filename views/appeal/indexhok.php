@@ -145,9 +145,14 @@ $user = Yii::$app->user->identity;
                                         ],
                                         'person_name',
                                         'person_phone',
-                                        'address',
+//                                        'address',
+                                        [
+                                            'attribute'=>'address',
+                                            'value'=>function($d){
+                                                return $d->district->name.' '.$d->village->name.' '.$d->address;
+                                            }
+                                        ],
                                         'appeal_detail',
-
                                         [
                                             'attribute'=>'deadtime',
                                             'value'=>function($d){
@@ -184,8 +189,6 @@ $user = Yii::$app->user->identity;
                                             },
                                             'format'=>'raw'
                                         ],
-
-
 
                                     ],
                                 ]); ?>
