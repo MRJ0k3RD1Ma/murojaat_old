@@ -137,7 +137,7 @@ $user = Yii::$app->user->identity;
                                         ['class' => 'yii\grid\SerialColumn'],
 
                                         [
-                                            'label'=>'Рақамси ва санаси',
+                                            'label'=>'Рақами ва санаси',
                                             'value'=>function($d){
                                                 return "<b>№ {$d->number}</b> <br> {$d->date}";
                                             },
