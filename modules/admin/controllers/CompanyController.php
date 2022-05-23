@@ -54,6 +54,7 @@ class CompanyController extends Controller
             $sheet->setCellValue('B1', 'Ташкилот номи');
             $sheet->setCellValue('C1', 'Логин');
             $sheet->setCellValue('D1', 'Парол');
+            $sheet->setCellValue('E1', 'Тўлов ҳолати');
             foreach ($dataProvider->query->all() as $item){
                 $n++;
                 $m = $n+1;
@@ -61,6 +62,7 @@ class CompanyController extends Controller
                 $sheet->setCellValue('B'.$m, $item->name);
                 $sheet->setCellValue('C'.$m, $item->inn);
                 $sheet->setCellValue('D'.$m, '1111');
+                $sheet->setCellValue('E'.$m, $item->paid==1?'Тўлов қилинган':'Тўланмаган');
             }
 
             $writer = new Xlsx($spreadsheet);
@@ -756,4 +758,25 @@ class CompanyController extends Controller
 		
 		return $this->redirect(['index']);
 	}
+
+    public function actionPaid($id,$url=0){
+
+        $model = Company::findOne($id);
+        $model->redirect = $url;
+        $model->paid_date = date('Y-m-d');
+        $model->paid = 1;
+        if($model->load(Yii::$app->request->post())){
+
+            if($model->save()){
+                if($url){
+                    return $this->redirect([$url]);
+                }else{
+                    return $this->redirect(['index']);
+                }
+            }
+        }
+        return $this->renderAjax('_paid',['model'=>$model]);
+
+
+    }
 }

@@ -31,7 +31,7 @@ use Yii;
  */
 class Company extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
 {
-    public $cntall,$cntzero,$cntone,$cnttwo,$cntdead,$cntwithdead,$cnt0,$cnt1,$cnt2,$cnt3,$cnt4,$cnt5;
+    public $cntall,$cntzero,$cntone,$cnttwo,$cntdead,$cntwithdead,$cnt0,$cnt1,$cnt2,$cnt3,$cnt4,$cnt5,$redirect;
     /**
      * {@inheritdoc}
      */
@@ -47,10 +47,10 @@ class Company extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
     {
         return [
             [['inn', 'password', 'name', 'director', 'phone',  'region_id', 'district_id', 'village_id', 'address','type_id','group_id'], 'required'],
-            [['active_to', 'active_each', 'created', 'updated'], 'safe'],
-            [['status', 'parent_id','management', 'region_id', 'district_id', 'village_id','type_id','group_id'], 'integer'],
+            [['active_to', 'active_each', 'created', 'updated','paid_date'], 'safe'],
+            [['status', 'parent_id','management', 'region_id', 'district_id', 'village_id','type_id','group_id','paid'], 'integer'],
             [['inn', 'name', 'director', 'phone', 'telegram', 'address','token'], 'string', 'max' => 255],
-            [['password'], 'string', 'max' => 500],
+            [['password','redirect'], 'string', 'max' => 500],
             [['inn'], 'unique'],
         ];
     }
@@ -94,6 +94,7 @@ class Company extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
             'cnt3' => 'Тасдиқланиши кутилмоқда',
             'cnt4' => 'Бажарилган',
             'cnt5' => 'Рад этилган',
+            'paid_date' => 'Тўлов санаси',
         ];
     }
 
