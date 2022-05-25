@@ -36,9 +36,12 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'format'=>'raw'
                             ],
                             'cntall',
-                            'cntzero',
-                            'cntone',
-                            'cnttwo',
+                            'cnt0',
+                            'cnt1',
+                            'cnt2',
+                            'cnt3',
+                            'cnt4',
+                            'cnt5',
                             'cntdead',
                         ],
                     ]); ?>

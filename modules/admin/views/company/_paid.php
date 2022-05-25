@@ -14,6 +14,8 @@ $form = ActiveForm::begin();
 
 <?= $form->field($model,'paid_date')->textInput(['type'=>'date'])?>
 
+<?= $form->field($model,'phone')->textInput()?>
+
 <button class="btn btn-success" type="submit">Saqlash</button>
 
 <?php ActiveForm::end()?>

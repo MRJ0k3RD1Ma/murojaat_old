@@ -32,6 +32,8 @@ use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
 use yii\web\UploadedFile;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use yii\helpers\FileHelper;
 
 class AppealController extends Controller
 {
@@ -549,32 +551,48 @@ class AppealController extends Controller
 
         if(Yii::$app->request->isPost){
 
-            header('Content-Type: application/vnd.ms-excel');
-            header('Content-Disposition: attachment;filename="hisobot.xlsx"');
-            $spreadsheet = new Spreadsheet();
-            $sheet = $spreadsheet->getActiveSheet();
+
+            $speadsheet = new Spreadsheet();
+            $sheet = $speadsheet->getActiveSheet();
+            $title = "Sheet1";
+            $sheet->setTitle(substr($title, 0, 31));
+
+
             $n = 0;
             $sheet->setCellValue('A1', '№');
             $sheet->setCellValue('B1', 'Ташкилот номи');
             $sheet->setCellValue('C1', 'Юборилган мурожаатлар');
             $sheet->setCellValue('D1', 'Қабул қилинмаган');
-            $sheet->setCellValue('E1', 'Жараёнда');
-            $sheet->setCellValue('F1', 'Бажарилган');
-            $sheet->setCellValue('F1', 'Муддати бузилган');
+            $sheet->setCellValue('E1', 'Янги');
+            $sheet->setCellValue('F1', 'Жараёнда');
+            $sheet->setCellValue('G1', 'Тасдиқланиши кутилмоқда');
+            $sheet->setCellValue('H1', 'Бажарилган');
+            $sheet->setCellValue('I1', 'Рад этилган');
+            $sheet->setCellValue('J1', 'Муддати бузилган');
             foreach ($dataProvider->query->all() as $item){
                 $n++;
                 $m = $n+1;
                 $sheet->setCellValue('A'.$m, $n);
                 $sheet->setCellValue('B'.$m, $item->name);
                 $sheet->setCellValue('C'.$m, $item->cntall);
-                $sheet->setCellValue('D'.$m, $item->cntzero);
-                $sheet->setCellValue('E'.$m, $item->cntone);
-                $sheet->setCellValue('F'.$m, $item->cnttwo);
-                $sheet->setCellValue('F'.$m, $item->cntdead);
+                $sheet->setCellValue('D'.$m, $item->cnt0);
+                $sheet->setCellValue('E'.$m, $item->cnt1);
+                $sheet->setCellValue('F'.$m, $item->cnt2);
+                $sheet->setCellValue('G'.$m, $item->cnt3);
+                $sheet->setCellValue('H'.$m, $item->cnt4);
+                $sheet->setCellValue('I'.$m, $item->cnt5);
+                $sheet->setCellValue('J'.$m, $item->cntdead);
             }
 
-            $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
-            $writer->save("php://output");
+            $name = 'hisobot.xlsx';
+            $writer = new Xlsx($speadsheet);
+            $dir = Yii::$app->basePath.'/web/template/temp/';
+            if (!is_dir($dir)) {
+                FileHelper::createDirectory($dir, 0777);
+            }
+            $fileName = $dir . DIRECTORY_SEPARATOR . $name;
+            $writer->save($fileName);
+            return Yii::$app->response->sendFile($fileName);
 
         }
         return $this->render('companies', [

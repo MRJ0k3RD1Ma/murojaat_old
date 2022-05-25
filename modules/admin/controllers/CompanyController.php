@@ -55,6 +55,8 @@ class CompanyController extends Controller
             $sheet->setCellValue('C1', 'Логин');
             $sheet->setCellValue('D1', 'Парол');
             $sheet->setCellValue('E1', 'Тўлов ҳолати');
+            $sheet->setCellValue('F1', 'Телефон');
+            $sheet->setCellValue('G1', 'Туман');
             foreach ($dataProvider->query->all() as $item){
                 $n++;
                 $m = $n+1;
@@ -63,6 +65,8 @@ class CompanyController extends Controller
                 $sheet->setCellValue('C'.$m, $item->inn);
                 $sheet->setCellValue('D'.$m, '1111');
                 $sheet->setCellValue('E'.$m, $item->paid==1?'Тўлов қилинган':'Тўланмаган');
+                $sheet->setCellValue('F'.$m, $item->phone);
+                $sheet->setCellValue('G'.$m, $item->district_id);
             }
 
             $writer = new Xlsx($spreadsheet);
@@ -762,8 +766,9 @@ class CompanyController extends Controller
     public function actionPaid($id,$url=0){
 
         $model = Company::findOne($id);
+        $model->scenario = 'paidtime';
         $model->redirect = $url;
-        $model->paid_date = date('Y-m-d');
+        $model->paid_date = "";
         $model->paid = 1;
         if($model->load(Yii::$app->request->post())){
 

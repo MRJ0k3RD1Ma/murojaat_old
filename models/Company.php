@@ -31,7 +31,7 @@ use Yii;
  */
 class Company extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
 {
-    public $cntall,$cntzero,$cntone,$cnttwo,$cntdead,$cntwithdead,$cnt0,$cnt1,$cnt2,$cnt3,$cnt4,$cnt5,$redirect;
+    public $cntall,$cntzero,$cntone,$cnttwo,$cnttree,$cntfour,$cntdead,$cntwithdead,$cnt0,$cnt1,$cnt2,$cnt3,$cnt4,$cnt5,$redirect;
     /**
      * {@inheritdoc}
      */
@@ -48,6 +48,7 @@ class Company extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
         return [
             [['inn', 'password', 'name', 'director', 'phone',  'region_id', 'district_id', 'village_id', 'address','type_id','group_id'], 'required'],
             [['active_to', 'active_each', 'created', 'updated','paid_date'], 'safe'],
+            [['phone','paid_date','paid'],'required','on'=>'paidtime'],
             [['status', 'parent_id','management', 'region_id', 'district_id', 'village_id','type_id','group_id','paid'], 'integer'],
             [['inn', 'name', 'director', 'phone', 'telegram', 'address','token'], 'string', 'max' => 255],
             [['password','redirect'], 'string', 'max' => 500],
