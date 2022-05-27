@@ -34,7 +34,7 @@ use yii\web\UploadedFile;
  */
 class AppealRegister extends \yii\db\ActiveRecord
 {
-    public $letter,$mystatus;
+    public $letter,$mystatus,$masala;
     /**
      * {@inheritdoc}
      */
@@ -51,9 +51,10 @@ class AppealRegister extends \yii\db\ActiveRecord
         return [
 //            [['number', 'date', 'appeal_id',], 'required'],
             [['number','date','rahbar_id','preview','ijrochi_id'],'required','on'=>'reg'],
+            [['rahbar_id','preview','ijrochi_id'],'required','on'=>'sayyor'],
             [['date', 'question_id','deadtime', 'donetime', 'created', 'updated','takroriy_date'], 'safe'],
             [['appeal_id', 'ijrochi_id','rahbar_id', 'parent_bajaruvchi_id','nazorat', 'takroriy','takroriy_id','deadline', 'control_id', 'status', 'company_id', 'answer_send'], 'integer'],
-            [['users', 'detail','user_answer','user_answer','tashkilot','tashkilot_answer'], 'string'],
+            [['users', 'detail','user_answer','masala','user_answer','tashkilot','tashkilot_answer'], 'string'],
             [['number', 'preview', 'file','takroriy_number'], 'string', 'max' => 255],
             ['letter','file'],
         ];
@@ -90,6 +91,7 @@ class AppealRegister extends \yii\db\ActiveRecord
             'answer_send' => 'Answer Send',
             'letter'=>'Кузатувчи хат',
             'question_id'=>'Масаласи',
+            'masala'=>'Мурожаат матни',
         ];
     }
     public function getQuestion(){

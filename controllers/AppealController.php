@@ -269,7 +269,7 @@ class AppealController extends Controller
         $model = new Appeal();
 
         $register = new AppealRegister();
-		$register->preview = "Мурожаатни кўриб чиқиб, кўтарилган масалани ўрнатилган тартибда ҳал қилиб, натижаси ҳақида муаллифга жавоб хати тайёрлансин.";
+        $register->preview = "Мурожаатни кўриб чиқиб, кўтарилган масалани ўрнатилган тартибда ҳал қилиб, натижаси ҳақида муаллифга жавоб хати тайёрлансин.";
         $register->deadline = 15;
         $register->date = date('Y-m-d');
         $register->company_id = Yii::$app->user->identity->company_id;
@@ -277,9 +277,9 @@ class AppealController extends Controller
         $model->region_id = Yii::$app->user->identity->company->region_id;
         $model->count_applicant = 1;
         $model->count_list = 1;
-		$model->appeal_control_id = 1;
-		$model->nation_id = 1;
-		$model->email = '';
+        $model->appeal_control_id = 1;
+        $model->nation_id = 1;
+        $model->email = '';
         //appeal_file file upload
         //users array to json
         $model->district_id = Yii::$app->user->identity->company->district_id;
@@ -340,14 +340,14 @@ class AppealController extends Controller
                             $baj->deadline = $register->deadline;
                             $baj->letter = $model->letter;
                             $baj->save();
-                           
+
                             $baj = null;
                         }
                     }
                     return $this->redirect(['view','id'=>$register->id]);
                 }catch (\Exception $e){
-					$bar = AppealBajaruvchi::find()->where(['appeal_id'=>$model->id])->all();
-					foreach ($bar as $it){$it->delete();}
+                    $bar = AppealBajaruvchi::find()->where(['appeal_id'=>$model->id])->all();
+                    foreach ($bar as $it){$it->delete();}
                     $model->delete();
                 }
 
@@ -405,6 +405,7 @@ class AppealController extends Controller
 
                 $baj->status = 2;
                 $baj->save(false);
+
                 $app = $model->appeal;
                 $app->appeal_control_id = 1;
                 $app->save();
@@ -632,7 +633,7 @@ class AppealController extends Controller
         $model = Appeal::findOne($register->appeal_id);
         $address = $model->region->name.' '.$model->district->name.' '.@$model->village->name.' '.$model->address;
         $word = new TemplateProcessor(Yii::$app->basePath.'/web/template/getappeal.docx');
-        $word->setValue('companyup',mb_strtoupper($model->company->name));
+        $word->setValue('companyup',mb_strtoupper(\app\models\Company::findOne(1)->name));
         $word->setValue('number',$register->number);
         $word->setValue('questiongroup',$model->question->group->name);
 
@@ -653,8 +654,8 @@ class AppealController extends Controller
         $word->setValue('tocompany',Yii::$app->user->identity->company->name.'га');
 
 
-        $fileName = 'e-murojaat.uz_'.$register->number.'.docx';
-        $fullname = Yii::$app->basePath.'/web/template/temp/e-murojaat.uz_'.$register->number.'.docx';
+        $fileName = 'e-murojaat.uz_'.$register->id.'.docx';
+        $fullname = Yii::$app->basePath.'/web/template/temp/e-murojaat.uz_'.$register->id.'.docx';
         $word->saveAs($fullname);
         header('Content-Disposition: attachment; name=' . $fullname);
         $file = fopen($fullname, 'r+');
@@ -700,7 +701,7 @@ class AppealController extends Controller
         $model->reciever_id = $id;
         $model->deadtime = $register->deadtime;
         if(TaskEmp::find()->where(['sender_id'=>$model->sender_id])->andWhere(['reciever_id'=>$id])->andWhere(['appeal_id'=>$model->appeal_id])->andWhere(['register_id'=>$register->id])->one()
-        or $register->ijrochi_id == $model->reciever_id or $register->rahbar_id==$model->reciever_id
+            or $register->ijrochi_id == $model->reciever_id or $register->rahbar_id==$model->reciever_id
         ){
             return "Ушбу ҳодимга аввал топшириқ берилган юборилган";
         }
@@ -939,20 +940,20 @@ class AppealController extends Controller
     }
 
     public function actionSendrequest(){
-       $model = new Request();
-       $model->status_id = 0;
-       if($model->load(Yii::$app->request->post())){
+        $model = new Request();
+        $model->status_id = 0;
+        if($model->load(Yii::$app->request->post())){
 
-           if($model->save()){
-               Yii::$app->session->setFlash('success','Сўров мувоффақиятли юборилди');
-               // muddatni uzaytirishda tashkilotga tegishli murojaat bo'lsa uni bajarib yuborish yani parent null bo'lsa
-               if($model->type_id == 1 and !$model->register->parent_bajaruvchi_id){
-                   changeTime($model->id);
-               }
-           }else{
-               Yii::$app->session->setFlash('error','Сўров маълумотлари тўлиқ эмас');
-           }
-       }
+            if($model->save()){
+                Yii::$app->session->setFlash('success','Сўров мувоффақиятли юборилди');
+                // muddatni uzaytirishda tashkilotga tegishli murojaat bo'lsa uni bajarib yuborish yani parent null bo'lsa
+                if($model->type_id == 1 and !$model->register->parent_bajaruvchi_id){
+                    changeTime($model->id);
+                }
+            }else{
+                Yii::$app->session->setFlash('error','Сўров маълумотлари тўлиқ эмас');
+            }
+        }
         return $this->redirect(['view','id'=>$model->register_id]);
     }
 
@@ -1036,10 +1037,10 @@ class AppealController extends Controller
                 $model->appeal_file = $name;
             }
             $model->year = date('Y');
-            if($model->number = Appeal::find()->where(['year'=>$model->year])->max('number')){
+            if($model->number = Appeal::find()->where(['year'=>$model->year])->andWhere(['type'=>1])->max('number')){
                 $model->number = $model->number+1;
             }else{
-                $model->number = 0;
+                $model->number = 1;
             }
 
             $model->number_full = $model->number.'/'.substr($model->year,2,2);
@@ -1062,6 +1063,9 @@ class AppealController extends Controller
         $register = new AppealRegister();
         $register->scenario = 'reg';
         $register->preview = "Мурожаатни кўриб чиқиб, кўтарилган масалани ўрнатилган тартибда ҳал қилиб, натижаси ҳақида муаллифга жавоб хати тайёрлансин.";
+        $register->masala = $model->appeal_detail;
+        $register->number = $model->number_full;
+        $register->date = date('Y-m-d');
         if($register->load(Yii::$app->request->post())){
             $register->appeal_id = $model->id;
             $register->deadtime = $model->deadtime;
@@ -1072,6 +1076,7 @@ class AppealController extends Controller
                 $model->question_id = $register->question_id;
                 $model->appeal_control_id = 1;
                 $model->status = 2;
+                $model->appeal_detail = $register->masala;
                 $model->save();
                 return $this->redirect(['view','id'=>$register->id]);
             }
@@ -1100,6 +1105,103 @@ class AppealController extends Controller
         return $this->render('indexhok', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+        ]);
+    }
+
+    public function actionNotregsayyor(){
+        $searchModel = new AppealSearch();
+        $dataProvider = $searchModel->searchNotregsayyor(Yii::$app->request->queryParams);
+
+        return $this->render('indexhok', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+
+    public function actionTosayyor(){
+        $model = new Appeal();
+//        $model->scenario = "insert";
+        $register = new AppealRegister();
+//        $register->scenario = 'sayyor';
+
+        $model->company_id = Yii::$app->user->identity->company_id;
+        $model->register_id = Yii::$app->user->id;
+        $model->register_company_id = Yii::$app->user->identity->company_id;
+        $model->type = 2;
+        $model->count_applicant = 1;
+        $model->count_list = 1;
+        $model->appeal_shakl_id = 5;
+        $model->appeal_type_id = 1;
+        $model->appeal_control_id = 1;
+        $com = Yii::$app->user->identity->company;
+        $model->region_id = $com->region_id;
+        $model->district_id = $com->district_id;
+        $model->village_id = $com->village_id;
+        $model->deadtime = date('Y-m-d', strtotime(date('Y-m-d') . ' +10 day'));
+        $register->preview = "Мурожаатни кўриб чиқиб, кўтарилган масалани ўрнатилган тартибда ҳал қилиб, натижаси ҳақида муаллифга жавоб хати тайёрлансин.";
+
+        if($model->load(Yii::$app->request->post()) and $register->load(Yii::$app->request->post())){
+
+            if($model->appeal_file = UploadedFile::getInstance($model,'appeal_file')){
+                $name = microtime(true).'.'.$model->appeal_file->extension;
+                $model->appeal_file->saveAs(Yii::$app->basePath.'/web/upload/'.$name);
+                $model->appeal_file = $name;
+            }
+            $model->year = date('Y');
+            if($model->number = Appeal::find()->where(['year'=>$model->year])->andWhere(['company_id'=>Yii::$app->user->identity->company_id])->andWhere(['type'=>'2'])->max('number')){
+                $model->number = $model->number+1;
+            }else{
+                $model->number = 1;
+            }
+            $model->question_id = $register->question_id;
+            $model->number_full = "S-".$model->number.'-'.substr($model->year,2,2).'/'.Yii::$app->user->identity->company_id;
+
+            if($model->save()){
+//                $register->masala = $model->appeal_detail;
+                $register->number = $model->number_full;
+                $register->date = date('Y-m-d');
+                $register->deadtime = $model->deadtime;
+                $register->appeal_id = $model->id;
+                $register->deadtime = $model->deadtime;
+                $register->deadline = 10;
+                $register->status = 2;
+                $register->company_id = $model->company_id;
+                if($register->save()){
+                    $model->question_id = $register->question_id;
+                    $model->appeal_control_id = 1;
+                    $model->status = 2;
+                    $model->save();
+
+                    $task = new TaskEmp();
+                    $task->appeal_id = $model->id;
+                    $task->register_id = $register->id;
+                    $task->reciever_id = $register->rahbar_id;
+                    $task->sender_id = $register->rahbar_id;
+                    $task->deadtime = $register->deadtime;
+                    $task->task = '-';
+                    $task->status = 0;
+                    $task->save();
+                    if($register->rahbar_id != $register->ijrochi_id){
+                        $task = new TaskEmp();
+                        $task->appeal_id = $model->id;
+                        $task->register_id = $register->id;
+                        $task->sender_id = $register->rahbar_id;
+                        $task->reciever_id = $register->ijrochi_id;
+                        $task->deadtime = $register->deadtime;
+                        $task->task = '-';
+                        $task->status = 0;
+                        $task->save();
+                    }
+
+
+                    Yii::$app->session->setFlash('success','Мурожаат мувоффақиятли қибул қилинди.');
+                    return $this->redirect(['view','id'=>$register->id]);
+                }
+            }
+        }
+        return $this->render('tosayyor',[
+            'model'=>$model,
+            'register'=>$register
         ]);
     }
 }

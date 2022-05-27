@@ -99,12 +99,12 @@ class AppealRegisterSearch extends AppealRegister
             'appeal.address' => $this->address,
         ]);
 
-        $query->andFilterWhere(['like', 'number', $this->number])
-            ->andFilterWhere(['like', 'users', $this->users])
-            ->andFilterWhere(['like', 'preview', $this->preview])
-            ->andFilterWhere(['like', 'detail', $this->detail])
-            ->andFilterWhere(['like', 'file', $this->file])
-            ->andFilterWhere(['like', 'takroriy_number', $this->takroriy_number])
+        $query->andFilterWhere(['like', 'appeal.number', $this->number])
+            ->andFilterWhere(['like', 'appeal_register.users', $this->users])
+            ->andFilterWhere(['like', 'appeal_register.preview', $this->preview])
+            ->andFilterWhere(['like', 'appeal_register.detail', $this->detail])
+            ->andFilterWhere(['like', 'appeal.file', $this->file])
+            ->andFilterWhere(['like', 'appeal_register.takroriy_number', $this->takroriy_number])
             ->andFilterWhere(['like', 'appeal.person_phone', $this->person_phone])
             ->andFilterWhere(['like', 'appeal.person_name', $this->person_name]);
 

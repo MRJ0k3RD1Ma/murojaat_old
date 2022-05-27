@@ -121,9 +121,19 @@ use yii\helpers\Url; ?>
                         </a>
                     </li>
 
+
+
                 </ul>
             </li>
-
+            <li class="nav-item">
+                <a href="<?= Yii::$app->urlManager->createUrl(['/appeal/tosayyor'])?>" class="nav-link
+                    <?=(Yii::$app->controller->id=='appeal' and Yii::$app->controller->action->id == 'tosayyor')?'active':''?>">
+                    <i class="nav-icon fas fa-plus"></i>
+                    <p>
+                        Сайёр қабул
+                    </p>
+                </a>
+            </li>
             <li class="nav-item">
                 <a href="<?= Yii::$app->urlManager->createUrl(['/appeal/companies'])?>" class="nav-link <?=(Yii::$app->controller->id=='appeal' and Yii::$app->controller->action->id == 'companies')?'active':''?>">
                     <i class="nav-icon fas fa-list"></i>

@@ -303,16 +303,16 @@ $user = Yii::$app->user->identity;
                                                     if($ds < 0){
                                                         $class = "bg-danger";
                                                     }
-                                                    $res = "<span class='{$class}' style='width: 100%; height: 100%; display: block;text-align: center'>".$days.' кун<br>'.$d->deadtime."</span> ";
+                                                    $res = "<span class='{$class}' style='text-align: center'>".$days.' кун<br>'.$d->deadtime."</span> ";
 
                                                     
 													if($ds < 0){
 														$class = "bg-danger";
-														$res = "<span class='{$class}' style='width: 100%; height: 100%; display: block;'>Муддати ўтган</span>";
+														$res = "<span class='{$class}' style='width: 100%; height: 100%; '>Муддати ўтган</span>";
 													}elseif($ds <= 5){
 														$class = "bg-warning";
-														$res = "<span class='{$class}' style='width: 100%; height: 100%; display: block;'>".$days.' кун'."</span><br>{$d->deadtime}";
-													}else{$res = "<span class='{$class}' style='width: 100%; height: 100%; display: block;'>".$days.' кун'."</span><br>{$d->deadtime}";}
+														$res = "<span class='{$class}' style='width: 100%; height: 100%; '>".$days.' кун'."</span><br>{$d->deadtime}";
+													}else{$res = "<span class='{$class}' style='width: 100%; height: 100%;'>".$days.' кун'."</span><br>{$d->deadtime}";}
 
                                                     return $res;
                                                 },

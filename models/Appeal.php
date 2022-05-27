@@ -79,7 +79,7 @@ class Appeal extends \yii\db\ActiveRecord
     {
         return [
             [['pursuit', 'person_id','number','year', 'gender','type','register_id','register_company_id', 'nation_id', 'home_id','count_list','count_applicant','answer_reply_send','company_id', 'region_id','boshqa_tashkilot', 'boshqa_tashkilot_group_id','isbusinessman','boshqa_tashkilot_id','district_id', 'village_id', 'question_id', 'appeal_type_id', 'appeal_shakl_id', 'appeal_control_id', 'status'], 'integer'],
-            [['region_id', 'district_id', 'address','gender',  'appeal_detail', 'appeal_type_id','appeal_preview','answer_detail',], 'required','on'=>'insert'],
+            [['region_id', 'district_id', 'address','gender', 'appeal_detail', 'appeal_type_id',], 'required','on'=>'insert'],
             [['answer_name','answer_preview','answer_number','appeal_control_id','answer_date',],'required','on'=>'close'],
             [['date_of_birth', 'created', 'updated','boshqa_tashkilot_date','answer_date','deadtime'], 'safe'],
             [['types', 'detail', 'appeal_preview','answer_detail','appeal_detail', 'executor_files'], 'string'],
