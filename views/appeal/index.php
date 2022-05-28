@@ -220,8 +220,7 @@ $user = Yii::$app->user->identity;
                                     <?= $this->title?>
                                 </h3>
                                 <div class="card-tools">
-                                            <?= Html::a('Рўйхатга олинмаган мурожаатлар', ['notregister'], ['class' => 'btn btn-primary']) ?>
-                                            <?= Html::a('Янги мурожаат қўшиш', ['create'], ['class' => 'btn btn-success']) ?>
+                                    <a href="" data-method="post" class="btn btn-info"><i class="fa fa-file-excel"></i> Экспорт</a>
                                     <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
                                         <span class="fa fa-search"></span> Қидирув
                                     </button>
