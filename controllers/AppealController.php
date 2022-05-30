@@ -8,7 +8,6 @@ use app\models\AppealBajaruvchi;
 use app\models\AppealComment;
 use app\models\AppealRegister;
 use app\models\Company;
-use app\models\DeadlineChanges;
 use app\models\Request;
 use app\models\search\AppealBajaruvchiAnsSearch;
 use app\models\search\AppealBajaruvchiComSearch;
@@ -20,14 +19,12 @@ use app\models\search\AppealRegisterRunningSearch;
 use app\models\search\AppealRegisterSearch;
 use app\models\search\AppealSearch;
 use app\models\search\CompanyRegisterSearch;
-use app\models\search\DeadlineChangesSearch;
 use app\models\search\RequestSearch;
 use app\models\TaskEmp;
 use app\models\User;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpWord\TemplateProcessor;
 use Yii;
-use yii\base\BaseObject;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
@@ -212,6 +209,8 @@ class AppealController extends Controller
             'reject'=>$reject
         ]);
     }
+
+
     public function actionAnswer($id,$ansid=0){
 
         $register = AppealRegister::findOne($id);
@@ -258,7 +257,6 @@ class AppealController extends Controller
                 exit;
             }
         }
-
 
         return $this->renderAjax('_answerform',[
             'model'=>$model
@@ -530,21 +528,6 @@ class AppealController extends Controller
         ]);
     }
 
-    public function actionQuest($id,$quest){
-        if($model = AppealRegister::findOne($id)){
-            $appeal = $model->appeal;
-            $appeal->question_id = $quest;
-            if($appeal->save()){
-                Yii::$app->session->setFlash('success','Савол ўзгартирилди');
-            }else{
-                Yii::$app->session->setFlash('error','Саволни сақлашда хатолик');
-            }
-        }else{
-            Yii::$app->session->setFlash('error','Маълумотлар етарли эмас');
-        }
-    }
-
-
 
     public function actionCompanies(){
         $searchModel = new CompanyRegisterSearch();
@@ -603,29 +586,6 @@ class AppealController extends Controller
 
 
 
-    }
-
-    public function actionDeadline($id){
-        $model = AppealRegister::findOne($id);
-        $dead = new DeadlineChanges();
-        $dead->appeal_id = $model->appeal_id;
-        $dead->register_id = $model->id;
-        if($dead->load(Yii::$app->request->post())){
-
-            if($dead->file = UploadedFile::getInstance($dead,'file')){
-                $name = microtime(true).'.'.$dead->file->extension;
-                $dead->file->saveAs(Yii::$app->basePath.'/web/upload/deadline/'.$name);
-                $dead->file = $name;
-            }
-
-            if($dead->save()){
-                return $this->redirect(['view','id'=>$id]);
-            }
-        }
-
-        return $this->render('deadline',[
-            'model'=>$dead
-        ]);
     }
 
     public function actionGetappeal($id){
@@ -967,6 +927,7 @@ class AppealController extends Controller
         return $this->redirect(['request']);
     }
 
+
     public function actionRequest($do=null,$all=null){
         $searchModel = new RequestSearch();
         if($do){
@@ -1017,6 +978,7 @@ class AppealController extends Controller
 
     }
 
+
     public function actionTohok(){
         $model = new Appeal();
         $model->company_id = 1;
@@ -1054,6 +1016,7 @@ class AppealController extends Controller
             'model'=>$model
         ]);
     }
+
     public function actionViewhok($id){
         $model = Appeal::findOne($id);
         if($model->status==0){
@@ -1088,6 +1051,7 @@ class AppealController extends Controller
             'register'=>$register
         ]);
     }
+
     public function actionIndexhok(){
         $searchModel = new AppealSearch();
         $dataProvider = $searchModel->searchVillage(Yii::$app->request->queryParams);
@@ -1108,15 +1072,6 @@ class AppealController extends Controller
         ]);
     }
 
-    public function actionNotregsayyor(){
-        $searchModel = new AppealSearch();
-        $dataProvider = $searchModel->searchNotregsayyor(Yii::$app->request->queryParams);
-
-        return $this->render('indexhok', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
-        ]);
-    }
 
     public function actionTosayyor(){
         $model = new Appeal();
@@ -1204,4 +1159,6 @@ class AppealController extends Controller
             'register'=>$register
         ]);
     }
+
+
 }
