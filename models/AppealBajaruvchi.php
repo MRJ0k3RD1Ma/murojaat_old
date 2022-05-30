@@ -73,6 +73,9 @@ class AppealBajaruvchi extends \yii\db\ActiveRecord
     public function getRegister(){
         return $this->hasOne(AppealRegister::className(),['id'=>'register_id']);
     }
+    public function getChild(){
+        return $this->hasOne(AppealRegister::className(),['parent_bajaruvchi_id'=>'id']);
+    }
     public function upload(){
         if($this->letter = UploadedFile::getInstance($this,'letter')){
             $name = microtime(true).'.'.$this->letter->extension;

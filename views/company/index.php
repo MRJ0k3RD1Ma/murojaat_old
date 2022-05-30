@@ -30,7 +30,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             [
                                 'attribute'=>'name',
                                 'value'=>function($d){
-                                    $url = Yii::$app->urlManager->createUrl(['/appeal/complist','id'=>$d->id]);
+                                    $url = Yii::$app->urlManager->createUrl(['/company/view','id'=>$d->id]);
                                     return "<a href='{$url}'>{$d->name}</a>";
                                 },
                                 'format'=>'raw'

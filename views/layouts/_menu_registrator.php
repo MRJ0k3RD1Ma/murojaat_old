@@ -45,7 +45,7 @@
     </a>
 </li>
 <li class="nav-item">
-    <a href="<?= Yii::$app->urlManager->createUrl(['/appeal/companies'])?>" class="nav-link <?=(Yii::$app->controller->id=='appeal' and Yii::$app->controller->action->id == 'companies')?'active':''?>">
+    <a href="<?= Yii::$app->urlManager->createUrl(['/company/index'])?>" class="nav-link <?=(Yii::$app->controller->id=='company')?'active':''?>">
         <i class="nav-icon fas fa-list"></i>
         <p>
             Ташкилотлар

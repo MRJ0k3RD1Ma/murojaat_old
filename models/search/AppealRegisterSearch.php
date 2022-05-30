@@ -39,13 +39,25 @@ class AppealRegisterSearch extends AppealRegister
      *
      * @return ActiveDataProvider
      */
-    public function search($params)
+    public function search($params,$type=null)
     {
         $user = \Yii::$app->user->identity;
-
         $query = AppealRegister::find()->where(['appeal_register.company_id'=>$user->company_id])
-            ->innerJoin('appeal','appeal.id=appeal_register.appeal_id')
-            ->orderBy(['date'=>SORT_DESC]);
+            ->innerJoin('appeal','appeal.id=appeal_register.appeal_id');
+        //dead running closed;
+        if($type == 'running'){
+                $query->andWhere(['<>','appeal_register.status',4]);
+
+        }elseif($type=='closed'){
+            $query->andWhere(['=','appeal_register.status',4]);
+
+        }elseif($type == 'dead'){
+            $sql = "appeal_register.deadtime<date(now())";
+            $query->andWhere(['<>','appeal_register.status',4])->andWhere($sql);
+        }
+
+        $query->orderBy(['date'=>SORT_DESC]);
+
 
         // add conditions that should always apply here
 

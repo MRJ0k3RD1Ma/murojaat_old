@@ -22,6 +22,7 @@ class GetController extends Controller
         echo $res;
         exit;
     }
+
     public function actionVillage($id){
         $model = Village::find()->where(['district_id'=>$id])->all();
         $res = "<option value=''>-Mahallani tanlang-</option>";
@@ -31,6 +32,7 @@ class GetController extends Controller
         echo $res;
         exit;
     }
+
     public function actionVillages($id){
         $res = "";
         $model = Village::find()->where(['district_id'=>$id])->all();
@@ -57,6 +59,7 @@ class GetController extends Controller
         echo $res;
         exit;
     }
+
     public function actionGettashkilot(){
 ## Read value
         $draw = isset($_POST['draw']) ? $_POST['draw'] : 1;

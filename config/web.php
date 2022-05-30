@@ -19,9 +19,6 @@ $config = [
         'rest' => [
             'class' => 'app\modules\rest\Module',
         ],
-        'company' => [
-            'class' => 'app\modules\company\Module',
-        ],
     ],
     'components' => [
         'request' => [
@@ -47,12 +44,7 @@ $config = [
             'enableAutoLogin' => true,
             'loginUrl'=>['/site/login']
         ],
-        'company' => [
-            'class' => 'yii\web\User',
-            'identityClass' => 'app\models\Company',
-            'enableAutoLogin' => true,
-            'loginUrl'=>['/company/default/login']
-        ],
+
 
         'errorHandler' => [
             'errorAction' => '/site/error',

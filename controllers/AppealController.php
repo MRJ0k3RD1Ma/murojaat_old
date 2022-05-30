@@ -25,6 +25,7 @@ use app\models\User;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpWord\TemplateProcessor;
 use Yii;
+use yii\base\BaseObject;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
@@ -48,7 +49,9 @@ class AppealController extends Controller
                         'roles' => ['@'],
 
                     ],
-
+                    'matchCallback' => function ($rule, $action) {
+                        return Yii::$app->user->identity->is_registration === 1;
+                    }
                 ],
             ],
             'verbs' => [
@@ -68,84 +71,16 @@ class AppealController extends Controller
      */
     public function actionIndex($type = null)
     {
-        $user = Yii::$app->user->identity;
-        if($type=='closed'){
-            $searchModel = new AppealRegisterClosedSearch();
-            $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-        }elseif($type == 'running'){
-            $searchModel = new AppealRegisterRunningSearch();
-            $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-        }elseif($type == 'dead'){
-            $searchModel = new AppealRegisterDeadSearch();
-            $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-        }else{
-            $searchModel = new AppealRegisterSearch();
-            $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-        }
+
+        $searchModel = new AppealRegisterSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams,$type);
+
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
     }
 
-    public function actionComplist($id){
-        if($com = Company::findOne($id)){
-            $searchModel = new AppealBajaruvchiComSearch();
-            $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-
-            if(Yii::$app->request->isPost){
-
-                header('Content-Type: application/vnd.ms-excel');
-                header('Content-Disposition: attachment;filename="hisbot.xlsx"');
-                $spreadsheet = new Spreadsheet();
-                $sheet = $spreadsheet->getActiveSheet();
-                $n = 0;
-                $sheet->setCellValue('A1', '№');
-                $sheet->setCellValue('B1', 'Ҳолати');
-                $sheet->setCellValue('C1', 'Мурожаатчи');
-                $sheet->setCellValue('D1', 'Савол');
-                $sheet->setCellValue('E1', 'Муддат');
-                $sheet->setCellValue('F1', 'Юборилган вақти');
-                foreach ($dataProvider->query->all() as $item){
-                    $n++;
-                    $m = $n+1;
-                    $d = $item;
-                    if($q = $d->appeal->question){
-                        $res = $q->group->code.'-'.$q->code.'.'.$q->name;
-                    }else{
-                        $res = "Савол белгиланмаган";
-                    }
-
-                    if($d->status == 0){
-                        $status =  "Рўйхатга олинмаган";
-                    }elseif($d->status == 1){
-                        $status =  "Жараёнда";
-                    }else{
-                        $status =  "Бажарилган";
-                    }
-
-                    $sheet->setCellValue('A'.$m, $n);
-                    $sheet->setCellValue('B'.$m, $status);
-                    $sheet->setCellValue('C'.$m, $d->appeal->person_name);
-                    $sheet->setCellValue('D'.$m, $res);
-                    $sheet->setCellValue('E'.$m, $item->deadtime);
-                    $sheet->setCellValue('F'.$m, $item->created);
-                }
-
-                $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
-                $writer->save("php://output");
-
-            }
-
-            return $this->render('combaj', [
-                'searchModel' => $searchModel,
-                'dataProvider' => $dataProvider,
-                'company'=>$com
-            ]);
-        }else{
-            return $this->redirect(['index']);
-        }
-    }
 
     public function actionAnswered($status = 3){
         $searchModel = new AppealBajaruvchiAnsSearch();
@@ -505,9 +440,6 @@ class AppealController extends Controller
                                 $baj->save();
                                 $baj = null;
                             }
-
-
-
                         }
 
                     }
@@ -528,65 +460,6 @@ class AppealController extends Controller
         ]);
     }
 
-
-    public function actionCompanies(){
-        $searchModel = new CompanyRegisterSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-
-        if(Yii::$app->request->isPost){
-
-
-            $speadsheet = new Spreadsheet();
-            $sheet = $speadsheet->getActiveSheet();
-            $title = "Sheet1";
-            $sheet->setTitle(substr($title, 0, 31));
-
-
-            $n = 0;
-            $sheet->setCellValue('A1', '№');
-            $sheet->setCellValue('B1', 'Ташкилот номи');
-            $sheet->setCellValue('C1', 'Юборилган мурожаатлар');
-            $sheet->setCellValue('D1', 'Қабул қилинмаган');
-            $sheet->setCellValue('E1', 'Янги');
-            $sheet->setCellValue('F1', 'Жараёнда');
-            $sheet->setCellValue('G1', 'Тасдиқланиши кутилмоқда');
-            $sheet->setCellValue('H1', 'Бажарилган');
-            $sheet->setCellValue('I1', 'Рад этилган');
-            $sheet->setCellValue('J1', 'Муддати бузилган');
-            foreach ($dataProvider->query->all() as $item){
-                $n++;
-                $m = $n+1;
-                $sheet->setCellValue('A'.$m, $n);
-                $sheet->setCellValue('B'.$m, $item->name);
-                $sheet->setCellValue('C'.$m, $item->cntall);
-                $sheet->setCellValue('D'.$m, $item->cnt0);
-                $sheet->setCellValue('E'.$m, $item->cnt1);
-                $sheet->setCellValue('F'.$m, $item->cnt2);
-                $sheet->setCellValue('G'.$m, $item->cnt3);
-                $sheet->setCellValue('H'.$m, $item->cnt4);
-                $sheet->setCellValue('I'.$m, $item->cnt5);
-                $sheet->setCellValue('J'.$m, $item->cntdead);
-            }
-
-            $name = 'hisobot.xlsx';
-            $writer = new Xlsx($speadsheet);
-            $dir = Yii::$app->basePath.'/web/template/temp/';
-            if (!is_dir($dir)) {
-                FileHelper::createDirectory($dir, 0777);
-            }
-            $fileName = $dir . DIRECTORY_SEPARATOR . $name;
-            $writer->save($fileName);
-            return Yii::$app->response->sendFile($fileName);
-
-        }
-        return $this->render('companies', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
-        ]);
-
-
-
-    }
 
     public function actionGetappeal($id){
         $register = AppealRegister::findOne($id);

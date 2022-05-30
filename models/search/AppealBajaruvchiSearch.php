@@ -38,10 +38,25 @@ class AppealBajaruvchiSearch extends AppealBajaruvchi
      *
      * @return ActiveDataProvider
      */
-    public function search($params)
+    public function search($params,$type=null,$id=0)
     {
-        $query = AppealBajaruvchi::find()
-        ->where(['company_id'=>\Yii::$app->user->identity->company_id])->andWhere(['<=','status',1]);
+        $query = AppealBajaruvchi::find();
+
+        if($type=='company'){
+            $query
+                ->innerJoin('appeal_register','appeal_register.id=appeal_bajaruvchi.register_id')
+                ->andWhere(['appeal_register.company_id'=>\Yii::$app->user->identity->company_id])
+                ->andWhere(['appeal_bajaruvchi.company_id'=>$id])
+                ->orderBy(['appeal_register.created'=>SORT_DESC])
+            ;
+        }elseif($type == 'answered'){
+            $query = AppealBajaruvchi::find()
+                ->where('register_id in (select id from appeal_register where company_id='.\Yii::$app->user->identity->company_id.')')
+                ->orderBy(['updated'=>SORT_DESC]);
+        }else{
+            $query->where(['company_id'=>\Yii::$app->user->identity->company_id])->andWhere(['<=','status',1]);
+        }
+
 
         // add conditions that should always apply here
 

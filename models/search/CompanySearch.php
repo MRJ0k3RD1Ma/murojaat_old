@@ -5,7 +5,7 @@ namespace app\models\search;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\Company;
-
+use Yii;
 /**
  * CompanySearch represents the model behind the search form of `app\models\Company`.
  */
@@ -38,10 +38,24 @@ class CompanySearch extends Company
      *
      * @return ActiveDataProvider
      */
-    public function search($params)
+    public function search($params,$type=null)
     {
         $query = Company::find();
+        if($type=='withstatus'){
+            $query->select(['company.*','COUNT(appeal_bajaruvchi.company_id) as cntall',
+                '(select count(appeal_bajaruvchi.id) from appeal_bajaruvchi WHERE appeal_bajaruvchi.company_id=company.id and appeal_bajaruvchi.status=0 and appeal_bajaruvchi.register_id in (select id from appeal_register where company_id='.Yii::$app->user->identity->company_id.')) as cnt0',
+                '(select count(appeal_bajaruvchi.id) from appeal_bajaruvchi WHERE appeal_bajaruvchi.company_id=company.id and appeal_bajaruvchi.status=1  and appeal_bajaruvchi.register_id in (select id from appeal_register where company_id='.Yii::$app->user->identity->company_id.')) as cnt1',
+                '(select count(appeal_bajaruvchi.id) from appeal_bajaruvchi WHERE appeal_bajaruvchi.company_id=company.id and appeal_bajaruvchi.status=2  and appeal_bajaruvchi.register_id in (select id from appeal_register where company_id='.Yii::$app->user->identity->company_id.')) as cnt2',
+                '(select count(appeal_bajaruvchi.id) from appeal_bajaruvchi WHERE appeal_bajaruvchi.company_id=company.id and appeal_bajaruvchi.status=3  and appeal_bajaruvchi.register_id in (select id from appeal_register where company_id='.Yii::$app->user->identity->company_id.')) as cnt3',
+                '(select count(appeal_bajaruvchi.id) from appeal_bajaruvchi WHERE appeal_bajaruvchi.company_id=company.id and appeal_bajaruvchi.status=4  and appeal_bajaruvchi.register_id in (select id from appeal_register where company_id='.Yii::$app->user->identity->company_id.')) as cnt4',
+                '(select count(appeal_bajaruvchi.id) from appeal_bajaruvchi WHERE appeal_bajaruvchi.company_id=company.id and appeal_bajaruvchi.status=5  and appeal_bajaruvchi.register_id in (select id from appeal_register where company_id='.Yii::$app->user->identity->company_id.')) as cnt5',
+                '(select count(appeal_bajaruvchi.id) from appeal_bajaruvchi WHERE appeal_bajaruvchi.company_id=company.id and appeal_bajaruvchi.deadtime<date(now()) and appeal_bajaruvchi.status<>4 and appeal_bajaruvchi.register_id in (select id from appeal_register where company_id='.Yii::$app->user->identity->company_id.')) as cntdead',
+            ])->leftJoin('appeal_bajaruvchi','appeal_bajaruvchi.company_id = company.id ')
+                ->where('appeal_bajaruvchi.register_id in (SELECT appeal_register.id FROM appeal_register WHERE appeal_register.company_id='.Yii::$app->user->identity->company_id.') ')
+                ->groupBy(['appeal_bajaruvchi.company_id'])
+                ->orderBy(['cntall'=>SORT_DESC]);
 
+        }
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
