@@ -198,7 +198,7 @@ class AppealController extends Controller
             }
             return $this->redirect(['view','id'=>$regid]);
         }
-        return $this->renderAjax('_task',[
+        return $this->renderAjax('view/_send_task',[
             'model'=>$model,
             'id'=>$id,
             'regid'=>$regid
@@ -276,7 +276,7 @@ class AppealController extends Controller
             }
             return $this->redirect(['view','id'=>$regid]);
         }
-        return $this->renderAjax('view/_task_emp',[
+        return $this->renderAjax('view/_send_task_emp',[
             'model'=>$model,
             'id'=>$id,
             'regid'=>$regid,
