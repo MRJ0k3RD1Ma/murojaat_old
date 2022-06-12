@@ -235,7 +235,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 [
                                     'attribute'=>'reaply_send',
                                     'value'=>function($d){
-                                        if($d->reaply_send == 0){
+                                        if($d->reaply_send == 1){
                                             return "Мурожаатчига жавоб хати юборилган";
                                         }else{
                                             return "Мурожаатчига жавоб хати юборилмаган";

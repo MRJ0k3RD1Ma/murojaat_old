@@ -308,7 +308,6 @@ class AppealController extends Controller
         return $this->redirect(['view','id'=>$register->id]);
     }
 
-
     public function actionClose($id,$ansid){
         $register = AppealRegister::findOne($id);
         $model = Appeal::findOne($register->appeal_id);
@@ -377,7 +376,7 @@ class AppealController extends Controller
         $model->status = 3;
         if($ansid != 0){
             $old = AppealAnswer::findOne($ansid);
-            $model->file = $old->file;
+            $file = $old->file;
         }
         if($model->load(Yii::$app->request->post())){
 
@@ -674,8 +673,6 @@ class AppealController extends Controller
             'register'=>$register
         ]);
     }
-
-
 
 
     public function actionDeletetask($id){
