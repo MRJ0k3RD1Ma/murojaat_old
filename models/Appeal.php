@@ -193,6 +193,13 @@ class Appeal extends \yii\db\ActiveRecord
             $this->letter = $name;
         }
     }
+    public function uploadAppeal(){
+        if($this->appeal_file = UploadedFile::getInstance($this,'appeal_file')){
+            $name = microtime(true).'.'.$this->appeal_file->extension;
+            $this->appeal_file->saveAs(Yii::$app->basePath.'/web/upload/'.$name);
+            $this->appeal_file = $name;
+        }
+    }
     public function getStatus0(){
         return $this->hasOne(Status::className(),['id'=>'status']);
     }

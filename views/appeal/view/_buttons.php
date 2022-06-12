@@ -16,7 +16,7 @@
     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
         <a class="dropdown-item" href="<?= Yii::$app->urlManager->createUrl(['/appeal/update','id'=>$register->id])?>">Резолюция</a>
         <a class="dropdown-item" href="<?= Yii::$app->urlManager->createUrl(['/appeal/updateappeal','id'=>$register->id])?>">Мурожаат маълумотлари</a>
-        <a class="dropdown-item" href="<?= Yii::$app->urlManager->createUrl(['/appeal/updateregister','id'=>$register->id])?>">Ариза маълумотлари</a>
+        <a class="dropdown-item" href="#">Ариза маълумотлари</a>
     </div>
 </div>
 

@@ -40,7 +40,7 @@
             ?>
             <tr>
                 <td><?= $n?></td>
-                <td><button class="btn btn-primary" onclick="taskemployee('<?= Yii::$app->urlManager->createUrl(['/site/taskemp','id'=>$item->id,'regid'=>$register->id])?>')"><span class="fa fa-plus"></span></button></td>
+                <td><button class="btn btn-primary" onclick="taskemployee('<?= Yii::$app->urlManager->createUrl(['/appeal/taskemp','id'=>$item->id,'regid'=>$register->id])?>')"><span class="fa fa-plus"></span></button></td>
                 <td><?= $item->name?></td>
                 <td><?= $item->lavozim->name?></td>
                 <td><?= $item->bulim->name?></td>

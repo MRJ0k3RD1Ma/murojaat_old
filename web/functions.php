@@ -69,7 +69,11 @@ function closeAppeal($id,$reg_id,$c_id){
             $baj->status = 4;
             $baj->save();
         }
-
+        $emp = TaskEmp::find()->where(['appeal_id'=>$id])->andWhere(['register_id'=>$item->id]);
+        foreach ($emp as $e){
+            $e->status = 4;
+            $e->save();
+        }
         $item->save();
     }
 }
