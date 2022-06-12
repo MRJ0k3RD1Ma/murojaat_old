@@ -43,7 +43,7 @@
                             <td><?= $item->status0->name ?></td>
                             <td>
                                 <?php if($item->status<2){?>
-                                    <a data-method="post" data-confirm="Siz rostdan ham ushbu topshiriqni o`chirmoqchimisiz?" href="<?= Yii::$app->urlManager->createUrl(['/appeal/deletetaskemp','sender_id'=>$item->sender_id,'reciever_id'=>$item->reciever_id,'register_id'=>$register->id])?>"><span class="fa fa-trash"></span></a>
+                                    <a data-method="post" data-confirm="Siz rostdan ham ushbu topshiriqni o`chirmoqchimisiz?" href="<?= Yii::$app->urlManager->createUrl(['/appeal/deletetask'])?>"><span class="fa fa-trash"></span></a>
                                 <?php }?>
                             </td>
                         </tr>

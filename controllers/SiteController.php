@@ -7,11 +7,9 @@ use app\models\AppealAnswer;
 use app\models\AppealBajaruvchi;
 use app\models\AppealComment;
 use app\models\AppealRegister;
-use app\models\search\AppealBajaruvchiAnsSearch;
 use app\models\search\AppealRegisterMyHasSearch;
 use app\models\search\AppealRegisterMySearch;
 use app\models\search\CompanyMyRegisterSearch;
-use app\models\search\CompanyRegisterSearch;
 use app\models\TaskEmp;
 use app\models\User;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -59,7 +57,7 @@ class SiteController extends Controller
 
     public function afterAction($action, $result)
     {
-        if($action->id !='logout' and $action->id != 'login' and $action->id != 'change' and $action->id != 'profile'){
+        if($action->id !='logout' and $action->id != 'login' and $action->id != 'change' and $action->id != 'profile' and $action->id != 'error'){
             if(Yii::$app->user->identity->is_registration){
                 return $this->redirect(['/appeal/index']);
             }

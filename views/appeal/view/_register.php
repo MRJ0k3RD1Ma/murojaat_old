@@ -23,33 +23,47 @@
         [
             'attribute'=>'deadtime',
             'value'=>function($d){
-                if($d->status == 4){
-                    return "<span class='bg-success' style='display: block;text-align: center'>Бажарилган</span>".
-                        $d->donetime;
+                if($d->parent_bajaruvchi_id>0){
+                    $baj = $d->parent;
+                    if($baj->status == 4){
+                        return "<span class='bg-success' style='display: block;text-align: center'>Бажарилган</span>".
+                            $d->donetime;
+                    }
+                    $datetime2 = date_create($baj->deadtime);
+                    $datetime1 = date_create(date('Y-m-d'));
+                    $interval = date_diff($datetime1, $datetime2);
+                    $days = $interval->format('%a ');
+                    $ds = $interval->format('%R%a ');
+                    $dead = date('d-m-Y',strtotime($baj->deadtime));
+
+                }else{
+                    $baj = $d->appeal;
+                    if($baj->status == 4){
+                        return "<span class='bg-success' style='display: block;text-align: center'>Бажарилган</span>".
+                            $baj->answer_date;
+                    }
+                    $datetime2 = date_create($baj->deadtime);
+                    $datetime1 = date_create(date('Y-m-d'));
+                    $interval = date_diff($datetime1, $datetime2);
+                    $days = $interval->format('%a ');
+                    $ds = $interval->format('%R%a ');
+                    $dead = date('d-m-Y',strtotime($baj->deadtime));
                 }
-                $datetime2 = date_create($d->deadtime);
-                $datetime1 = date_create(date('Y-m-d'));
-                $interval = date_diff($datetime1, $datetime2);
-                $days = $interval->format('%a ');
-                $ds = $interval->format('%R%a ');
-                $d->deadtime = date('d-m-Y',strtotime($d->deadtime));
+
+
+
+
                 $class = "";
-                if($ds <= 5){
-                    $class = "bg-warning";
-                }
-                if($ds < 0){
-                    $class = "bg-danger";
-                }
-                $res = "<span class='{$class}' style='width: 100%; height: 100%; display: block;text-align: center'>".$days.' кун<br>'.$d->deadtime."</span> ";
-
 
                 if($ds < 0){
                     $class = "bg-danger";
-                    $res = "<span class='{$class}' style='width: 100%; height: 100%; display: block;'>Муддати ўтган</span>";
+                    $res = "<span class='{$class}' style='width: 100%; height: 100%; '>Муддати ўтган</span>";
                 }elseif($ds <= 5){
                     $class = "bg-warning";
-                    $res = "<span class='{$class}' style='width: 100%; height: 100%; display: block;'>".$days.' кун'."</span><br>{$d->deadtime}";
-                }else{$res = "<span class='{$class}' style='width: 100%; height: 100%; display: block;'>".$days.' кун'."</span><br>{$d->deadtime}";}
+                    $res = "<span class='{$class}' style='width: 100%; height: 100%; '>".$days.' кун'."</span><br>{$d->deadtime}";
+                }else{
+                    $res = "<span class='{$class}' style='width: 100%; height: 100%;'>".$days.' кун'."</span><br>{$d->deadtime}";
+                }
 
                 return $res;
             },

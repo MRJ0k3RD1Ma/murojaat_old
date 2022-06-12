@@ -2,6 +2,7 @@
 
 namespace app\models\search;
 
+use yii\base\BaseObject;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\AppealBajaruvchi;
@@ -86,4 +87,6 @@ class AppealBajaruvchiSearch extends AppealBajaruvchi
 
         return $dataProvider;
     }
+
+
 }

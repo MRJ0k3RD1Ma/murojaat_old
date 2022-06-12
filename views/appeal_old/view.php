@@ -39,8 +39,11 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-<?php if($register->status == 0 or $register->status == 1 or $register->status == 2) echo 12; else echo 6?>">
+
                         <?= $this->render('view/_register',['register'=>$register])?>
+
                     </div>
+
                     <?php if($register->status > 2 and $register->parent_bajaruvchi_id){?>
                     <div class="col-md-6">
 
