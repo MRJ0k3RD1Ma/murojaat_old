@@ -304,8 +304,6 @@ class AppealController extends Controller
                 $register->save();
                 closeAppeal($model->id,$register->id,$register->control_id);
             }
-
-            //return $this->redirect(['acceptanswer','id'=>$answer->id]);
         }
         return $this->redirect(['view','id'=>$register->id]);
     }
@@ -334,6 +332,8 @@ class AppealController extends Controller
         }
         return $this->redirect(['view','id'=>$register->id]);
     }
+
+
     public function actionAnswered($status = 3){
         $searchModel = new AppealBajaruvchiSearch();
         $searchModel->status = $status;

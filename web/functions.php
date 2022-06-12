@@ -56,26 +56,30 @@ function getColor($status){
 }
 
 
-
-
 // type some code
 function closeAppeal($id,$reg_id,$c_id){
     $reg = \app\models\AppealRegister::find()->where(['appeal_id'=>$id])->andWhere(['>=','id',$reg_id])->all();
+
     foreach ($reg as $item){
         $item->status = 4;
         $item->control_id = $c_id;
         $item->donetime = date('Y-m-d');
-        if($baj = $item->parent){
-            $baj->status = 4;
-            $baj->save();
-        }
-        $emp = TaskEmp::find()->where(['appeal_id'=>$id])->andWhere(['register_id'=>$item->id]);
+
+        $emp = TaskEmp::find()->where(['appeal_id'=>$id])->andWhere(['register_id'=>$item->id])->all();
+
         foreach ($emp as $e){
             $e->status = 4;
             $e->save();
         }
         $item->save();
     }
+
+    $bajs = AppealBajaruvchi::find()->where(['appeal_id'=>$id])->andWhere(['>=','register_id',$reg_id])->all();
+    foreach ($bajs as $item) {
+        $item->status = 4;
+        $item->save(false);
+    }
+
 }
 
 function changeTime($id){
