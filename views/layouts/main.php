@@ -171,17 +171,13 @@ AppAsset::register($this);
                     <i class="far fa-bell"></i>
                     <span class="badge badge-warning navbar-badge mycolor"><?php
                         $cnt = \app\models\AppealBajaruvchi::find()->where(['<=','status',1])->andWhere(['company_id'=>Yii::$app->user->identity->company_id])->count('id');
-                        $cnt1 = AppealRegister::find()
-                            ->innerJoin('appeal','appeal.id=appeal_register.appeal_id')
-                            ->where(['appeal_register.company_id'=>Yii::$app->user->identity->company_id])
-                            ->where('appeal_register.id in (select register_id from task_emp where (reciever_id='.\Yii::$app->user->id.' or sender_id='.\Yii::$app->user->id.') and status=0)')
-                            ->orderBy(['appeal_register.deadtime'=>SORT_DESC])->count('appeal_register.id');
+
                         if(Yii::$app->user->identity->company_id == 1){
                             $cnt2 = \app\models\Appeal::find()->where(['type'=>1])->andWhere(['<','status',2])->count('id');
-                            echo $cnt + $cnt1 + $cnt2;
+                            echo $cnt +  $cnt2;
                         }else{
                             $cnt2 = \app\models\Appeal::find()->where(['type'=>1])->andWhere(['<','status',2])->count('id');
-                            echo $cnt + $cnt1;
+                            echo $cnt ;
                         }
                         ?></span>
                 </a>
@@ -196,9 +192,6 @@ AppAsset::register($this);
                             <i class="fas fa-envelope mr-2"></i> <?= $cnt2 ?> та МФЙ орқали келган
                         </a>
                     <?php }?>
-                    <a href="<?= Yii::$app->urlManager->createUrl(['/site/index','status'=>0])?>" class="dropdown-item">
-                        <i class="fas fa-envelope mr-2"></i> <?= $cnt1 ?> та менга келган
-                    </a>
 
                 </div>
             </li>

@@ -57,9 +57,6 @@ $this->params['breadcrumbs'][] = $this->title;
                             ],
                             'deadtime',
                             'created',
-                            //'status',
-
-//                            ['class' => 'yii\grid\ActionColumn'],
                         ],
                     ]); ?>
 

@@ -25,13 +25,10 @@ use app\models\User;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpWord\TemplateProcessor;
 use Yii;
-use yii\base\BaseObject;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
 use yii\web\UploadedFile;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-use yii\helpers\FileHelper;
 
 class AppealController extends Controller
 {
