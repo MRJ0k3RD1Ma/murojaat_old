@@ -260,6 +260,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
             <a href="<?= Yii::$app->urlManager->createUrl(['/appeal/getappeal','id'=>$register->id])?>" class="btn btn-default" id="downappeal"><span class="fa fa-download"></span> Мурожаат масаласини юклаб олиш</a>
 
+            <?php if($model->status < 2){?>
+
             <a href="#success" class="btn btn-success" data-toggle="collapse"><span class="fa fa-check"></span> Мурожаатни қабул қилиш</a>
             <?php if(false){?>
             <a href="#route" class="btn btn-primary" data-toggle="collapse"><span class="fa fa-route"></span> Қуйи ташкилотга юбориш</a>
@@ -298,6 +300,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                 <?php ActiveForm::end() ?>
             </div>
+            <?php } ?>
 
 
             <div id="route" class="collapse" style="margin-top: 20px; padding: 20px;border: 1px solid #007bff;" data-parent="#accordion">
